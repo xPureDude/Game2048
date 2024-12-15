@@ -22,7 +22,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     std::cout << "Hello Game2048 !" << std::endl;
 
     Game game;
-    game.OnNewGame();
+    game.OnNewGame(4, 4);
 
     sf::Text text;
     sf::Font font;

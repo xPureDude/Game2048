@@ -4,11 +4,9 @@
 
 #include <iostream>
 
-BlockInfo::BlockInfo(const sf::Color& backColor, float blockSize, const sf::Font& font, const sf::Color& valueColor,
+BlockInfo::BlockInfo(const sf::Color& backColor, const sf::Font& font, const sf::Color& valueColor,
                      std::uint32_t charSize, std::int32_t value)
 {
-    m_back.setSize({blockSize, blockSize});
-    m_back.setOrigin({m_back.getSize().x / 2, m_back.getSize().y / 2});
     m_back.setFillColor(backColor);
 
     m_value.setFillColor(valueColor);
@@ -50,7 +48,6 @@ void Block::Update(const sf::Time& elapsed)
         {
             float rate = m_moveElapsed / sf::milliseconds(200);
             m_pos = originPos + (destPos - originPos) * rate;
-            std::cout << "m_pos: x = " << m_pos.x << ", y = " << m_pos.y << " rate = " << rate << std::endl;
         }
     }
 }
@@ -64,38 +61,35 @@ sf::Time Game::s_moveTime = sf::milliseconds(200);
 Game::Game()
     : m_createBlockIndex(0),
       m_isMoving(false),
-      m_isPlaying(false)
+      m_isPlaying(false),
+      m_blockSize(0),
+      m_blockSpace(20.f),
+      m_rowCount(4),
+      m_colCount(4)
 {
-    if (m_font.loadFromFile("Vegur-Yg1a.otf") == false)
+    if (m_font.loadFromFile("SourceHanSansCN-Regular.otf") == false)
     {
-        std::cout << "Game::Game(), load font failed, file: Vegur-Yg1a.otf" << std::endl;
+        std::cout << "Game::Game(), load font failed, file: SourceHanSansCN-Regular.otf" << std::endl;
     }
     m_baseBoard.setSize({(float)s_boardWidth, (float)s_boardWidth});
     m_baseBoard.setPosition(0.0f, s_boardOffset);
     m_baseBoard.setFillColor(s_boardColor);
 
-    m_blockSize = (float)(s_boardWidth - (m_board.size() + 1) * 20) / m_board.size();
-    m_baseBlock.setSize({m_blockSize, m_blockSize});
-    m_baseBlock.setFillColor(s_baseBlockColor);
-    m_baseBlock.setOrigin(m_baseBlock.getSize() / 2.f);
-
-    m_blockInfos.emplace_back(sf::Color(0xEEE4DAFF), m_blockSize, m_font, sf::Color(0x776E65FF), 55, 2);
-    m_blockInfos.emplace_back(sf::Color(0xEDE0C8FF), m_blockSize, m_font, sf::Color(0x776E65FF), 55, 4);
-    m_blockInfos.emplace_back(sf::Color(0xF2B179FF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 55, 8);
-    m_blockInfos.emplace_back(sf::Color(0xF59563FF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 50, 16);
-    m_blockInfos.emplace_back(sf::Color(0xF67C5FFF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 50, 32);
-    m_blockInfos.emplace_back(sf::Color(0xF65E3BFF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 50, 64);
-    m_blockInfos.emplace_back(sf::Color(0xEDCF72FF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 45, 128);
-    m_blockInfos.emplace_back(sf::Color(0xEDCC61FF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 45, 256);
-    m_blockInfos.emplace_back(sf::Color(0xEDC850FF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 45, 512);
-    m_blockInfos.emplace_back(sf::Color(0xEDC53FFF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 40, 1024);
-    m_blockInfos.emplace_back(sf::Color(0xEFC32FFF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 40, 2048);
-    m_blockInfos.emplace_back(sf::Color(0xF0C430FF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 40, 4096);
-    m_blockInfos.emplace_back(sf::Color(0xF1C531FF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 40, 8192);
-    m_blockInfos.emplace_back(sf::Color(0xF2C632FF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 35, 16384);
-    m_blockInfos.emplace_back(sf::Color(0xF3C733FF), m_blockSize, m_font, sf::Color(0xFFFFFFFF), 35, 32768);
-
-    _ResetBoard();
+    m_blockInfos.emplace_back(sf::Color(0xEEE4DAFF), m_font, sf::Color(0x776E65FF), 55, 2);
+    m_blockInfos.emplace_back(sf::Color(0xEDE0C8FF), m_font, sf::Color(0x776E65FF), 55, 4);
+    m_blockInfos.emplace_back(sf::Color(0xF2B179FF), m_font, sf::Color(0xFFFFFFFF), 55, 8);
+    m_blockInfos.emplace_back(sf::Color(0xF59563FF), m_font, sf::Color(0xFFFFFFFF), 50, 16);
+    m_blockInfos.emplace_back(sf::Color(0xF67C5FFF), m_font, sf::Color(0xFFFFFFFF), 50, 32);
+    m_blockInfos.emplace_back(sf::Color(0xF65E3BFF), m_font, sf::Color(0xFFFFFFFF), 50, 64);
+    m_blockInfos.emplace_back(sf::Color(0xEDCF72FF), m_font, sf::Color(0xFFFFFFFF), 45, 128);
+    m_blockInfos.emplace_back(sf::Color(0xEDCC61FF), m_font, sf::Color(0xFFFFFFFF), 45, 256);
+    m_blockInfos.emplace_back(sf::Color(0xEDC850FF), m_font, sf::Color(0xFFFFFFFF), 45, 512);
+    m_blockInfos.emplace_back(sf::Color(0xEDC53FFF), m_font, sf::Color(0xFFFFFFFF), 40, 1024);
+    m_blockInfos.emplace_back(sf::Color(0xEFC32FFF), m_font, sf::Color(0xFFFFFFFF), 40, 2048);
+    m_blockInfos.emplace_back(sf::Color(0xF0C430FF), m_font, sf::Color(0xFFFFFFFF), 40, 4096);
+    m_blockInfos.emplace_back(sf::Color(0xF1C531FF), m_font, sf::Color(0xFFFFFFFF), 40, 8192);
+    m_blockInfos.emplace_back(sf::Color(0xF2C632FF), m_font, sf::Color(0xFFFFFFFF), 35, 16384);
+    m_blockInfos.emplace_back(sf::Color(0xF3C733FF), m_font, sf::Color(0xFFFFFFFF), 35, 32768);
 }
 
 Game::~Game()
@@ -110,22 +104,27 @@ void Game::Update(const sf::Time& elapsed)
 {
     bool prevMoving = m_isMoving;
     m_isMoving = false;
-    for (auto info : m_blocks)
+    auto info = m_blocks.begin();
+    while (info != m_blocks.end())
     {
-        if (info->m_originGrid != info->m_destGrid)
+        if ((*info)->m_originGrid != (*info)->m_destGrid)
         {
-            info->Update(elapsed);
+            (*info)->Update(elapsed);
             // After update
-            if (info->m_originGrid == info->m_destGrid)
+            if ((*info)->m_originGrid == (*info)->m_destGrid)
             {
-                if (info->m_needGrow)
+                auto destBlock = m_board[(*info)->m_destGrid.x][(*info)->m_destGrid.y];
+                if (destBlock != nullptr && destBlock->m_needGrow && *info != destBlock)
                 {
-                    info->m_index++;
-                    if (info->m_index == m_blockInfos.size() - 1)
+                    destBlock->m_index++;
+                    destBlock->m_needGrow = false;
+                    if (destBlock->m_index == m_blockInfos.size())
                     {
                         // Win
                     }
-                    info->m_needGrow = false;
+                    delete (*info);
+                    info = m_blocks.erase(info);
+                    continue;
                 }
             }
             else
@@ -133,6 +132,7 @@ void Game::Update(const sf::Time& elapsed)
                 m_isMoving = true;
             }
         }
+        ++info;
     }
 
     // Create new block after move
@@ -146,9 +146,9 @@ void Game::Render(sf::RenderTarget* window)
 {
     window->draw(m_baseBoard);
 
-    for (std::size_t row = 0; row < m_board.size(); ++row)
+    for (std::size_t row = 0; row < m_rowCount; ++row)
     {
-        for (std::size_t col = 0; col < m_board[row].size(); ++col)
+        for (std::size_t col = 0; col < m_colCount; ++col)
         {
             m_baseBlock.setPosition(GetGridPosition({row, col}));
             window->draw(m_baseBlock);
@@ -186,11 +186,25 @@ void Game::HandleEvent(const sf::Event& e)
     }
 }
 
-void Game::OnNewGame()
+void Game::OnNewGame(std::size_t rowCount, std::size_t colCount)
 {
-    _ResetBoard();
     m_createBlockIndex = 0;
     m_isPlaying = true;
+    m_rowCount = rowCount;
+    m_colCount = colCount;
+
+    m_blockSize = (float)(s_boardWidth - (m_colCount + 1) * m_blockSpace) / m_colCount;
+    m_baseBlock.setSize({m_blockSize, m_blockSize});
+    m_baseBlock.setFillColor(s_baseBlockColor);
+    m_baseBlock.setOrigin(m_baseBlock.getSize() / 2.f);
+
+    for (auto& info : m_blockInfos)
+    {
+        info.m_back.setSize({m_blockSize, m_blockSize});
+        info.m_back.setOrigin({m_blockSize / 2.f, m_blockSize / 2.f});
+    }
+
+    _ResetBoard();
     _CreateNewBlock();
     _CreateNewBlock();
 }
@@ -198,30 +212,35 @@ void Game::OnNewGame()
 sf::Vector2f Game::GetGridPosition(const sf::Vector2<std::size_t>& grid)
 {
     auto [row, col] = grid;
-    auto xpos = (col + 1) * 20 + col * m_blockSize + m_blockSize / 2.f;
-    auto ypos = (row + 1) * 20 + row * m_blockSize + m_blockSize / 2.f;
+    auto xpos = (col + 1) * m_blockSpace + col * m_blockSize + m_blockSize / 2.f;
+    auto ypos = (row + 1) * m_blockSpace + row * m_blockSize + m_blockSize / 2.f;
     return {xpos, ypos + s_boardOffset};
 }
 
 void Game::_OnMoveLeft()
 {
     // move row by row
-    for (std::size_t row = 0; row < m_board.size(); ++row)
+    for (std::size_t row = 0; row < m_rowCount; ++row)
     {
-        for (std::size_t col = 0; col < m_board[row].size(); ++col)
+        // Last one block can't move
+        for (std::size_t col = 1; col < m_colCount; ++col)
         {
+            // Find first !nullptr grid
             auto block = m_board[row][col];
-            if (block != nullptr)
+            if (block == nullptr)
+                continue;
+
+            std::size_t destCol = col - 1;
+            while (destCol >= 0 && destCol < m_colCount)
             {
-                // Find new pos to move
-                for (std::size_t destCol = 0; destCol < col; ++destCol)
-                {
-                    if (_FindCanMoveGrid(block, row, col, row, destCol))
-                    {
-                        break;
-                    }
-                }
+                if (m_board[row][destCol] != nullptr)
+                    break;
+                --destCol;
             }
+            if (destCol > m_colCount)
+                destCol = 0;
+
+            _CheckMoveGrid(block, {row, col}, {row, destCol}, {row, destCol + 1});
         }
     }
 }
@@ -229,25 +248,26 @@ void Game::_OnMoveLeft()
 void Game::_OnMoveRight()
 {
     // move row by row
-    for (std::size_t row = 0; row < m_board.size(); ++row)
+    for (std::size_t row = 0; row < m_rowCount; ++row)
     {
-        for (std::size_t col = m_board[row].size() - 1; col >= 0; --col)
+        // unsigned may overflow
+        for (std::size_t col = m_colCount - 2; col >= 0 && col < m_colCount; --col)
         {
-            // Index overflow
-            if (col > m_board[row].size())
-                break;
             auto block = m_board[row][col];
-            if (block != nullptr)
+            if (block == nullptr)
+                continue;
+
+            std::size_t destCol = col + 1;
+            while (destCol < m_colCount)
             {
-                // Find new pos to move
-                for (std::size_t destCol = m_board[row].size() - 1; destCol > col; --destCol)
-                {
-                    if (_FindCanMoveGrid(block, row, col, row, destCol))
-                    {
-                        break;
-                    }
-                }
+                if (m_board[row][destCol] != nullptr)
+                    break;
+                ++destCol;
             }
+            if (destCol == m_colCount)
+                destCol = m_colCount - 1;
+
+            _CheckMoveGrid(block, {row, col}, {row, destCol}, {row, destCol - 1});
         }
     }
 }
@@ -255,23 +275,25 @@ void Game::_OnMoveRight()
 void Game::_OnMoveUp()
 {
     // move col by col
-    auto colCount = m_board.front().size();
-    for (std::size_t col = 0; col < colCount; ++col)
+    for (std::size_t col = 0; col < m_colCount; ++col)
     {
-        for (std::size_t row = 0; row < m_board.size(); ++row)
+        for (std::size_t row = 1; row < m_rowCount; ++row)
         {
             auto block = m_board[row][col];
-            if (block != nullptr)
+            if (block == nullptr)
+                continue;
+
+            std::size_t destRow = row - 1;
+            while (destRow >= 0 && destRow < m_rowCount)
             {
-                // Find new pos to move
-                for (std::size_t destRow = 0; destRow < row; ++destRow)
-                {
-                    if (_FindCanMoveGrid(block, row, col, destRow, col))
-                    {
-                        break;
-                    }
-                }
+                if (m_board[destRow][col] != nullptr)
+                    break;
+                --destRow;
             }
+            if (destRow > m_rowCount)
+                destRow = 0;
+
+            _CheckMoveGrid(block, {row, col}, {destRow, col}, {destRow + 1, col});
         }
     }
 }
@@ -279,27 +301,26 @@ void Game::_OnMoveUp()
 void Game::_OnMoveDown()
 {
     // move col by col
-    auto colCount = m_board.front().size();
-    for (std::size_t col = 0; col < colCount; ++col)
+    for (std::size_t col = 0; col < m_colCount; ++col)
     {
-        for (std::size_t row = m_board.size() - 1; row >= 0; --row)
+        // uint may overflow
+        for (std::size_t row = m_rowCount - 2; row >= 0 && row < m_rowCount; --row)
         {
-            // Index overflow
-            if (row >= m_board.size())
-                break;
-
             auto block = m_board[row][col];
-            if (block != nullptr)
+            if (block == nullptr)
+                continue;
+
+            std::size_t destRow = row + 1;
+            while (destRow < m_rowCount)
             {
-                // Find new pos to move
-                for (std::size_t destRow = m_board.size() - 1; destRow > row; --destRow)
-                {
-                    if (_FindCanMoveGrid(block, row, col, destRow, col))
-                    {
-                        break;
-                    }
-                }
+                if (m_board[destRow][col] != nullptr)
+                    break;
+                ++destRow;
             }
+            if (destRow == m_rowCount)
+                destRow = m_rowCount - 1;
+
+            _CheckMoveGrid(block, {row, col}, {destRow, col}, {destRow - 1, col});
         }
     }
 }
@@ -312,21 +333,20 @@ void Game::_ResetBoard()
     }
     m_blocks.clear();
 
-    for (auto& line : m_board)
+    m_board.resize(m_rowCount);
+    for (auto& row : m_board)
     {
-        for (auto& cell : line)
-        {
-            cell = nullptr;
-        }
+        row.clear();
+        row.resize(m_colCount, nullptr);
     }
 }
 
 void Game::_CreateNewBlock()
 {
     std::vector<std::pair<std::size_t, std::size_t>> availableGrid;
-    for (std::size_t row = 0; row < m_board.size(); ++row)
+    for (std::size_t row = 0; row < m_rowCount; ++row)
     {
-        for (std::size_t col = 0; col < m_board[row].size(); ++col)
+        for (std::size_t col = 0; col < m_colCount; ++col)
         {
             if (m_board[row][col] == nullptr)
             {
@@ -341,7 +361,12 @@ void Game::_CreateNewBlock()
         return;
     }
 
-    auto index = rand() % (availableGrid.size() - 1);
+    std::size_t index = 0;
+    if (availableGrid.size() > 1)
+    {
+        index = rand() % (availableGrid.size() - 1);
+    }
+
     auto [row, col] = availableGrid[index];
 
     // three "2" block then one "4" block
@@ -358,30 +383,28 @@ void Game::_CreateNewBlock()
     m_createBlockIndex %= 4;
 }
 
-bool Game::_FindCanMoveGrid(Block* originBlock, std::size_t oRow, std::size_t oCol, std::size_t dRow, std::size_t dCol)
+void Game::_CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vector2size& dGrid, const Vector2size& pGrid)
 {
-    auto destBlock = m_board[dRow][dCol];
-    if (destBlock != nullptr && destBlock->m_needGrow)
-        return false;
+    m_board[oGrid.x][oGrid.y] = nullptr;
 
-    if (destBlock == nullptr || originBlock->m_index == destBlock->m_index)
+    auto destBlock = m_board[dGrid.x][dGrid.y];
+    if (destBlock == nullptr)
     {
-        // Find dest grid
-        // Set new grid pos
-        originBlock->m_destGrid = {dRow, dCol};
-        m_board[oRow][oCol] = nullptr;
-
-        if (destBlock != nullptr)
-        {
-            // delete old block
-            m_blocks.remove(destBlock);
-            delete destBlock;
-
-            originBlock->m_needGrow = true;
-        }
-
-        m_board[dRow][dCol] = originBlock;
-        return true;
+        block->m_destGrid = dGrid;
+        m_board[dGrid.x][dGrid.y] = block;
     }
-    return false;
+    else
+    {
+        if (block->m_index == destBlock->m_index && !destBlock->m_needGrow)
+        {
+            // Move to merge
+            destBlock->m_needGrow = true;
+            block->m_destGrid = dGrid;
+        }
+        else
+        {
+            block->m_destGrid = pGrid;
+            m_board[pGrid.x][pGrid.y] = block;
+        }
+    }
 }
