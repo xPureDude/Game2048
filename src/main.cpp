@@ -13,8 +13,7 @@
 const sf::Time g_fpsTime60 = sf::seconds(1.f / 60.f);
 const sf::Time g_fpsTime120 = sf::seconds(1.f / 120.f);
 
-// int main(int argc, char** argv)
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
+int main(int argc, char** argv)
 {
     sf::RenderWindow window;
     window.create(sf::VideoMode(500, 600), "Game2048", sf::Style::Close | sf::Style::Titlebar);
