@@ -1,11 +1,8 @@
 #include "Game.hpp"
 
-#include "SFML/Graphics/RenderTarget.hpp"
-
 #include <iostream>
 
-BlockInfo::BlockInfo(const sf::Color& backColor, const sf::Font& font, const sf::Color& valueColor,
-                     std::uint32_t charSize, std::int32_t value)
+BlockInfo::BlockInfo(const sf::Color& backColor, const sf::Font& font, const sf::Color& valueColor, std::uint32_t charSize, std::int32_t value)
 {
     m_back.setFillColor(backColor);
 
@@ -60,16 +57,17 @@ sf::Time Game::s_moveTime = sf::milliseconds(200);
 
 Game::Game()
     : m_createBlockIndex(0),
+      m_blockSize(0),
+      m_blockSpace(0),
+      m_rowCount(0),
+      m_colCount(0),
       m_isMoving(false),
       m_isPlaying(false),
-      m_blockSize(0),
-      m_blockSpace(20.f),
-      m_rowCount(4),
-      m_colCount(4)
+      m_score(0)
 {
-    if (m_font.loadFromFile("SourceHanSansCN-Regular.otf") == false)
+    if (m_font.loadFromFile("Vegur-Yg1a.otf") == false)
     {
-        std::cout << "Game::Game(), load font failed, file: SourceHanSansCN-Regular.otf" << std::endl;
+        std::cout << "Game::Game(), load font failed, file: Vegur-Yg1a.otf" << std::endl;
     }
     m_baseBoard.setSize({(float)s_boardWidth, (float)s_boardWidth});
     m_baseBoard.setPosition(0.0f, s_boardOffset);
@@ -86,10 +84,11 @@ Game::Game()
     m_blockInfos.emplace_back(sf::Color(0xEDC850FF), m_font, sf::Color(0xFFFFFFFF), 45, 512);
     m_blockInfos.emplace_back(sf::Color(0xEDC53FFF), m_font, sf::Color(0xFFFFFFFF), 40, 1024);
     m_blockInfos.emplace_back(sf::Color(0xEFC32FFF), m_font, sf::Color(0xFFFFFFFF), 40, 2048);
-    m_blockInfos.emplace_back(sf::Color(0xF0C430FF), m_font, sf::Color(0xFFFFFFFF), 40, 4096);
-    m_blockInfos.emplace_back(sf::Color(0xF1C531FF), m_font, sf::Color(0xFFFFFFFF), 40, 8192);
-    m_blockInfos.emplace_back(sf::Color(0xF2C632FF), m_font, sf::Color(0xFFFFFFFF), 35, 16384);
-    m_blockInfos.emplace_back(sf::Color(0xF3C733FF), m_font, sf::Color(0xFFFFFFFF), 35, 32768);
+    m_blockInfos.emplace_back(sf::Color(0xF0C734FF), m_font, sf::Color(0xFFFFFFFF), 40, 4096);
+    m_blockInfos.emplace_back(sf::Color(0xF2C939FF), m_font, sf::Color(0xFFFFFFFF), 40, 8192);
+    m_blockInfos.emplace_back(sf::Color(0xF2CD45FF), m_font, sf::Color(0xFFFFFFFF), 35, 16384);
+    m_blockInfos.emplace_back(sf::Color(0xF4D249FF), m_font, sf::Color(0xFFFFFFFF), 35, 32768);
+    m_blockInfos.emplace_back(sf::Color(0xF4E854FF), m_font, sf::Color(0xFFFFFFFF), 35, 65536);
 }
 
 Game::~Game()
@@ -117,8 +116,10 @@ void Game::Update(const sf::Time& elapsed)
                 if (destBlock != nullptr && destBlock->m_needGrow && *info != destBlock)
                 {
                     destBlock->m_index++;
+                    m_score += static_cast<std::size_t>(std::pow(2, destBlock->m_index + 1));
+                    std::cout << "score: " << m_score << std::endl;
                     destBlock->m_needGrow = false;
-                    if (destBlock->m_index == m_blockInfos.size())
+                    if (destBlock->m_index == m_blockInfos.size() - 1)
                     {
                         // Win
                     }
@@ -188,12 +189,10 @@ void Game::HandleEvent(const sf::Event& e)
 
 void Game::OnNewGame(std::size_t rowCount, std::size_t colCount)
 {
-    m_createBlockIndex = 0;
-    m_isPlaying = true;
     m_rowCount = rowCount;
     m_colCount = colCount;
-
-    m_blockSize = (float)(s_boardWidth - (m_colCount + 1) * m_blockSpace) / m_colCount;
+    m_blockSpace = s_boardWidth / (m_colCount * 6.f + 1.f);
+    m_blockSize = m_blockSpace * 5.f;
     m_baseBlock.setSize({m_blockSize, m_blockSize});
     m_baseBlock.setFillColor(s_baseBlockColor);
     m_baseBlock.setOrigin(m_baseBlock.getSize() / 2.f);
@@ -203,6 +202,9 @@ void Game::OnNewGame(std::size_t rowCount, std::size_t colCount)
         info.m_back.setSize({m_blockSize, m_blockSize});
         info.m_back.setOrigin({m_blockSize / 2.f, m_blockSize / 2.f});
     }
+    m_isPlaying = true;
+    m_createBlockIndex = 0;
+    m_score = 0;
 
     _ResetBoard();
     _CreateNewBlock();

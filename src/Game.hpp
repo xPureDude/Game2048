@@ -1,10 +1,8 @@
 #pragma once
 
-#include "SFML/Graphics/RectangleShape.hpp"
-#include "SFML/Graphics/Text.hpp"
-#include "SFML/System/Time.hpp"
-#include "SFML/System/Vector2.hpp"
-#include "SFML/Window/Event.hpp"
+#include "SFML/Graphics.hpp" // IWYU pragma: keep
+#include "SFML/System.hpp"   // IWYU pragma: keep
+#include "SFML/Window.hpp"   // IWYU pragma: keep
 
 #include <list>
 #include <vector>
@@ -65,18 +63,22 @@ private:
     static sf::Color s_baseBlockColor;
     static sf::Time s_moveTime;
 
-    bool m_isMoving;
-    bool m_isPlaying;
-    std::uint32_t m_createBlockIndex;
+    // GameSetting
     float m_blockSize;
     float m_blockSpace;
     std::size_t m_rowCount;
     std::size_t m_colCount;
-
     sf::Font m_font;
     sf::RectangleShape m_baseBoard;
     sf::RectangleShape m_baseBlock;
     std::vector<BlockInfo> m_blockInfos;
+
+    // GameData
+    bool m_isMoving;
+    bool m_isPlaying;
+    std::size_t m_score;
+    std::uint32_t m_createBlockIndex;
+
     std::list<Block*> m_blocks;
     std::vector<std::vector<Block*>> m_board;
 };
