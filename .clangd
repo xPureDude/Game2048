@@ -1,5 +1,5 @@
 CompileFlags:
     Add: [
-            "-ID:/case/Dependencies/SFML-2.6.2/include",
+            "-IE:/case/Dependencies/SFML-2.6.2/include",
             "-std=c++20"
         ]
