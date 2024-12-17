@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scene/SceneManager.hpp"
+#include "../scene/SceneManager.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <functional>

@@ -1,14 +1,15 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-
 #include "SharedContext.hpp"
 
-class Game
+#include <SFML/Graphics.hpp>
+
+
+class PureFramework
 {
 public:
-    Game();
-    ~Game();
+    PureFramework();
+    ~PureFramework();
 
     bool Init();
 
@@ -24,4 +25,3 @@ private:
     sf::Time m_elasped;
     sf::Clock m_clock;
 };
-

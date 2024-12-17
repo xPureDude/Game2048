@@ -1,6 +1,6 @@
 #include "SheetStorage.hpp"
 
-#include "../Log.hpp"
+#include "../common/Log.hpp"
 #include "AnimationSheet.hpp"
 #include "AtlasPackage.hpp"
 

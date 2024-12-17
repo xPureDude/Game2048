@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ResourceManager.hpp"
+#include "../core/ResourceManager.hpp"
 
 class TextureManager : public ResourceManager<sf::Texture>
 {
@@ -13,4 +13,3 @@ public:
 private:
     bool _LoadResourceInfoFromXml(const std::string& file);
 };
-

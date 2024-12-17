@@ -1,8 +1,7 @@
 #pragma once
 
 #include "../TinyXml/tinyxml2.h"
-#include "SFML/Graphics/Texture.hpp"
-#include "SFML/System/Time.hpp"
+#include "SFML/Graphics.hpp" // IWYU pragma: keep
 
 #include <unordered_map>
 

@@ -18,12 +18,12 @@ struct BlockInfo
     sf::Text m_value;
 };
 
-class Game;
+class Game2048;
 struct Block
 {
     void Update(const sf::Time& elapsed);
 
-    Game* m_game;
+    Game2048* m_game;
     bool m_needGrow{false};
     std::int64_t m_index{-1};
     sf::Vector2f m_pos;
@@ -32,11 +32,11 @@ struct Block
     sf::Time m_moveElapsed;
 };
 
-class Game
+class Game2048
 {
 public:
-    Game();
-    ~Game();
+    Game2048();
+    ~Game2048();
 
     void Update(const sf::Time& elapsed);
     void Render(sf::RenderTarget* window);
@@ -63,7 +63,7 @@ private:
     static sf::Color s_baseBlockColor;
     static sf::Time s_moveTime;
 
-    // GameSetting
+    // Game2048Setting
     float m_blockSize;
     float m_blockSpace;
     std::size_t m_rowCount;
@@ -73,7 +73,7 @@ private:
     sf::RectangleShape m_baseBlock;
     std::vector<BlockInfo> m_blockInfos;
 
-    // GameData
+    // Game2048 Data
     bool m_isMoving;
     bool m_isPlaying;
     std::size_t m_score;

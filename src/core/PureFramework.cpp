@@ -1,20 +1,20 @@
-#include "Game.hpp"
+#include "PureFramework.hpp"
 
-#include "EventManager.hpp"
+#include "../event/EventManager.hpp"
+#include "../graphics/TextureManager.hpp"
+#include "../scene/SceneManager.hpp"
 #include "SharedContext.hpp"
-#include "TextureManager.hpp"
 #include "Window.hpp"
-#include "scene/SceneManager.hpp"
 
 #include <SFML/System.hpp>
 
 #define FRAME_ELASPED 1000.0f / 144.0f
 
-Game::Game() {}
+PureFramework::PureFramework() {}
 
-Game::~Game() {}
+PureFramework::~PureFramework() {}
 
-bool Game::Init()
+bool PureFramework::Init()
 {
     Window* window = m_ctx.Emplace<Window>();
     auto desktopSize = sf::VideoMode::getDesktopMode();
@@ -35,7 +35,7 @@ bool Game::Init()
     return true;
 }
 
-void Game::Run()
+void PureFramework::Run()
 {
     sf::Time frameElapsed = sf::milliseconds(FRAME_ELASPED);
     m_clock.restart();
@@ -55,19 +55,25 @@ void Game::Run()
     }
 }
 
-void Game::Update()
+void PureFramework::Update()
 {
     m_ctx.Get<Window>()->Update();
     m_ctx.Get<SceneManager>()->Update(m_elasped);
 }
 
-void Game::Render()
+void PureFramework::Render()
 {
     m_ctx.Get<Window>()->BeginRender();
     m_ctx.Get<SceneManager>()->Render();
     m_ctx.Get<Window>()->EndRender();
 }
 
-void Game::HandleEvent() { m_ctx.Get<Window>()->HandleEvent(); }
+void PureFramework::HandleEvent()
+{
+    m_ctx.Get<Window>()->HandleEvent();
+}
 
-void Game::LateUpdate() { m_ctx.Get<SceneManager>()->ProcessRemoves(); }
+void PureFramework::LateUpdate()
+{
+    m_ctx.Get<SceneManager>()->ProcessRemoves();
+}

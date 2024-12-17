@@ -1,10 +1,8 @@
 #pragma once
 
-#include "Scene.hpp"
+#include "../scene/Scene.hpp"
 
 #include <SFML/Graphics.hpp>
-
-class DesktopPet;
 
 class ScenePlay : public Scene
 {
@@ -23,9 +21,4 @@ public:
 
 private:
     void _Pause(EventDetail* detail);
-
-private:
-    sf::Vector2u m_windowSize;
-    DesktopPet* m_pet;
-    sf::Time m_lostElapsed;
 };

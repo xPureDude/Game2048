@@ -2,17 +2,15 @@
 
 #include "SceneManager.hpp"
 
-#include "../EventManager.hpp"
-#include "../SharedContext.hpp"
-#include "../Window.hpp"
-#include "ScenePlay.hpp"
+#include "../core/SharedContext.hpp"
+#include "../core/Window.hpp"
+#include "../event/EventManager.hpp"
 
 #include <iostream>
 
 SceneManager::SceneManager()
     : m_sharedContext(nullptr)
 {
-    _RegisterScene<ScenePlay>(SceneType::Play);
 }
 
 SceneManager::~SceneManager()
@@ -132,7 +130,10 @@ void SceneManager::ChangeSceneTo(SceneType type)
     m_sharedContext->Get<Window>()->SetView(m_scenes.back().m_scene->GetView());
 }
 
-void SceneManager::RemoveScene(SceneType type) { m_removeLater.insert(type); }
+void SceneManager::RemoveScene(SceneType type)
+{
+    m_removeLater.insert(type);
+}
 
 void SceneManager::ProcessRemoves()
 {
@@ -173,4 +174,7 @@ void SceneManager::_DestroyScene(SceneType type)
     }
 }
 
-bool SceneManager::_IsInRemoveLater(SceneType type) { return m_removeLater.find(type) != m_removeLater.end(); }
+bool SceneManager::_IsInRemoveLater(SceneType type)
+{
+    return m_removeLater.find(type) != m_removeLater.end();
+}

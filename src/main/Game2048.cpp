@@ -1,4 +1,4 @@
-#include "Game.hpp"
+#include "Game2048.hpp"
 
 #include <iostream>
 
@@ -49,13 +49,13 @@ void Block::Update(const sf::Time& elapsed)
     }
 }
 
-std::uint32_t Game::s_boardWidth = 500;
-std::uint32_t Game::s_boardOffset = 100;
-sf::Color Game::s_boardColor = sf::Color(0xBBADA0FF);
-sf::Color Game::s_baseBlockColor = sf::Color(0xEEE4DA5F);
-sf::Time Game::s_moveTime = sf::milliseconds(200);
+std::uint32_t Game2048::s_boardWidth = 500;
+std::uint32_t Game2048::s_boardOffset = 100;
+sf::Color Game2048::s_boardColor = sf::Color(0xBBADA0FF);
+sf::Color Game2048::s_baseBlockColor = sf::Color(0xEEE4DA5F);
+sf::Time Game2048::s_moveTime = sf::milliseconds(200);
 
-Game::Game()
+Game2048::Game2048()
     : m_createBlockIndex(0),
       m_blockSize(0),
       m_blockSpace(0),
@@ -67,7 +67,7 @@ Game::Game()
 {
     if (m_font.loadFromFile("Vegur-Yg1a.otf") == false)
     {
-        std::cout << "Game::Game(), load font failed, file: Vegur-Yg1a.otf" << std::endl;
+        std::cout << "Game2048::Game(), load font failed, file: Vegur-Yg1a.otf" << std::endl;
     }
     m_baseBoard.setSize({(float)s_boardWidth, (float)s_boardWidth});
     m_baseBoard.setPosition(0.0f, s_boardOffset);
@@ -91,7 +91,7 @@ Game::Game()
     m_blockInfos.emplace_back(sf::Color(0xF4E854FF), m_font, sf::Color(0xFFFFFFFF), 35, 65536);
 }
 
-Game::~Game()
+Game2048::~Game2048()
 {
     for (auto& block : m_blocks)
     {
@@ -99,7 +99,7 @@ Game::~Game()
     }
 }
 
-void Game::Update(const sf::Time& elapsed)
+void Game2048::Update(const sf::Time& elapsed)
 {
     bool prevMoving = m_isMoving;
     m_isMoving = false;
@@ -143,7 +143,7 @@ void Game::Update(const sf::Time& elapsed)
     }
 }
 
-void Game::Render(sf::RenderTarget* window)
+void Game2048::Render(sf::RenderTarget* window)
 {
     window->draw(m_baseBoard);
 
@@ -163,7 +163,7 @@ void Game::Render(sf::RenderTarget* window)
     }
 }
 
-void Game::HandleEvent(const sf::Event& e)
+void Game2048::HandleEvent(const sf::Event& e)
 {
     if (m_isMoving)
         return;
@@ -187,7 +187,7 @@ void Game::HandleEvent(const sf::Event& e)
     }
 }
 
-void Game::OnNewGame(std::size_t rowCount, std::size_t colCount)
+void Game2048::OnNewGame(std::size_t rowCount, std::size_t colCount)
 {
     m_rowCount = rowCount;
     m_colCount = colCount;
@@ -211,7 +211,7 @@ void Game::OnNewGame(std::size_t rowCount, std::size_t colCount)
     _CreateNewBlock();
 }
 
-sf::Vector2f Game::GetGridPosition(const sf::Vector2<std::size_t>& grid)
+sf::Vector2f Game2048::GetGridPosition(const sf::Vector2<std::size_t>& grid)
 {
     auto [row, col] = grid;
     auto xpos = (col + 1) * m_blockSpace + col * m_blockSize + m_blockSize / 2.f;
@@ -219,7 +219,7 @@ sf::Vector2f Game::GetGridPosition(const sf::Vector2<std::size_t>& grid)
     return {xpos, ypos + s_boardOffset};
 }
 
-void Game::_OnMoveLeft()
+void Game2048::_OnMoveLeft()
 {
     // move row by row
     for (std::size_t row = 0; row < m_rowCount; ++row)
@@ -247,7 +247,7 @@ void Game::_OnMoveLeft()
     }
 }
 
-void Game::_OnMoveRight()
+void Game2048::_OnMoveRight()
 {
     // move row by row
     for (std::size_t row = 0; row < m_rowCount; ++row)
@@ -274,7 +274,7 @@ void Game::_OnMoveRight()
     }
 }
 
-void Game::_OnMoveUp()
+void Game2048::_OnMoveUp()
 {
     // move col by col
     for (std::size_t col = 0; col < m_colCount; ++col)
@@ -300,7 +300,7 @@ void Game::_OnMoveUp()
     }
 }
 
-void Game::_OnMoveDown()
+void Game2048::_OnMoveDown()
 {
     // move col by col
     for (std::size_t col = 0; col < m_colCount; ++col)
@@ -327,7 +327,7 @@ void Game::_OnMoveDown()
     }
 }
 
-void Game::_ResetBoard()
+void Game2048::_ResetBoard()
 {
     for (auto& info : m_blocks)
     {
@@ -343,7 +343,7 @@ void Game::_ResetBoard()
     }
 }
 
-void Game::_CreateNewBlock()
+void Game2048::_CreateNewBlock()
 {
     std::vector<std::pair<std::size_t, std::size_t>> availableGrid;
     for (std::size_t row = 0; row < m_rowCount; ++row)
@@ -358,7 +358,7 @@ void Game::_CreateNewBlock()
     }
     if (availableGrid.empty())
     {
-        // GameOver
+        // Game2048Over
         m_isPlaying = true;
         return;
     }
@@ -385,7 +385,7 @@ void Game::_CreateNewBlock()
     m_createBlockIndex %= 4;
 }
 
-void Game::_CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vector2size& dGrid, const Vector2size& pGrid)
+void Game2048::_CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vector2size& dGrid, const Vector2size& pGrid)
 {
     m_board[oGrid.x][oGrid.y] = nullptr;
 
