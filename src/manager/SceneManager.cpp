@@ -4,13 +4,15 @@
 
 #include "../core/SharedContext.hpp"
 #include "../core/Window.hpp"
-#include "../event/EventManager.hpp"
+#include "../gameplay/ScenePlay.hpp"
+#include "EventManager.hpp"
 
 #include <iostream>
 
-SceneManager::SceneManager()
-    : m_sharedContext(nullptr)
+SceneManager::SceneManager(SharedContext* ctx)
+    : m_ctx(ctx)
 {
+    _RegisterScene<ScenePlay>(SceneType::Play);
 }
 
 SceneManager::~SceneManager()
@@ -31,7 +33,7 @@ bool SceneManager::Init(SharedContext* context)
     if (context == nullptr)
         return false;
 
-    m_sharedContext = context;
+    m_ctx = context;
 
     return true;
 }
@@ -40,13 +42,13 @@ void SceneManager::Update(const sf::Time& elapsed)
 {
     if (m_scenes.empty() == true)
         return;
-    if (m_scenes.back().m_scene->IsTranscent() == true && m_scenes.size() > 1)
+    if (m_scenes.back().m_scene->IsUpdateTransparent() == true && m_scenes.size() > 1)
     {
         auto iter = m_scenes.end();
         --iter;
         while (iter != m_scenes.begin())
         {
-            if (iter->m_scene->IsTranscent() == false && _IsInRemoveLater(iter->m_type) == false)
+            if (iter->m_scene->IsUpdateTransparent() == false && _IsInRemoveLater(iter->m_type) == false)
             {
                 break;
             }
@@ -71,14 +73,14 @@ void SceneManager::Render()
     if (m_scenes.empty() == true)
         return;
 
-    auto window = m_sharedContext->Get<Window>();
-    if (m_scenes.back().m_scene->IsTransparent() == true && m_scenes.size() > 1)
+    auto window = m_ctx->Get<Window>();
+    if (m_scenes.back().m_scene->IsRenderTransparent() == true && m_scenes.size() > 1)
     {
         auto iter = m_scenes.end();
         --iter;
         while (iter != m_scenes.begin())
         {
-            if (iter->m_scene->IsTransparent() == false && _IsInRemoveLater(iter->m_type) == false)
+            if (iter->m_scene->IsRenderTransparent() == false && _IsInRemoveLater(iter->m_type) == false)
             {
                 break;
             }
@@ -126,8 +128,8 @@ void SceneManager::ChangeSceneTo(SceneType type)
         }
     }
     m_scenes.back().m_scene->OnEnter();
-    m_sharedContext->Get<EventManager>()->SetCurrentSceneType(type);
-    m_sharedContext->Get<Window>()->SetView(m_scenes.back().m_scene->GetView());
+    m_ctx->Get<EventManager>()->SetCurrentSceneType(type);
+    m_ctx->Get<Window>()->SetView(m_scenes.back().m_scene->GetView());
 }
 
 void SceneManager::RemoveScene(SceneType type)
@@ -156,7 +158,7 @@ bool SceneManager::_CreateScene(SceneType type)
     if (scene->OnCreate(this) == false)
         return false;
     m_scenes.emplace_back(type, scene);
-    m_sharedContext->Get<EventManager>()->SetCurrentSceneType(type);
+    m_ctx->Get<EventManager>()->SetCurrentSceneType(type);
     return true;
 }
 

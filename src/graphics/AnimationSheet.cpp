@@ -1,8 +1,8 @@
 #include "AnimationSheet.hpp"
 
-#include "../Log.hpp"
-#include "../TextureManager.hpp"
-#include "../Window.hpp"
+#include "../common/Log.hpp"
+#include "../core/Window.hpp"
+#include "../manager/TextureManager.hpp"
 #include "Animation.hpp"
 
 #include <cassert>
@@ -77,9 +77,15 @@ void AnimationSheet::SetCurAnimation(const std::string& name, bool loop)
         DBG("AnimationSheet::SetCurAnimation, name: {}", name);
     }
 }
-const sf::Vector2f& AnimationSheet::GetPosition() { return m_curAnimation->GetSprite().getPosition(); }
+const sf::Vector2f& AnimationSheet::GetPosition()
+{
+    return m_curAnimation->GetSprite().getPosition();
+}
 
-sf::FloatRect AnimationSheet::GetGlobalBounds() { return m_curAnimation->GetSprite().getGlobalBounds(); }
+sf::FloatRect AnimationSheet::GetGlobalBounds()
+{
+    return m_curAnimation->GetSprite().getGlobalBounds();
+}
 
 Animation* AnimationSheet::GetAnimation(const std::string& name)
 {

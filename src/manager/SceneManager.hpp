@@ -1,11 +1,11 @@
 #pragma once
 
+#include "../core/Scene.hpp"
+
+#include <functional>
+#include <set>
 #include <unordered_map>
 #include <vector>
-#include <set>
-#include <functional>
-
-#include "Scene.hpp"
 
 enum class SceneType
 {
@@ -21,8 +21,8 @@ using SceneFactory = std::unordered_map<SceneType, std::function<Scene*(void)>>;
 
 struct SceneInfo
 {
-    SceneType m_type{ SceneType::None };
-    Scene* m_scene{ nullptr };
+    SceneType m_type{SceneType::None};
+    Scene* m_scene{nullptr};
 };
 
 class SharedContext;
@@ -30,7 +30,7 @@ class SharedContext;
 class SceneManager
 {
 public:
-    SceneManager();
+    SceneManager(SharedContext* ctx);
     ~SceneManager();
 
     bool Init(SharedContext* context);
@@ -44,7 +44,7 @@ public:
 
     void ProcessRemoves();
 
-    SharedContext* GetSharedContext() { return m_sharedContext; }
+    SharedContext* GetSharedContext() { return m_ctx; }
 
 private:
     bool _CreateScene(SceneType type);
@@ -55,7 +55,7 @@ private:
     void _RegisterScene(SceneType type);
 
 private:
-    SharedContext* m_sharedContext;
+    SharedContext* m_ctx;
     std::vector<SceneInfo> m_scenes;
     SceneTypeContainer m_removeLater;
     SceneFactory m_factory;
@@ -65,7 +65,7 @@ template <typename T>
 void SceneManager::_RegisterScene(SceneType type)
 {
     m_factory[type] = []() -> Scene* {
-	auto scene = new T;
-	return scene;
+        auto scene = new T;
+        return scene;
     };
 }

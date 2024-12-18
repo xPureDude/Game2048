@@ -2,17 +2,18 @@
 
 #include "SFML/Graphics.hpp" // IWYU pragma: keep
 #include "SFML/System.hpp"   // IWYU pragma: keep
-#include "SFML/Window.hpp"   // IWYU pragma: keep
 
 #include <list>
 #include <vector>
+
+class Window;
 
 using Vector2size = sf::Vector2<std::size_t>;
 
 struct BlockInfo
 {
     BlockInfo(const sf::Color& backColor, const sf::Font& font, const sf::Color& valueColor, std::uint32_t charSize, std::int32_t value);
-    void Render(sf::RenderTarget* target);
+    void Render(Window* window);
     void SetPosition(const sf::Vector2f& pos);
     sf::RectangleShape m_back;
     sf::Text m_value;
@@ -39,31 +40,32 @@ public:
     ~Game2048();
 
     void Update(const sf::Time& elapsed);
-    void Render(sf::RenderTarget* window);
+    void Render(Window* window);
 
-    void HandleEvent(const sf::Event& e);
     void OnNewGame(std::size_t rowCount, std::size_t colCount);
+
+    void SetPosition(const sf::Vector2f& pos);
 
     sf::Vector2f GetGridPosition(const sf::Vector2<std::size_t>& grid);
 
-private:
-    void _OnMoveLeft();
-    void _OnMoveRight();
-    void _OnMoveUp();
-    void _OnMoveDown();
+    void OnMoveLeft();
+    void OnMoveRight();
+    void OnMoveUp();
+    void OnMoveDown();
 
+private:
     void _ResetBoard();
     void _CreateNewBlock();
     void _CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vector2size& dGrid, const Vector2size& pGrid);
 
 private:
     static std::uint32_t s_boardWidth;
-    static std::uint32_t s_boardOffset;
     static sf::Color s_boardColor;
     static sf::Color s_baseBlockColor;
     static sf::Time s_moveTime;
 
     // Game2048Setting
+    sf::Vector2f m_position;
     float m_blockSize;
     float m_blockSpace;
     std::size_t m_rowCount;

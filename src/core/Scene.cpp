@@ -1,9 +1,8 @@
 #include "Scene.hpp"
 
-#include "../SharedContext.hpp"
-#include "../Window.hpp"
-#include "SceneManager.hpp"
-
+#include "../manager/SceneManager.hpp"
+#include "SharedContext.hpp"
+#include "Window.hpp"
 
 Scene::Scene()
     : m_isTransparent(false),

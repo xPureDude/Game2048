@@ -1,5 +1,7 @@
 #include "Game2048.hpp"
 
+#include "../core/Window.hpp"
+
 #include <iostream>
 
 BlockInfo::BlockInfo(const sf::Color& backColor, const sf::Font& font, const sf::Color& valueColor, std::uint32_t charSize, std::int32_t value)
@@ -16,10 +18,10 @@ BlockInfo::BlockInfo(const sf::Color& backColor, const sf::Font& font, const sf:
                       localBounds.top + m_value.getLocalBounds().height / 2.f);
 }
 
-void BlockInfo::Render(sf::RenderTarget* target)
+void BlockInfo::Render(Window* window)
 {
-    target->draw(m_back);
-    target->draw(m_value);
+    window->Render(m_back);
+    window->Render(m_value);
 }
 
 void BlockInfo::SetPosition(const sf::Vector2f& pos)
@@ -50,7 +52,6 @@ void Block::Update(const sf::Time& elapsed)
 }
 
 std::uint32_t Game2048::s_boardWidth = 500;
-std::uint32_t Game2048::s_boardOffset = 100;
 sf::Color Game2048::s_boardColor = sf::Color(0xBBADA0FF);
 sf::Color Game2048::s_baseBlockColor = sf::Color(0xEEE4DA5F);
 sf::Time Game2048::s_moveTime = sf::milliseconds(200);
@@ -65,12 +66,11 @@ Game2048::Game2048()
       m_isPlaying(false),
       m_score(0)
 {
-    if (m_font.loadFromFile("Vegur-Yg1a.otf") == false)
+    if (m_font.loadFromFile("SourceHanSansCN-Regular.otf") == false)
     {
-        std::cout << "Game2048::Game(), load font failed, file: Vegur-Yg1a.otf" << std::endl;
+        std::cout << "Game2048::Game(), load font failed, file: SourceHanSansCN-Regular.otf" << std::endl;
     }
     m_baseBoard.setSize({(float)s_boardWidth, (float)s_boardWidth});
-    m_baseBoard.setPosition(0.0f, s_boardOffset);
     m_baseBoard.setFillColor(s_boardColor);
 
     m_blockInfos.emplace_back(sf::Color(0xEEE4DAFF), m_font, sf::Color(0x776E65FF), 55, 2);
@@ -143,16 +143,16 @@ void Game2048::Update(const sf::Time& elapsed)
     }
 }
 
-void Game2048::Render(sf::RenderTarget* window)
+void Game2048::Render(Window* window)
 {
-    window->draw(m_baseBoard);
+    window->Render(m_baseBoard);
 
     for (std::size_t row = 0; row < m_rowCount; ++row)
     {
         for (std::size_t col = 0; col < m_colCount; ++col)
         {
             m_baseBlock.setPosition(GetGridPosition({row, col}));
-            window->draw(m_baseBlock);
+            window->Render(m_baseBlock);
         }
     }
 
@@ -160,30 +160,6 @@ void Game2048::Render(sf::RenderTarget* window)
     {
         m_blockInfos[info->m_index].SetPosition(info->m_pos);
         m_blockInfos[info->m_index].Render(window);
-    }
-}
-
-void Game2048::HandleEvent(const sf::Event& e)
-{
-    if (m_isMoving)
-        return;
-
-    switch (e.key.code)
-    {
-    case sf::Keyboard::Left:
-        _OnMoveLeft();
-        break;
-    case sf::Keyboard::Right:
-        _OnMoveRight();
-        break;
-    case sf::Keyboard::Up:
-        _OnMoveUp();
-        break;
-    case sf::Keyboard::Down:
-        _OnMoveDown();
-        break;
-    default:
-        break;
     }
 }
 
@@ -211,16 +187,24 @@ void Game2048::OnNewGame(std::size_t rowCount, std::size_t colCount)
     _CreateNewBlock();
 }
 
+void Game2048::SetPosition(const sf::Vector2f& pos)
+{
+    m_position = pos;
+    m_baseBoard.setPosition(pos);
+}
+
 sf::Vector2f Game2048::GetGridPosition(const sf::Vector2<std::size_t>& grid)
 {
     auto [row, col] = grid;
     auto xpos = (col + 1) * m_blockSpace + col * m_blockSize + m_blockSize / 2.f;
     auto ypos = (row + 1) * m_blockSpace + row * m_blockSize + m_blockSize / 2.f;
-    return {xpos, ypos + s_boardOffset};
+    return {xpos + m_position.x, ypos + m_position.y};
 }
 
-void Game2048::_OnMoveLeft()
+void Game2048::OnMoveLeft()
 {
+    if (m_isMoving)
+        return;
     // move row by row
     for (std::size_t row = 0; row < m_rowCount; ++row)
     {
@@ -247,8 +231,10 @@ void Game2048::_OnMoveLeft()
     }
 }
 
-void Game2048::_OnMoveRight()
+void Game2048::OnMoveRight()
 {
+    if (m_isMoving)
+        return;
     // move row by row
     for (std::size_t row = 0; row < m_rowCount; ++row)
     {
@@ -274,8 +260,10 @@ void Game2048::_OnMoveRight()
     }
 }
 
-void Game2048::_OnMoveUp()
+void Game2048::OnMoveUp()
 {
+    if (m_isMoving)
+        return;
     // move col by col
     for (std::size_t col = 0; col < m_colCount; ++col)
     {
@@ -300,8 +288,10 @@ void Game2048::_OnMoveUp()
     }
 }
 
-void Game2048::_OnMoveDown()
+void Game2048::OnMoveDown()
 {
+    if (m_isMoving)
+        return;
     // move col by col
     for (std::size_t col = 0; col < m_colCount; ++col)
     {

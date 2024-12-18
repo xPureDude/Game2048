@@ -1,7 +1,8 @@
 #include "TextureManager.hpp"
 
-#include "Log.hpp"
-#include "TinyXml/tinyxml2.h"
+#include "../TinyXml/tinyxml2.h"
+#include "../common/Log.hpp"
+
 
 TextureManager::TextureManager() {}
 

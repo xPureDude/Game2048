@@ -4,14 +4,14 @@
 
 #include <SFML/Graphics.hpp>
 
-
 class PureFramework
 {
 public:
     PureFramework();
     ~PureFramework();
 
-    bool Init();
+    void Init();
+    void UnInit();
 
     void Run();
 
@@ -20,7 +20,7 @@ public:
     void HandleEvent();
     void LateUpdate();
 
-private:
+protected:
     SharedContext m_ctx;
     sf::Time m_elasped;
     sf::Clock m_clock;

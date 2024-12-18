@@ -1,8 +1,8 @@
 #include "PureFramework.hpp"
 
-#include "../event/EventManager.hpp"
-#include "../graphics/TextureManager.hpp"
-#include "../scene/SceneManager.hpp"
+#include "../manager/EventManager.hpp"
+#include "../manager/SceneManager.hpp"
+#include "../manager/TextureManager.hpp"
 #include "SharedContext.hpp"
 #include "Window.hpp"
 
@@ -14,25 +14,20 @@ PureFramework::PureFramework() {}
 
 PureFramework::~PureFramework() {}
 
-bool PureFramework::Init()
+void PureFramework::Init()
 {
-    Window* window = m_ctx.Emplace<Window>();
-    auto desktopSize = sf::VideoMode::getDesktopMode();
-    window->Init("DesktopPet", sf::Vector2u(desktopSize.width - 1, desktopSize.height - 1), sf::Style::None, true, false);
+    m_ctx.Emplace<EventManager>([](void* obj) { delete (EventManager*)obj; });
+    m_ctx.Emplace<Window>([](void* obj) { delete (Window*)obj; }, m_ctx.Get<EventManager>());
+    m_ctx.Emplace<TextureManager>([](void* obj) { delete (TextureManager*)obj; });
+    m_ctx.Emplace<SceneManager>([](void* obj) { delete (SceneManager*)obj; }, &m_ctx);
+}
 
-    EventManager* eventManager = m_ctx.Emplace<EventManager>();
-    window->SetEventManager(eventManager);
-    TextureManager* textureManager = m_ctx.Emplace<TextureManager>();
-
-    if (textureManager->LoadResourceInfo("Resource/Texture.xml") == false)
-        return false;
-
-    auto sceneManager = m_ctx.Emplace<SceneManager>();
-
-    sceneManager->Init(&m_ctx);
-    sceneManager->ChangeSceneTo(SceneType::Play);
-
-    return true;
+void PureFramework::UnInit()
+{
+    m_ctx.Release<SceneManager>();
+    m_ctx.Release<TextureManager>();
+    m_ctx.Release<Window>();
+    m_ctx.Release<EventManager>();
 }
 
 void PureFramework::Run()

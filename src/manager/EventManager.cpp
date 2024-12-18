@@ -1,7 +1,6 @@
 #include "EventManager.hpp"
 
-#include "SFML/Window/Keyboard.hpp"
-#include "Window.hpp"
+#include "../core/Window.hpp"
 
 #include <utility>
 
@@ -25,7 +24,10 @@ EventBinding::EventBinding(const std::string& name)
 {
 }
 
-void EventBinding::BindEvent(EventType type, EventInfo info) { m_events.emplace_back(type, info); }
+void EventBinding::BindEvent(EventType type, EventInfo info)
+{
+    m_events.emplace_back(type, info);
+}
 
 EventManager::EventManager()
     : m_isFocus(true),
@@ -215,9 +217,15 @@ bool EventManager::DelEventBinding(const std::string& name)
     return true;
 }
 
-void EventManager::SetFocus(bool focus) { m_isFocus = focus; }
+void EventManager::SetFocus(bool focus)
+{
+    m_isFocus = focus;
+}
 
-void EventManager::SetCurrentSceneType(SceneType type) { m_curSceneType = type; }
+void EventManager::SetCurrentSceneType(SceneType type)
+{
+    m_curSceneType = type;
+}
 
 void EventManager::DelEventCallback(SceneType type, const std::string& name)
 {
@@ -247,24 +255,13 @@ void EventManager::_LoadBindings()
         m_bindings.emplace(name, eventBinding);
     };
 
-    eventBind("Fullscreen_Toggle", EventType::KeyPressed, sf::Keyboard::F5);
+    eventBind("Window_Close", EventType::WindowClosed, 0);
     eventBind("Mouse_Move", EventType::MouseMoved, 0);
     eventBind("Mouse_Left_Pressed", EventType::MouseButtonPressed, sf::Mouse::Left);
     eventBind("Mouse_Left_Release", EventType::MouseButtonReleased, sf::Mouse::Left);
 
-    eventBind("Window_Close", EventType::WindowClosed, 0);
-    eventBind("Move_Left", EventType::KeyBoardHold, sf::Keyboard::Left);
-    eventBind("Move_Right", EventType::KeyBoardHold, sf::Keyboard::Right);
-    eventBind("Look_Up", EventType::KeyBoardHold, sf::Keyboard::Up);
-    eventBind("Look_Up_End", EventType::KeyReleased, sf::Keyboard::Up);
-    eventBind("Look_Down", EventType::KeyBoardHold, sf::Keyboard::Down);
-    eventBind("Look_Down_End", EventType::KeyReleased, sf::Keyboard::Down);
-    eventBind("Attack", EventType::KeyPressed, sf::Keyboard::X);
-    eventBind("AttackEnd", EventType::KeyReleased, sf::Keyboard::X);
-    eventBind("Dash", EventType::KeyPressed, sf::Keyboard::Z);
-    eventBind("Jump", EventType::KeyPressed, sf::Keyboard::C);
-    eventBind("JumpEnd", EventType::KeyReleased, sf::Keyboard::C);
-    eventBind("SuperDash", EventType::KeyPressed, sf::Keyboard::S);
-    eventBind("SuperDashEnd", EventType::KeyReleased, sf::Keyboard::S);
-    eventBind("LookMap", EventType::KeyBoardHold, sf::Keyboard::Tab);
+    eventBind("Move_Left", EventType::KeyPressed, sf::Keyboard::Left);
+    eventBind("Move_Right", EventType::KeyPressed, sf::Keyboard::Right);
+    eventBind("Move_Up", EventType::KeyPressed, sf::Keyboard::Up);
+    eventBind("Move_Down", EventType::KeyPressed, sf::Keyboard::Down);
 }

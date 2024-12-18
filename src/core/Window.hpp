@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SFML/System/Vector2.hpp"
-
 #include <SFML/Graphics.hpp>
 #include <string>
 
@@ -11,10 +9,10 @@ class EventManager;
 class Window
 {
 public:
-    Window();
+    Window(EventManager* eventManager);
     ~Window();
 
-    void Init(const std::string& title, const sf::Vector2u& size, uint32_t style = sf::Style::Default, bool trans = false, bool onTop = false);
+    void Init(const std::string& title, const sf::Vector2u& size, uint32_t style = sf::Style::Default);
     void UnInit();
 
     void Update();
@@ -32,7 +30,6 @@ public:
     void SetSize(const sf::Vector2u& size);
     void SetPosition(const sf::Vector2i& position);
     void SetView(const sf::View& view);
-    void SetEventManager(EventManager* manager);
 
     void MoveBy(const sf::Vector2i& velocity);
 
@@ -49,8 +46,6 @@ private:
     void _WindowClose(EventDetail* detail);
 
 private:
-    bool m_isTransparent;
-    bool m_isOnTop;
     bool m_isClose;
     bool m_isFullscreen;
     bool m_isFocus;

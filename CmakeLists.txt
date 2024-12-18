@@ -17,7 +17,7 @@ file(GLOB_RECURSE src_files "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 add_executable(${PROJECT_NAME} ${header_files} ${src_files})
 target_include_directories(${PROJECT_NAME} PUBLIC "${SFML_ROOT}/include")
-target_link_libraries(${PROJECT_NAME} PUBLIC sfml-window sfml-graphics sfml-system sfml-main)
+target_link_libraries(${PROJECT_NAME} PUBLIC sfml-main sfml-window sfml-graphics sfml-system)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../")
 
