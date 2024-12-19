@@ -1,10 +1,6 @@
 #pragma once
 
-#include "SFML/Graphics.hpp" // IWYU pragma: keep
-#include "SFML/System.hpp"   // IWYU pragma: keep
-
-#include <list>
-#include <vector>
+#include "../pch.pch" // IWYU pragma: keep
 
 class Window;
 

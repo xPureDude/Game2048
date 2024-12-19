@@ -1,11 +1,6 @@
 #pragma once
 
-#include "../core/Scene.hpp"
-
-#include <functional>
-#include <set>
-#include <unordered_map>
-#include <vector>
+#include "Scene.hpp"
 
 enum class SceneType
 {

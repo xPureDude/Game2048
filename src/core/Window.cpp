@@ -1,7 +1,7 @@
 #include "Window.hpp"
 
-#include "../manager/EventManager.hpp"
-#include "../manager/SceneManager.hpp"
+#include "../event/EventManager.hpp"
+#include "../scene/SceneManager.hpp"
 
 #include <Windows.h>
 

@@ -1,9 +1,7 @@
 #pragma once
 
-#include "../core/Scene.hpp"
-#include "Game2048.hpp"
-
-#include <SFML/Graphics.hpp>
+#include "../gameplay/Game2048.hpp"
+#include "Scene.hpp"
 
 class ScenePlay : public Scene
 {

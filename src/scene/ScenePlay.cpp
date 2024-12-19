@@ -2,8 +2,8 @@
 
 #include "../core/SharedContext.hpp"
 #include "../core/Window.hpp"
-#include "../manager/EventManager.hpp"
-#include "../manager/SceneManager.hpp"
+#include "../event/EventManager.hpp"
+#include "SceneManager.hpp"
 
 ScenePlay::ScenePlay()
 {

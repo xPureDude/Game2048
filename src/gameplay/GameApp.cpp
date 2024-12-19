@@ -2,7 +2,7 @@
 
 #include "../core/SharedContext.hpp"
 #include "../core/Window.hpp"
-#include "../manager/SceneManager.hpp"
+#include "../scene/SceneManager.hpp"
 
 GameApp::GameApp()
     : PureFramework()

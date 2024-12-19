@@ -1,7 +1,6 @@
 #include "SpriteSheet.hpp"
 
-#include "../common/Log.hpp"
-#include "../manager/TextureManager.hpp"
+#include "../resource/TextureManager.hpp"
 #include "GridAnimation.hpp"
 
 #include <cassert>

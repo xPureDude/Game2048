@@ -9,19 +9,26 @@ set(SFML_ROOT "E:/case/Dependencies/SFML-2.6.2")
 set(CMAKE_CXX_STANDARD 20)
 
 set(project_output_directory "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+set(targetSourceDir "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 find_package(SFML REQUIRED system window graphics main)
 
-file(GLOB_RECURSE header_files "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp")
-file(GLOB_RECURSE src_files "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE headerFiles "${targetSourceDir}/*.hpp")
+file(GLOB_RECURSE srcFiles "${targetSourceDir}/*.cpp")
 
-add_executable(${PROJECT_NAME} ${header_files} ${src_files})
-target_include_directories(${PROJECT_NAME} PUBLIC "${SFML_ROOT}/include")
+add_executable(${PROJECT_NAME} ${headerFiles} ${srcFiles})
+
+target_precompile_headers(${PROJECT_NAME} PRIVATE "${targetSourceDir}/pch.pch")
+target_include_directories(${PROJECT_NAME} 
+    PUBLIC "${SFML_ROOT}/include"
+    PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src"
+)
 target_link_libraries(${PROJECT_NAME} PUBLIC sfml-main sfml-window sfml-graphics sfml-system)
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../")
-
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${project_output_directory}")
+set_target_properties(${PROJECT_NAME} PROPERTIES 
+    RUNTIME_OUTPUT_DIRECTORY "${project_output_directory}"
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../"
+)
 
 if(WIN32)
     set_target_properties(${PROJECT_NAME} PROPERTIES

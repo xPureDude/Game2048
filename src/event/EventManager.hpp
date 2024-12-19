@@ -1,12 +1,7 @@
 #pragma once
 
-#include "SceneManager.hpp"
-
-#include <SFML/Graphics.hpp>
-#include <functional>
-#include <string>
-#include <unordered_map>
-#include <vector>
+#include "../pch.pch" // IWYU pragma: keep
+#include "../scene/SceneManager.hpp"
 
 enum class EventType
 {

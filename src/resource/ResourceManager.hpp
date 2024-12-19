@@ -1,16 +1,13 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-
-#include <unordered_map>
+#include "../pch.pch" // IWYU pragma: keep
 
 struct ResourceHead
 {
     std::string m_filePath;
     int m_fromOffset;
     int m_toOffset;
-    union
-    {
+    union {
         sf::Vector2i m_size;
     };
 };
@@ -18,10 +15,11 @@ struct ResourceHead
 template <typename T>
 struct ResourceInfo
 {
-    ResourceInfo():
-        m_count(0),
-        m_res(nullptr)
-    {}
+    ResourceInfo()
+        : m_count(0),
+          m_res(nullptr)
+    {
+    }
 
     ~ResourceInfo()
     {
@@ -77,7 +75,8 @@ class ResourceManager
 {
 public:
     ResourceManager()
-    {}
+    {
+    }
 
     virtual ~ResourceManager()
     {
@@ -97,7 +96,7 @@ public:
 
         return itInfo->second.Get();
     }
-    
+
     void ReleaseResource(const std::string& name)
     {
         auto itInfo = m_resources.find(name);
@@ -111,7 +110,7 @@ public:
     {
         m_resources.emplace(name, info);
     }
-    
+
 protected:
     bool _ReLoadReource(const std::string& name)
     {

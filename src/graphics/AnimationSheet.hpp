@@ -1,9 +1,6 @@
 #pragma once
 
-#include "../TinyXml/tinyxml2.h"
-#include "SFML/Graphics.hpp" // IWYU pragma: keep
-
-#include <unordered_map>
+#include "../pch.pch" // IWYU pragma: keep
 
 class Animation;
 class Window;

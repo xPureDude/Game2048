@@ -2,8 +2,6 @@
 
 #include "AnimationSheet.hpp"
 
-#include <SFML/Graphics.hpp>
-
 class Window;
 class TextureManager;
 

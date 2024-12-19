@@ -1,12 +1,12 @@
 #include "Scene.hpp"
 
-#include "../manager/SceneManager.hpp"
-#include "SharedContext.hpp"
-#include "Window.hpp"
+#include "../core/SharedContext.hpp"
+#include "../core/Window.hpp"
+#include "SceneManager.hpp"
 
 Scene::Scene()
-    : m_isTransparent(false),
-      m_isTranscent(false),
+    : m_updateTransparent(false),
+      m_renderTransparent(false),
       m_sceneManager(nullptr)
 {
 }

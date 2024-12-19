@@ -4,8 +4,8 @@
 
 #include "../core/SharedContext.hpp"
 #include "../core/Window.hpp"
-#include "../gameplay/ScenePlay.hpp"
-#include "EventManager.hpp"
+#include "../event/EventManager.hpp"
+#include "ScenePlay.hpp"
 
 #include <iostream>
 

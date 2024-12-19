@@ -1,7 +1,6 @@
 #pragma once
 
-#include <map>
-#include <string>
+#include "../pch.pch" // IWYU pragma: keep
 
 class TextureManager;
 class AnimationSheet;

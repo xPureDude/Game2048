@@ -1,9 +1,6 @@
 #pragma once
 
-#include "../TinyXml/tinyxml2.h"
-
-#include <SFML/Graphics.hpp>
-#include <string>
+#include "../pch.pch" // IWYU pragma: keep
 
 class AnimationSheet;
 

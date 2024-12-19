@@ -1,8 +1,7 @@
 #include "AnimationSheet.hpp"
 
-#include "../common/Log.hpp"
 #include "../core/Window.hpp"
-#include "../manager/TextureManager.hpp"
+#include "../resource/TextureManager.hpp"
 #include "Animation.hpp"
 
 #include <cassert>

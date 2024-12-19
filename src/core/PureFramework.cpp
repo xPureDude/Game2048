@@ -1,12 +1,10 @@
 #include "PureFramework.hpp"
 
-#include "../manager/EventManager.hpp"
-#include "../manager/SceneManager.hpp"
-#include "../manager/TextureManager.hpp"
-#include "SharedContext.hpp"
+#include "../event/EventManager.hpp"
+#include "../resource/TextureManager.hpp"
+#include "../scene/SceneManager.hpp"
 #include "Window.hpp"
 
-#include <SFML/System.hpp>
 
 #define FRAME_ELASPED 1000.0f / 144.0f
 

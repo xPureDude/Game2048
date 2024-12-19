@@ -1,6 +1,5 @@
 #include "GridAnimation.hpp"
 
-#include "../common/Log.hpp"
 #include "AnimationSheet.hpp"
 
 GridAnimation::GridAnimation(AnimationSheet* sheet)

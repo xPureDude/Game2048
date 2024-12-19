@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../pch.pch" // IWYU pragma: keep
 #include "SharedContext.hpp"
 
-#include <SFML/Graphics.hpp>
 
 class PureFramework
 {
