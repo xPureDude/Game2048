@@ -1,7 +1,6 @@
 #include "log.hpp"
 
 // #include <chrono>
-#include <iostream>
 
 Log* Log::s_log = nullptr;
 

@@ -2,8 +2,6 @@
 
 #include "../core/Window.hpp"
 
-#include <iostream>
-
 BlockInfo::BlockInfo(const sf::Color& backColor, const sf::Font& font, const sf::Color& valueColor, std::uint32_t charSize, std::int32_t value)
 {
     m_back.setFillColor(backColor);

@@ -18,7 +18,7 @@ file(GLOB_RECURSE srcFiles "${targetSourceDir}/*.cpp")
 
 add_executable(${PROJECT_NAME} ${headerFiles} ${srcFiles})
 
-target_precompile_headers(${PROJECT_NAME} PRIVATE "${targetSourceDir}/pch.pch")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "${targetSourceDir}/pch.hpp")
 target_include_directories(${PROJECT_NAME} 
     PUBLIC "${SFML_ROOT}/include"
     PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src"

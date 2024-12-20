@@ -1,10 +1,9 @@
 #include "AnimationSheet.hpp"
 
+#include "../common/Log.hpp"
 #include "../core/Window.hpp"
 #include "../resource/TextureManager.hpp"
 #include "Animation.hpp"
-
-#include <cassert>
 
 AnimationSheet::AnimationSheet(TextureManager* manager)
     : m_textureManager(manager),

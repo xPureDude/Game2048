@@ -7,8 +7,6 @@
 #include "../event/EventManager.hpp"
 #include "ScenePlay.hpp"
 
-#include <iostream>
-
 SceneManager::SceneManager(SharedContext* ctx)
     : m_ctx(ctx)
 {

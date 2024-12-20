@@ -1,14 +1,14 @@
 #pragma once
 
-#include <vector>
-#include <array>
+#include "../pch.hpp" // IWYU pragma: keep
 
 template <typename T, uint32_t pageSize>
 class SparseSet
 {
     struct _Sparse
     {
-        void Reset() {
+        void Reset()
+        {
             m_id = 0;
             m_data.Reset();
         }
@@ -17,14 +17,15 @@ class SparseSet
     };
 
 public:
-    SparseSet(): m_nextSparseIndex(1)
+    SparseSet()
+        : m_nextSparseIndex(1)
     {
         m_sparse.resize(m_nextSparseIndex); // m_sparse[0] reserved;
     }
 
     ~SparseSet() {}
 
-    bool CheckSparseByID(uint32_t id) 
+    bool CheckSparseByID(uint32_t id)
     {
         auto [page, index] = _TransferIndex(id);
         if (m_vec.size() <= page)
@@ -75,10 +76,11 @@ public:
             m_vec[oPage][oIndex] = sparseIndex;
         }
     }
-    
+
 private:
-    std::tuple<uint32_t, uint32_t> _TransferIndex(uint32_t id) {
-        return { id / pageSize, id % pageSize };
+    std::tuple<uint32_t, uint32_t> _TransferIndex(uint32_t id)
+    {
+        return {id / pageSize, id % pageSize};
     }
 
 private:

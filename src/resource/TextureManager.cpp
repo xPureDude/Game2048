@@ -1,5 +1,7 @@
 #include "TextureManager.hpp"
 
+#include "../common/Log.hpp"
+
 TextureManager::TextureManager() {}
 
 TextureManager::~TextureManager() {}

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "SFML/System/Time.hpp"
-#include "SFML/System/Vector2.hpp"
+#include "../pch.hpp" // IWYU pragma: keep
 
 #include <cmath>
 

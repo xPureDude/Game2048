@@ -1,7 +1,10 @@
 #pragma once
 
-#include <map>
-#include "SparseSet.hpp"
+#include "../pch.hpp" // IWYU pragma: keep
+
+using ComponentID = std::uint32_t;
+using SystemID = std::uint32_t;
+using ResourceID = std::uint32_t;
 
 template <typename ComponentT>
 class Registry

@@ -1,9 +1,6 @@
 #pragma once
 
-#include "../pch.pch" // IWYU pragma: keep
-
-#include <typeindex>
-
+#include "../pch.hpp" // IWYU pragma: keep
 
 using Deletor = std::function<void(void*)>;
 

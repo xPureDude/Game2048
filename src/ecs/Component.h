@@ -1,9 +1,6 @@
 #pragma once
 
-#include "../TinyXml/tinyxml2.h"
-
-#include <SFML/Graphics.hpp>
-
+#include "../pch.hpp" // IWYU pragma: keep
 
 class PositionComponent
 {

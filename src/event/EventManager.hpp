@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../pch.pch" // IWYU pragma: keep
+#include "../pch.hpp" // IWYU pragma: keep
 #include "../scene/SceneManager.hpp"
 
 enum class EventType

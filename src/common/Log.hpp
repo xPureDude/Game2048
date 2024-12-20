@@ -10,9 +10,7 @@
 
    ========================================================================== */
 
-#include <fstream>
-#include <string>
-#include <format>
+#include "../pch.hpp" // IWYU pragma: keep
 
 std::string ParseSrcFileName(std::string_view str);
 
@@ -27,7 +25,7 @@ public:
 
     ~Log();
     void init();
-    
+
     void writeLog(const std::string& str);
 
 protected:
@@ -39,4 +37,4 @@ protected:
     std::ofstream m_log_file;
 };
 
-#endif //LOG_H
+#endif // LOG_H
