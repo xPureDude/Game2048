@@ -5,13 +5,13 @@ project(PureGame2048
     LANGUAGES CXX
 )
 
-set(SFML_ROOT "E:/case/Dependencies/SFML-2.6.2")
+set(SFML_ROOT "E:/case/Dependencies/SFML-3.0.0")
 set(CMAKE_CXX_STANDARD 20)
 
 set(project_output_directory "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(targetSourceDir "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-find_package(SFML REQUIRED system window graphics main)
+find_package(SFML REQUIRED System Window Graphics Main)
 
 file(GLOB_RECURSE headerFiles "${targetSourceDir}/*.hpp")
 file(GLOB_RECURSE srcFiles "${targetSourceDir}/*.cpp")
@@ -23,7 +23,7 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC "${SFML_ROOT}/include"
     PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
-target_link_libraries(${PROJECT_NAME} PUBLIC sfml-main sfml-window sfml-graphics sfml-system)
+target_link_libraries(${PROJECT_NAME} PUBLIC SFML::Main SFML::Window SFML::Graphics SFML::System)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES 
     RUNTIME_OUTPUT_DIRECTORY "${project_output_directory}"

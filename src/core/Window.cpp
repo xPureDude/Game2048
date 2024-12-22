@@ -1,14 +1,13 @@
 #include "Window.hpp"
 
 #include "../event/EventManager.hpp"
-#include "../scene/SceneManager.hpp"
 
 #include <Windows.h>
 
 Window::Window(EventManager* eventManager)
     : m_isClose(false),
-      m_isFullscreen(false),
       m_isFocus(true),
+      m_state(sf::State::Windowed),
       m_eventManager(eventManager)
 {
     m_eventManager->AddEventCallback(SceneType::None, "Fullscreen_Toggle", &Window::_ToggleFullscreen, this);
@@ -20,12 +19,13 @@ Window::~Window()
     UnInit();
 }
 
-void Window::Init(const std::string& title, const sf::Vector2u& size, uint32_t style)
+void Window::Init(const std::string& title, const sf::Vector2u& size, sf::State state)
 {
     m_title = title;
     m_size = size;
+    m_state = state;
 
-    m_window.create(sf::VideoMode(size.x, size.y), title, m_isFullscreen == true ? sf::Style::Fullscreen : style);
+    m_window.create(sf::VideoMode({size.x, size.y}), title, m_state);
     m_window.setKeyRepeatEnabled(false);
 }
 
@@ -41,33 +41,24 @@ void Window::Update()
 
 void Window::HandleEvent()
 {
-    sf::Event event;
-    while (m_window.pollEvent(event) == true)
+    while (const std::optional<sf::Event> event = m_window.pollEvent())
     {
-        switch (event.type)
+        if (event->is<sf::Event::Closed>())
         {
-        case sf::Event::LostFocus:
+            m_isClose = true;
+        }
+        else if (event->is<sf::Event::FocusLost>())
         {
             m_isFocus = false;
             m_eventManager->SetFocus(false);
         }
-        break;
-        case sf::Event::GainedFocus:
+        else if (event->is<sf::Event::FocusGained>())
         {
             m_isFocus = true;
             m_eventManager->SetFocus(true);
         }
-        break;
-        case sf::Event::Closed:
-        {
-            m_isClose = true;
-        }
-        break;
-        default:
-        {
+        else
             m_eventManager->HandleEvent(event);
-        }
-        }
     }
 }
 
@@ -102,9 +93,12 @@ sf::FloatRect Window::GetViewSpace()
 
 void Window::_ToggleFullscreen(EventDetail* detail)
 {
-    m_isFullscreen = !m_isFullscreen;
+    if (m_state == sf::State::Windowed)
+        m_state = sf::State::Fullscreen;
+    else
+        m_state = sf::State::Windowed;
     UnInit();
-    Init(m_title, m_size);
+    Init(m_title, m_size, m_state);
 }
 
 void Window::_WindowClose(EventDetail* detail)

@@ -7,6 +7,15 @@ class Window;
 
 struct EventDetail;
 
+enum class SceneType
+{
+    None = 0,
+    Intro,
+    MainMenu,
+    Play,
+    Paused
+};
+
 class Scene
 {
     friend class SceneManager;
@@ -34,4 +43,19 @@ protected:
     bool m_renderTransparent;
     sf::View m_view;
     SceneManager* m_sceneManager;
+};
+
+using ScenePtr = std::shared_ptr<Scene>;
+
+class SceneFactory final
+{
+public:
+    SceneFactory() = default;
+    ~SceneFactory();
+
+    std::shared_ptr<Scene> CreateScene(SceneType sceneType);
+    void ReleaseScene(SceneType sceneType);
+
+private:
+    std::map<SceneType, std::shared_ptr<Scene>> m_scenes;
 };

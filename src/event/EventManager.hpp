@@ -1,37 +1,20 @@
 #pragma once
 
 #include "../pch.hpp" // IWYU pragma: keep
-#include "../scene/SceneManager.hpp"
+#include "../scene/Scene.hpp"
 
 enum class EventType
 {
-    WindowClosed = sf::Event::Closed,
-    WindowResized = sf::Event::Resized,
-    WindowLostFocus = sf::Event::LostFocus,
-    WindowGainedFocus = sf::Event::GainedFocus,
-    TextEntered = sf::Event::TextEntered,
-    KeyPressed = sf::Event::KeyPressed,
-    KeyReleased = sf::Event::KeyReleased,
-    MouseWheelScrolled = sf::Event::MouseWheelScrolled,
-    MouseButtonPressed = sf::Event::MouseButtonPressed,
-    MouseButtonReleased = sf::Event::MouseButtonReleased,
-    MouseMoved = sf::Event::MouseMoved,
-    MouseEntered = sf::Event::MouseEntered,
-    MouseLeft = sf::Event::MouseLeft,
-    JoystickButtonPressed = sf::Event::JoystickButtonPressed,
-    JoystickButtonReleased = sf::Event::JoystickButtonReleased,
-    JoystickMoved = sf::Event::JoystickMoved,
-    JoystickConnected = sf::Event::JoystickConnected,
-    JoystickDisconnected = sf::Event::JoystickDisconnected,
-    TouchBegan = sf::Event::TouchBegan,
-    TouchMoved = sf::Event::TouchMoved,
-    TouchEnded = sf::Event::TouchEnded,
-    SensorChanged = sf::Event::SensorChanged,
-
     // Key hold event
-    KeyBoardHold = sf::Event::Count + 1,
+    KeyBoardHold,
     MouseHold,
     JoystickHold,
+
+    // Gui Event
+    GuiHovered,
+    GuiPressed,
+    GuiReleased,
+    GuiDetached,
 };
 
 struct EventInfo
@@ -56,7 +39,7 @@ struct EventDetail
 
     std::string m_name;
     sf::Vector2u m_size;
-    sf::Uint32 m_textEntered;
+    std::uint32_t m_textEntered;
     sf::Vector2f m_mousePos;
     int m_mouseWheelDelta;
     int m_keyCode;
@@ -89,7 +72,7 @@ public:
     ~EventManager();
 
     void Update();
-    void HandleEvent(sf::Event& event);
+    void HandleEvent(const std::optional<sf::Event>& event);
 
     bool AddEventBinding(EventBinding* binding);
     bool DelEventBinding(const std::string& name);

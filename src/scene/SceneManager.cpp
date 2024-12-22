@@ -5,12 +5,10 @@
 #include "../core/SharedContext.hpp"
 #include "../core/Window.hpp"
 #include "../event/EventManager.hpp"
-#include "ScenePlay.hpp"
 
 SceneManager::SceneManager(SharedContext* ctx)
     : m_ctx(ctx)
 {
-    _RegisterScene<ScenePlay>(SceneType::Play);
 }
 
 SceneManager::~SceneManager()
@@ -20,8 +18,8 @@ SceneManager::~SceneManager()
         if (item.m_scene != nullptr)
         {
             item.m_scene->OnDestroy();
-            delete item.m_scene;
             item.m_scene = nullptr;
+            m_factory.ReleaseScene(item.m_type);
         }
     }
 }
@@ -126,7 +124,10 @@ void SceneManager::ChangeSceneTo(SceneType type)
         }
     }
     m_scenes.back().m_scene->OnEnter();
+
+    // Inform SceneType related Manager
     m_ctx->Get<EventManager>()->SetCurrentSceneType(type);
+    // m_ctx->Get<GuiManager>()->SetCurrentSceneType(type);
     m_ctx->Get<Window>()->SetView(m_scenes.back().m_scene->GetView());
 }
 
@@ -146,17 +147,16 @@ void SceneManager::ProcessRemoves()
 
 bool SceneManager::_CreateScene(SceneType type)
 {
-    if (m_factory.find(type) == m_factory.end())
+    std::shared_ptr<Scene> scene = m_factory.CreateScene(type);
+    if (scene == nullptr)
     {
         std::cout << "SceneManager::_CreateScene failed, Type " << static_cast<int>(type) << " not found" << std::endl;
         return false;
     }
 
-    Scene* scene = m_factory[type]();
     if (scene->OnCreate(this) == false)
         return false;
     m_scenes.emplace_back(type, scene);
-    m_ctx->Get<EventManager>()->SetCurrentSceneType(type);
     return true;
 }
 
@@ -167,8 +167,8 @@ void SceneManager::_DestroyScene(SceneType type)
         if (iter->m_type == type)
         {
             iter->m_scene->OnDestroy();
-            delete iter->m_scene;
             m_scenes.erase(iter);
+            m_factory.ReleaseScene(type);
             return;
         }
     }

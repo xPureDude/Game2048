@@ -11,7 +11,7 @@ public:
     Window(EventManager* eventManager);
     ~Window();
 
-    void Init(const std::string& title, const sf::Vector2u& size, uint32_t style = sf::Style::Default);
+    void Init(const std::string& title, const sf::Vector2u& size, sf::State state);
     void UnInit();
 
     void Update();
@@ -23,7 +23,7 @@ public:
     void Close() { m_isClose = true; }
 
     bool IsClose() { return m_isClose; }
-    bool IsFullscreen() { return m_isFullscreen; }
+    bool IsFullscreen() { return m_state == sf::State::Windowed; }
     bool IsFocus() { return m_isFocus; }
 
     void SetSize(const sf::Vector2u& size);
@@ -46,10 +46,10 @@ private:
 
 private:
     bool m_isClose;
-    bool m_isFullscreen;
     bool m_isFocus;
-    std::string m_title;
     sf::Vector2u m_size;
+    std::string m_title;
+    sf::State m_state;
     sf::RenderWindow m_window;
     EventManager* m_eventManager;
 };

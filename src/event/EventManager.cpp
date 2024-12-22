@@ -118,7 +118,7 @@ void EventManager::Update()
     }
 }
 
-void EventManager::HandleEvent(sf::Event& event)
+void EventManager::HandleEvent(const std::optional<sf::Event>& event)
 {
     // Regular event
     for (auto& bindIter : m_bindings)
@@ -126,7 +126,7 @@ void EventManager::HandleEvent(sf::Event& event)
         auto binding = bindIter.second;
         for (auto& eventIter : binding->m_events)
         {
-            auto eventType = (EventType)event.type;
+
             if (eventIter.first != eventType)
                 continue;
 
