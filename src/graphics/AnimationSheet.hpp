@@ -3,8 +3,6 @@
 #include "../pch.hpp" // IWYU pragma: keep
 
 class Animation;
-class Window;
-class TextureManager;
 
 class AnimationSheet
 {

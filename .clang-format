@@ -13,7 +13,7 @@ SpaceBeforeCtorInitializerColon: false
 SpaceAfterTemplateKeyword: true
 IncludeBlocks: Regroup
 AlignOperands: true
-BreakTemplateDeclarations: true
+AlwaysBreakTemplateDeclarations: true
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
 BraceWrapping:

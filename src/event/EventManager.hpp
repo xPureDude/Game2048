@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../pch.hpp" // IWYU pragma: keep
-#include "../scene/Scene.hpp"
+#include "../scene/SceneDependent.hpp"
 
 enum class EventType
 {
@@ -52,33 +52,31 @@ struct EventBinding
 {
     EventBinding(const std::string& name);
     void BindEvent(EventType type, EventInfo info = EventInfo());
+    void AddCallBack(SceneType type, std::function<void(EventDetail*)>& callback);
+    void DelCallBack(SceneType type);
 
     int m_count;
     std::string m_name;
     Events m_events;
     EventDetail m_detail;
+    std::unordered_map<SceneType, std::vector<std::function<void(EventDetail*)>>> m_callbacks;
 };
 
 using EventBindings = std::unordered_map<std::string, EventBinding*>;
-using CallbackContainer = std::unordered_map<std::string, std::function<void(EventDetail*)>>;
-using SceneCallbacks = std::unordered_map<SceneType, CallbackContainer>;
 
-class Window;
-
-class EventManager
+class EventManager : public SceneDependent
 {
 public:
     EventManager();
     ~EventManager();
 
     void Update();
-    void HandleEvent(const std::optional<sf::Event>& event);
+    void HandleEvent(const sf::Event& event);
 
     bool AddEventBinding(EventBinding* binding);
     bool DelEventBinding(const std::string& name);
 
     void SetFocus(bool focus);
-    void SetCurrentSceneType(SceneType type);
 
     template <typename T>
     bool AddEventCallback(SceneType type, const std::string& name, void (T::*func)(EventDetail*), T* obj);
@@ -91,20 +89,17 @@ private:
 
 private:
     bool m_isFocus;
-    SceneType m_curSceneType;
     EventBindings m_bindings;
-    SceneCallbacks m_callbacks;
 };
 
 template <typename T>
 bool EventManager::AddEventCallback(SceneType type, const std::string& name, void (T::*func)(EventDetail*), T* obj)
 {
-    if (m_callbacks.find(type) == m_callbacks.end())
-        m_callbacks.emplace(type, CallbackContainer());
+    auto binding = m_bindings.find(name);
+    if (binding == m_bindings.end())
+        return false;
 
-    auto& container = m_callbacks[type];
-
-    auto temp = std::bind(func, obj, std::placeholders::_1);
-    container.emplace(name, temp);
+    auto callback = std::bind(func, obj, std::placeholders::_1);
+    binding->second->AddCallBack(type, callback);
     return true;
 }

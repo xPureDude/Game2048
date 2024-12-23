@@ -2,8 +2,6 @@
 
 #include "AnimationSheet.hpp"
 
-#include <cassert>
-
 Animation::Animation(AnimationSheet* sheet)
     : m_isLoop(false),
       m_isPlay(false),

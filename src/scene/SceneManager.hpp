@@ -2,15 +2,16 @@
 
 #include "Scene.hpp"
 
-using SceneTypeContainer = std::set<SceneType>;
-
 struct SceneInfo
 {
     SceneType m_type{SceneType::None};
     std::shared_ptr<Scene> m_scene;
-};
 
-class SharedContext;
+    bool operator==(const SceneInfo& other)
+    {
+        return m_type == other.m_type;
+    }
+};
 
 class SceneManager
 {
@@ -24,8 +25,14 @@ public:
     void Update(const sf::Time& elapsed);
     void Render();
 
-    void ChangeSceneTo(SceneType type);
-    void RemoveScene(SceneType type);
+    // Pop Current Scene && Push New Scene "type"
+    void ChangeScene(SceneType type);
+
+    // Push New Scene on top
+    void PushScene(SceneType type);
+
+    // Pop Current Scene
+    void PopScene();
 
     void ProcessRemoves();
 
@@ -39,6 +46,6 @@ private:
 private:
     SharedContext* m_ctx;
     std::vector<SceneInfo> m_scenes;
-    SceneTypeContainer m_removeLater;
+    std::set<SceneType> m_removeLater;
     SceneFactory m_factory;
 };

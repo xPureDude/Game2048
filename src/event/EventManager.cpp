@@ -27,9 +27,14 @@ void EventBinding::BindEvent(EventType type, EventInfo info)
     m_events.emplace_back(type, info);
 }
 
+void EventBinding::AddCallBack(SceneType type, std::function<void(EventDetail*)>& callback)
+{
+    m_callbacks[type].emplace_back(callback);
+}
+
 EventManager::EventManager()
-    : m_isFocus(true),
-      m_curSceneType(SceneType::None)
+    : SceneDependent(),
+      m_isFocus(true)
 {
     _LoadBindings();
 }
@@ -90,7 +95,7 @@ void EventManager::Update()
 
         if (binding->m_count == binding->m_events.size())
         {
-            auto sceneCallbacks = m_callbacks.find(m_curSceneType);
+            auto sceneCallbacks = m_callbacks.find(s_curSceneType);
             auto globalCallbacks = m_callbacks.find(SceneType::None);
 
             if (sceneCallbacks != m_callbacks.end())
@@ -118,7 +123,7 @@ void EventManager::Update()
     }
 }
 
-void EventManager::HandleEvent(const std::optional<sf::Event>& event)
+void EventManager::HandleEvent(const sf::Event& event)
 {
     // Regular event
     for (auto& bindIter : m_bindings)
@@ -222,7 +227,7 @@ void EventManager::SetFocus(bool focus)
 
 void EventManager::SetCurrentSceneType(SceneType type)
 {
-    m_curSceneType = type;
+    s_curSceneType = type;
 }
 
 void EventManager::DelEventCallback(SceneType type, const std::string& name)

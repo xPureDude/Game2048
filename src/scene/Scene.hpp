@@ -2,9 +2,6 @@
 
 #include "../pch.hpp" // IWYU pragma: keep
 
-class SceneManager;
-class Window;
-
 struct EventDetail;
 
 enum class SceneType

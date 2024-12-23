@@ -58,7 +58,7 @@ void Window::HandleEvent()
             m_eventManager->SetFocus(true);
         }
         else
-            m_eventManager->HandleEvent(event);
+            m_eventManager->HandleEvent(event.value());
     }
 }
 

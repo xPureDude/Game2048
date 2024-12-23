@@ -4,7 +4,7 @@
 
 #include "../core/SharedContext.hpp"
 #include "../core/Window.hpp"
-#include "../event/EventManager.hpp"
+#include "SceneDependent.hpp"
 
 SceneManager::SceneManager(SharedContext* ctx)
     : m_ctx(ctx)
@@ -100,15 +100,18 @@ void SceneManager::Render()
     }
 }
 
-void SceneManager::ChangeSceneTo(SceneType type)
+void SceneManager::ChangeScene(SceneType type)
 {
-    auto iter = m_scenes.begin();
-    while (iter != m_scenes.end())
-    {
-        if (iter->m_type == type)
-            break;
-        ++iter;
-    }
+    if (m_scenes.back().m_type == type)
+        return;
+
+    PopScene();
+    PushScene(type);
+}
+
+void SceneManager::PushScene(SceneType type)
+{
+    auto iter = std::find(m_scenes.begin(), m_scenes.end(), SceneInfo({.m_type = type, .m_scene = nullptr}));
     if (iter != m_scenes.end())
     {
         m_scenes.back().m_scene->OnLeave();
@@ -126,14 +129,16 @@ void SceneManager::ChangeSceneTo(SceneType type)
     m_scenes.back().m_scene->OnEnter();
 
     // Inform SceneType related Manager
-    m_ctx->Get<EventManager>()->SetCurrentSceneType(type);
-    // m_ctx->Get<GuiManager>()->SetCurrentSceneType(type);
+    SceneDependent::ChangeCurrentSceneType(type);
     m_ctx->Get<Window>()->SetView(m_scenes.back().m_scene->GetView());
 }
 
-void SceneManager::RemoveScene(SceneType type)
+void SceneManager::PopScene()
 {
-    m_removeLater.insert(type);
+    if (m_scenes.empty())
+        return;
+    m_removeLater.insert(m_scenes.back().m_type);
+    m_scenes.pop_back();
 }
 
 void SceneManager::ProcessRemoves()

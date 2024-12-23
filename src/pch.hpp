@@ -14,10 +14,17 @@
 #include <iostream>
 #include <map>
 #include <optional>
+#include <set>
 #include <typeindex>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
-
 // IWYU pragma: end_keep
+
+class SharedContext;
+class Window;
+class EventManager;
+class SceneManager;
+class GuiManager;
+class TextureManager;

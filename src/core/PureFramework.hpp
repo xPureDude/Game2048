@@ -21,6 +21,7 @@ public:
 
 protected:
     SharedContext m_ctx;
+    sf::Time m_fpsTime;
     sf::Time m_elasped;
     sf::Clock m_clock;
 };
