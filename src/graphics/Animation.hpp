@@ -42,8 +42,8 @@ protected:
     bool m_isPlay;
     bool m_isPause;
 
-    uint32_t m_curFrame;
-    uint32_t m_maxFrame;
+    std::int32_t m_curFrame;
+    std::int32_t m_maxFrame;
     sf::Time m_frameTime;
     sf::Time m_elapsedTime;
 

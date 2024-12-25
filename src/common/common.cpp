@@ -1,4 +1,4 @@
-#include "utility.hpp"
+#include "common.hpp"
 
 std::vector<std::string> SplitString(std::string& str, char c)
 {

@@ -47,12 +47,5 @@ using ScenePtr = std::shared_ptr<Scene>;
 class SceneFactory final
 {
 public:
-    SceneFactory() = default;
-    ~SceneFactory();
-
     std::shared_ptr<Scene> CreateScene(SceneType sceneType);
-    void ReleaseScene(SceneType sceneType);
-
-private:
-    std::map<SceneType, std::shared_ptr<Scene>> m_scenes;
 };

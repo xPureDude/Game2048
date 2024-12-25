@@ -3,17 +3,14 @@
 #include "../core/Window.hpp"
 
 BlockInfo::BlockInfo(const sf::Color& backColor, const sf::Font& font, const sf::Color& valueColor, std::uint32_t charSize, std::int32_t value)
+    : m_value(font, std::to_string(value), charSize)
 {
     m_back.setFillColor(backColor);
 
     m_value.setFillColor(valueColor);
-    m_value.setString(std::to_string(value));
-    m_value.setCharacterSize(charSize);
-    m_value.setFont(font);
     m_value.setStyle(sf::Text::Style::Bold);
     auto localBounds = m_value.getLocalBounds();
-    m_value.setOrigin(localBounds.left + localBounds.width / 2.f,
-                      localBounds.top + m_value.getLocalBounds().height / 2.f);
+    m_value.setOrigin(localBounds.getCenter());
 }
 
 void BlockInfo::Render(Window* window)
@@ -49,13 +46,13 @@ void Block::Update(const sf::Time& elapsed)
     }
 }
 
-std::uint32_t Game2048::s_boardWidth = 500;
 sf::Color Game2048::s_boardColor = sf::Color(0xBBADA0FF);
 sf::Color Game2048::s_baseBlockColor = sf::Color(0xEEE4DA5F);
 sf::Time Game2048::s_moveTime = sf::milliseconds(200);
 
 Game2048::Game2048()
-    : m_createBlockIndex(0),
+    : m_boardWidth(500),
+      m_createBlockIndex(0),
       m_blockSize(0),
       m_blockSpace(0),
       m_rowCount(0),
@@ -64,11 +61,11 @@ Game2048::Game2048()
       m_isPlaying(false),
       m_score(0)
 {
-    if (m_font.loadFromFile("SourceHanSansCN-Regular.otf") == false)
+    if (m_font.openFromFile("SourceHanSansCN-Regular.otf") == false)
     {
         std::cout << "Game2048::Game(), load font failed, file: SourceHanSansCN-Regular.otf" << std::endl;
     }
-    m_baseBoard.setSize({(float)s_boardWidth, (float)s_boardWidth});
+    m_baseBoard.setSize({(float)m_boardWidth, (float)m_boardWidth});
     m_baseBoard.setFillColor(s_boardColor);
 
     m_blockInfos.emplace_back(sf::Color(0xEEE4DAFF), m_font, sf::Color(0x776E65FF), 55, 2);
@@ -165,7 +162,7 @@ void Game2048::OnNewGame(std::size_t rowCount, std::size_t colCount)
 {
     m_rowCount = rowCount;
     m_colCount = colCount;
-    m_blockSpace = s_boardWidth / (m_colCount * 6.f + 1.f);
+    m_blockSpace = m_boardWidth / (m_colCount * 6.f + 1.f);
     m_blockSize = m_blockSpace * 5.f;
     m_baseBlock.setSize({m_blockSize, m_blockSize});
     m_baseBlock.setFillColor(s_baseBlockColor);
@@ -189,6 +186,11 @@ void Game2048::SetPosition(const sf::Vector2f& pos)
 {
     m_position = pos;
     m_baseBoard.setPosition(pos);
+}
+
+void Game2048::SetBoardSize(std::uint32_t width)
+{
+    m_boardWidth = width;
 }
 
 sf::Vector2f Game2048::GetGridPosition(const sf::Vector2<std::size_t>& grid)

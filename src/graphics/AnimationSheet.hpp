@@ -18,7 +18,7 @@ public:
     void SetTextureName(const std::string& name);
     void SetCurAnimation(const std::string& name, bool loop = false);
 
-    const sf::Vector2f& GetPosition();
+    sf::Vector2f GetPosition();
 
     bool GetDirection() { return m_left; }
     sf::FloatRect GetGlobalBounds();

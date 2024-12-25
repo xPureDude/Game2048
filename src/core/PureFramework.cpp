@@ -18,13 +18,15 @@ PureFramework::PureFramework()
 
 PureFramework::~PureFramework() {}
 
-void PureFramework::Init()
+bool PureFramework::Init()
 {
     m_ctx.Emplace<EventManager>([](void* obj) { delete (EventManager*)obj; });
     m_ctx.Emplace<Window>([](void* obj) { delete (Window*)obj; }, m_ctx.Get<EventManager>());
     m_ctx.Emplace<TextureManager>([](void* obj) { delete (TextureManager*)obj; });
     m_ctx.Emplace<GuiManager>([](void* obj) { delete (GuiManager*)obj; }, &m_ctx);
     m_ctx.Emplace<SceneManager>([](void* obj) { delete (SceneManager*)obj; }, &m_ctx);
+
+    return true;
 }
 
 void PureFramework::UnInit()

@@ -12,4 +12,12 @@ Element::~Element()
 {
 }
 
+void Element::Update(const sf::Time& elapsed)
+{
+}
+
+void Element::Render(sf::RenderTarget* target)
+{
+}
+
 } // namespace gui

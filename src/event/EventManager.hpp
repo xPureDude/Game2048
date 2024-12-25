@@ -2,6 +2,7 @@
 
 #include "../pch.hpp" // IWYU pragma: keep
 #include "../scene/SceneDependent.hpp"
+#include "InputBinding.hpp"
 
 enum class EventType
 {
@@ -17,53 +18,6 @@ enum class EventType
     GuiDetached,
 };
 
-struct EventInfo
-{
-    EventInfo()
-        : m_code(-1)
-    {
-    }
-    EventInfo(int code)
-        : m_code(code)
-    {
-    }
-    union {
-        int m_code;
-    };
-};
-
-struct EventDetail
-{
-    EventDetail(const std::string& name);
-    void Reset();
-
-    std::string m_name;
-    sf::Vector2u m_size;
-    std::uint32_t m_textEntered;
-    sf::Vector2f m_mousePos;
-    int m_mouseWheelDelta;
-    int m_keyCode;
-    bool m_keyRepeat;
-};
-
-using Events = std::vector<std::pair<EventType, EventInfo>>;
-
-struct EventBinding
-{
-    EventBinding(const std::string& name);
-    void BindEvent(EventType type, EventInfo info = EventInfo());
-    void AddCallBack(SceneType type, std::function<void(EventDetail*)>& callback);
-    void DelCallBack(SceneType type);
-
-    int m_count;
-    std::string m_name;
-    Events m_events;
-    EventDetail m_detail;
-    std::unordered_map<SceneType, std::vector<std::function<void(EventDetail*)>>> m_callbacks;
-};
-
-using EventBindings = std::unordered_map<std::string, EventBinding*>;
-
 class EventManager : public SceneDependent
 {
 public:
@@ -73,33 +27,45 @@ public:
     void Update();
     void HandleEvent(const sf::Event& event);
 
-    bool AddEventBinding(EventBinding* binding);
-    bool DelEventBinding(const std::string& name);
-
     void SetFocus(bool focus);
 
     template <typename T>
-    bool AddEventCallback(SceneType type, const std::string& name, void (T::*func)(EventDetail*), T* obj);
-    void DelEventCallback(SceneType type, const std::string& name);
+    bool AddInputBindingCallback(SceneType type, ib::BindType bindType, const std::string_view& name, void (T::*func)(), T* obj);
+    void DelInputBindingCallback(SceneType type, ib::BindType bindType, const std::string_view& name);
 
     sf::Vector2i GetMousePosition(Window* window = nullptr);
 
 private:
-    void _LoadBindings();
-
-private:
     bool m_isFocus;
-    EventBindings m_bindings;
+    InputBindingFactory m_inputBindingFactory;
+    std::map<SceneType, std::map<ib::BindType, ib::BindingPtr>> m_bindings;
 };
 
 template <typename T>
-bool EventManager::AddEventCallback(SceneType type, const std::string& name, void (T::*func)(EventDetail*), T* obj)
+bool EventManager::AddInputBindingCallback(SceneType sceneType, ib::BindType bindType, const std::string_view& name, void (T::*func)(), T* obj)
 {
-    auto binding = m_bindings.find(name);
-    if (binding == m_bindings.end())
-        return false;
+    if (m_bindings.find(sceneType) == m_bindings.end())
+    {
+        m_bindings.emplace(sceneType, std::map<ib::BindType, ib::BindingPtr>());
+    }
 
-    auto callback = std::bind(func, obj, std::placeholders::_1);
-    binding->second->AddCallBack(type, callback);
+    auto& sceneBindings = m_bindings[sceneType];
+
+    if (sceneBindings.find(bindType) == sceneBindings.end())
+    {
+        // Try create new Binding;
+        auto newBindPtr = m_inputBindingFactory.CreateInputBinding(bindType);
+        if (newBindPtr == nullptr)
+        {
+            return false;
+        }
+        sceneBindings.emplace(bindType, newBindPtr);
+    }
+
+    auto& bindPtr = sceneBindings[bindType];
+
+    // auto callback = std::bind(func, obj, std::placeholders::_1);
+    auto callback = std::bind(func, obj);
+    bindPtr->AddBindingCallback(name, callback);
     return true;
 }

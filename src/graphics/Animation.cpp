@@ -8,10 +8,9 @@ Animation::Animation(AnimationSheet* sheet)
       m_isPause(false),
       m_curFrame(0),
       m_maxFrame(0),
-      m_sheet(sheet)
+      m_sheet(sheet),
+      m_sprite(sheet->GetTexture())
 {
-    assert(sheet != nullptr);
-    m_sprite.setTexture(sheet->GetTexture());
 }
 
 Animation::~Animation() {}

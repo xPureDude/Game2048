@@ -14,19 +14,16 @@ struct RigidBody
         if (m_velocity.x > 0)
         {
             m_velocity.x -= m_friction.x;
-            if (m_velocity.x < 0)
-                m_velocity.x = 0;
+            m_velocity.x = std::max(0.f, m_velocity.x);
         }
         else if (m_velocity.x < 0)
         {
             m_velocity.x += m_friction.x;
-            if (m_velocity.x > 0)
-                m_velocity.x = 0;
+            m_velocity.x = std::min(0.f, m_velocity.x);
         }
 
         m_velocity.y += m_friction.y;
-        if (m_velocity.y > m_maxVelocity.y)
-            m_velocity.y = m_maxVelocity.y;
+        m_velocity.y = std::min(m_maxVelocity.y, m_velocity.y);
     }
 
     sf::Vector2f m_velocity;

@@ -17,12 +17,15 @@ bool ScenePlay::OnCreate(SceneManager* manager)
         return false;
 
     EventManager* eventManager = m_sceneManager->GetSharedContext()->Get<EventManager>();
-    eventManager->AddEventCallback(SceneType::Play, "Move_Left", &ScenePlay::_OnMoveLeft, this);
-    eventManager->AddEventCallback(SceneType::Play, "Move_Right", &ScenePlay::_OnMoveRight, this);
-    eventManager->AddEventCallback(SceneType::Play, "Move_Up", &ScenePlay::_OnMoveUp, this);
-    eventManager->AddEventCallback(SceneType::Play, "Move_Down", &ScenePlay::_OnMoveDown, this);
+    eventManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveLeft, "ScenePlay_MoveLeft", &ScenePlay::_OnMoveLeft, this);
+    eventManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveRight, "ScenePlay_MoveRight", &ScenePlay::_OnMoveRight, this);
+    eventManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveUp, "ScenePlay_MoveUp", &ScenePlay::_OnMoveUp, this);
+    eventManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveDown, "ScenePlay_MoveDown", &ScenePlay::_OnMoveDown, this);
 
-    m_game2048.SetPosition({0, 100});
+    Window* window = m_sceneManager->GetSharedContext()->Get<Window>();
+    auto windowSize = window->GetSize();
+    m_game2048.SetBoardSize(500);
+    m_game2048.SetPosition({0, (float)(windowSize.y - m_game2048.GetBoardSize())});
 
     return true;
 }
@@ -30,10 +33,10 @@ bool ScenePlay::OnCreate(SceneManager* manager)
 void ScenePlay::OnDestroy()
 {
     EventManager* eventManager = m_sceneManager->GetSharedContext()->Get<EventManager>();
-    eventManager->DelEventCallback(SceneType::Play, "Move_Left");
-    eventManager->DelEventCallback(SceneType::Play, "Move_Right");
-    eventManager->DelEventCallback(SceneType::Play, "Move_Up");
-    eventManager->DelEventCallback(SceneType::Play, "Move_Down");
+    eventManager->DelInputBindingCallback(SceneType::Play, ib::BindType::MoveLeft, "ScenePlay_MoveLeft");
+    eventManager->DelInputBindingCallback(SceneType::Play, ib::BindType::MoveRight, "ScenePlay_MoveRight");
+    eventManager->DelInputBindingCallback(SceneType::Play, ib::BindType::MoveUp, "ScenePlay_MoveUp");
+    eventManager->DelInputBindingCallback(SceneType::Play, ib::BindType::MoveDown, "ScenePlay_MoveDown");
 }
 
 void ScenePlay::Update(const sf::Time& elapsed)
@@ -54,22 +57,22 @@ void ScenePlay::OnEnter()
 
 void ScenePlay::OnLeave() {}
 
-void ScenePlay::_OnMoveLeft(EventDetail* detail)
+void ScenePlay::_OnMoveLeft()
 {
     m_game2048.OnMoveLeft();
 }
 
-void ScenePlay::_OnMoveRight(EventDetail* detail)
+void ScenePlay::_OnMoveRight()
 {
     m_game2048.OnMoveRight();
 }
 
-void ScenePlay::_OnMoveUp(EventDetail* detail)
+void ScenePlay::_OnMoveUp()
 {
     m_game2048.OnMoveUp();
 }
 
-void ScenePlay::_OnMoveDown(EventDetail* detail)
+void ScenePlay::_OnMoveDown()
 {
     m_game2048.OnMoveDown();
 }

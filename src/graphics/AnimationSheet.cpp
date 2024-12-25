@@ -75,7 +75,7 @@ void AnimationSheet::SetCurAnimation(const std::string& name, bool loop)
         DBG("AnimationSheet::SetCurAnimation, name: {}", name);
     }
 }
-const sf::Vector2f& AnimationSheet::GetPosition()
+sf::Vector2f AnimationSheet::GetPosition()
 {
     return m_curAnimation->GetSprite().getPosition();
 }

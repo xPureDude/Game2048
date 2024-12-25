@@ -17,10 +17,10 @@ bool GameApp::Init()
 {
     PureFramework::Init();
     Window* window = m_ctx.Get<Window>();
-    window->Init("Game2048", sf::Vector2u(500, 600), sf::Style::Titlebar | sf::Style::Close);
+    window->Init("Game2048", sf::Vector2u(500, 700), sf::Style::Titlebar | sf::Style::Close, sf::State::Windowed);
 
     SceneManager* sceneManager = m_ctx.Get<SceneManager>();
-    sceneManager->ChangeSceneTo(SceneType::Play);
+    sceneManager->PushScene(SceneType::Play);
 
     return true;
 }

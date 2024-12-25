@@ -3,7 +3,6 @@
 #include "../common/Log.hpp"
 #include "AnimationSheet.hpp"
 
-
 GridAnimation::GridAnimation(AnimationSheet* sheet)
     : Animation(sheet),
       m_spacing(0)
@@ -14,7 +13,7 @@ GridAnimation::~GridAnimation() {}
 
 void GridAnimation::_CropSprite()
 {
-    sf::IntRect rect(m_originPos.x + m_curFrame * (m_size.x + m_spacing), m_originPos.y, m_size.x, m_size.y);
+    sf::IntRect rect({m_originPos.x + m_curFrame * (m_size.x + m_spacing), m_originPos.y}, {m_size.x, m_size.y});
     m_sprite.setTextureRect(rect);
 }
 

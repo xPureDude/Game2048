@@ -19,10 +19,10 @@ public:
     virtual void OnLeave() override;
 
 private:
-    void _OnMoveLeft(EventDetail* detail);
-    void _OnMoveRight(EventDetail* detail);
-    void _OnMoveUp(EventDetail* detail);
-    void _OnMoveDown(EventDetail* detail);
+    void _OnMoveLeft();
+    void _OnMoveRight();
+    void _OnMoveUp();
+    void _OnMoveDown();
 
 private:
     Game2048 m_game2048;

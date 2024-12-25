@@ -28,29 +28,17 @@ bool Scene::OnCreate(SceneManager* manager)
 
 std::shared_ptr<Scene> SceneFactory::CreateScene(SceneType sceneType)
 {
-    if (m_scenes.find(sceneType) == m_scenes.end())
+    switch (sceneType)
     {
-        switch (sceneType)
-        {
-        case SceneType::Play:
-        {
-            m_scenes[sceneType] = std::make_shared<ScenePlay>();
-            break;
-        }
-        case SceneType::MainMenu:
-        {
-            m_scenes[sceneType] = std::make_shared<SceneMenu>();
-            break;
-        }
-        default:
-            return nullptr;
-        }
+    case SceneType::Play:
+    {
+        return std::make_shared<ScenePlay>();
     }
-
-    return m_scenes[sceneType];
-}
-
-SceneFactory::~SceneFactory()
-{
-    m_scenes.clear();
+    case SceneType::MainMenu:
+    {
+        return std::make_shared<SceneMenu>();
+    }
+    default:
+        return nullptr;
+    }
 }

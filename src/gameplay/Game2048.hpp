@@ -42,6 +42,9 @@ public:
 
     void SetPosition(const sf::Vector2f& pos);
 
+    void SetBoardSize(std::uint32_t width);
+    std::uint32_t GetBoardSize() { return m_boardWidth; }
+
     sf::Vector2f GetGridPosition(const sf::Vector2<std::size_t>& grid);
 
     void OnMoveLeft();
@@ -55,12 +58,12 @@ private:
     void _CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vector2size& dGrid, const Vector2size& pGrid);
 
 private:
-    static std::uint32_t s_boardWidth;
     static sf::Color s_boardColor;
     static sf::Color s_baseBlockColor;
     static sf::Time s_moveTime;
 
     // Game2048Setting
+    std::uint32_t m_boardWidth;
     sf::Vector2f m_position;
     float m_blockSize;
     float m_blockSpace;

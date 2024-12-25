@@ -1,7 +1,10 @@
-#pragma once
+#ifndef PUREFRAMEWORK_HPP
+#define PUREFRAMEWORK_HPP
 
 #include "../pch.hpp" // IWYU pragma: keep
 #include "SharedContext.hpp"
+
+struct EventBinding;
 
 class PureFramework
 {
@@ -9,7 +12,7 @@ public:
     PureFramework();
     ~PureFramework();
 
-    void Init();
+    bool Init();
     void UnInit();
 
     void Run();
@@ -25,3 +28,5 @@ protected:
     sf::Time m_elasped;
     sf::Clock m_clock;
 };
+
+#endif // PUREFRAMEWORK_HPP

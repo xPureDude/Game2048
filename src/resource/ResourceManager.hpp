@@ -15,55 +15,12 @@ struct ResourceHead
 template <typename T>
 struct ResourceInfo
 {
-    ResourceInfo()
-        : m_count(0),
-          m_res(nullptr)
-    {
-    }
+    ResourceInfo();
+    ~ResourceInfo();
 
-    ~ResourceInfo()
-    {
-        if (m_res != nullptr)
-            delete m_res;
-    }
-
-    T* Get()
-    {
-        if (m_res == nullptr)
-        {
-            if (Load() == true)
-            {
-                m_count++;
-                return m_res;
-            }
-            else
-            {
-                return nullptr;
-            }
-        }
-        m_count++;
-        return m_res;
-    }
-
-    bool Load()
-    {
-        if (m_res != nullptr)
-            return false;
-        m_res = new T;
-        if (m_res->loadFromFile(m_filePath) == false)
-            return false;
-        m_count = 0;
-        return true;
-    }
-    void Release()
-    {
-        --m_count;
-        if (m_count <= 0 && m_res != nullptr)
-        {
-            delete m_res;
-            m_res = nullptr;
-        }
-    }
+    T* Get();
+    bool Load();
+    void Release();
 
     std::string m_filePath;
     int m_count;
@@ -120,3 +77,59 @@ protected:
 protected:
     std::unordered_map<std::string, ResourceInfo<T>> m_resources;
 };
+
+template <typename T>
+ResourceInfo<T>::ResourceInfo()
+    : m_count(0),
+      m_res(nullptr)
+{
+}
+
+template <typename T>
+ResourceInfo<T>::~ResourceInfo()
+{
+    if (m_res != nullptr)
+        delete m_res;
+}
+
+template <typename T>
+T* ResourceInfo<T>::Get()
+{
+    if (m_res == nullptr)
+    {
+        if (Load() == true)
+        {
+            m_count++;
+            return m_res;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+    m_count++;
+    return m_res;
+}
+
+template <typename T>
+bool ResourceInfo<T>::Load()
+{
+    if (m_res != nullptr)
+        return false;
+    m_res = new T;
+    if (m_res->loadFromFile(m_filePath) == false)
+        return false;
+    m_count = 0;
+    return true;
+}
+
+template <typename T>
+void ResourceInfo<T>::Release()
+{
+    --m_count;
+    if (m_count <= 0 && m_res != nullptr)
+    {
+        delete m_res;
+        m_res = nullptr;
+    }
+}

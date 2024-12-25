@@ -14,7 +14,7 @@ private:
     virtual void _CropSprite() override;
 
 private:
-    uint32_t m_spacing;
+    std::int32_t m_spacing;
     sf::Vector2i m_originPos;
     sf::Vector2i m_size;
 };

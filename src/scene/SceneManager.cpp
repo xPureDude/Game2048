@@ -15,13 +15,9 @@ SceneManager::~SceneManager()
 {
     for (auto& item : m_scenes)
     {
-        if (item.m_scene != nullptr)
-        {
-            item.m_scene->OnDestroy();
-            item.m_scene = nullptr;
-            m_factory.ReleaseScene(item.m_type);
-        }
+        item.m_scene->OnDestroy();
     }
+    m_scenes.clear();
 }
 
 bool SceneManager::Init(SharedContext* context)
@@ -173,7 +169,6 @@ void SceneManager::_DestroyScene(SceneType type)
         {
             iter->m_scene->OnDestroy();
             m_scenes.erase(iter);
-            m_factory.ReleaseScene(type);
             return;
         }
     }
