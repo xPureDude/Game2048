@@ -2,20 +2,16 @@
 
 #include "../pch.hpp" // IWYU pragma: keep
 
-class EventDetail;
-class EventManager;
-
 class Window
 {
 public:
-    Window(EventManager* eventManager);
+    Window(SharedContext* ctx);
     ~Window();
 
     void Init(const std::string& title, const sf::Vector2u& size, std::int32_t style, sf::State state);
     void UnInit();
 
-    void Update();
-    void HandleEvent();
+    std::optional<sf::Event> PollEvent();
     void BeginRender();
     void Render(sf::Drawable& drawable) { m_window.draw(drawable); }
     void EndRender() { m_window.display(); }
@@ -46,6 +42,8 @@ private:
     void _WindowClose();
 
 private:
+    SharedContext* m_ctx;
+
     bool m_isClose;
     bool m_isFocus;
     sf::Vector2u m_size;
@@ -54,5 +52,4 @@ private:
     std::int32_t m_style;
     sf::State m_state;
     sf::RenderWindow m_window;
-    EventManager* m_eventManager;
 };

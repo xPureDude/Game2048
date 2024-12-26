@@ -1,7 +1,8 @@
 #include "PureFramework.hpp"
 
-#include "../event/EventManager.hpp"
+#include "../event/InputManager.hpp"
 #include "../gui/GuiManager.hpp"
+#include "../resource/FontManager.hpp"
 #include "../resource/TextureManager.hpp"
 #include "../scene/SceneManager.hpp"
 #include "Window.hpp"
@@ -20,9 +21,10 @@ PureFramework::~PureFramework() {}
 
 bool PureFramework::Init()
 {
-    m_ctx.Emplace<EventManager>([](void* obj) { delete (EventManager*)obj; });
-    m_ctx.Emplace<Window>([](void* obj) { delete (Window*)obj; }, m_ctx.Get<EventManager>());
     m_ctx.Emplace<TextureManager>([](void* obj) { delete (TextureManager*)obj; });
+    m_ctx.Emplace<FontManager>([](void* obj) { delete (FontManager*)obj; });
+    m_ctx.Emplace<InputManager>([](void* obj) { delete (InputManager*)obj; });
+    m_ctx.Emplace<Window>([](void* obj) { delete (Window*)obj; }, &m_ctx);
     m_ctx.Emplace<GuiManager>([](void* obj) { delete (GuiManager*)obj; }, &m_ctx);
     m_ctx.Emplace<SceneManager>([](void* obj) { delete (SceneManager*)obj; }, &m_ctx);
 
@@ -34,8 +36,9 @@ void PureFramework::UnInit()
     m_ctx.Release<SceneManager>();
     m_ctx.Release<GuiManager>();
     m_ctx.Release<TextureManager>();
+    m_ctx.Release<FontManager>();
     m_ctx.Release<Window>();
-    m_ctx.Release<EventManager>();
+    m_ctx.Release<InputManager>();
 }
 
 void PureFramework::Run()
@@ -59,7 +62,7 @@ void PureFramework::Run()
 
 void PureFramework::Update()
 {
-    m_ctx.Get<Window>()->Update();
+    m_ctx.Get<InputManager>()->Update(m_elasped);
     m_ctx.Get<GuiManager>()->Update(m_elasped);
     m_ctx.Get<SceneManager>()->Update(m_elasped);
 }
@@ -74,7 +77,12 @@ void PureFramework::Render()
 
 void PureFramework::HandleEvent()
 {
-    m_ctx.Get<Window>()->HandleEvent();
+    Window* window = m_ctx.Get<Window>();
+    while (const std::optional event = window->PollEvent())
+    {
+        m_ctx.Get<InputManager>()->HandleInput(event.value());
+        m_ctx.Get<GuiManager>()->HandleInput(event.value());
+    }
 }
 
 void PureFramework::LateUpdate()

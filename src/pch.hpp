@@ -23,8 +23,9 @@
 // IWYU pragma: end_keep
 
 class SharedContext;
+class TextureManager;
+class FontManager;
+class InputManager;
 class Window;
-class EventManager;
 class SceneManager;
 class GuiManager;
-class TextureManager;

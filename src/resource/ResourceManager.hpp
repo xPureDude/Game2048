@@ -31,48 +31,17 @@ template <typename T>
 class ResourceManager
 {
 public:
-    ResourceManager()
-    {
-    }
+    ResourceManager() = default;
 
-    virtual ~ResourceManager()
-    {
-        for (auto& info : m_resources)
-        {
-            info.second.Release();
-        }
-    }
+    virtual ~ResourceManager();
 
     virtual bool LoadResourceInfo(const std::string& file) = 0;
 
-    T* GetResource(const std::string& name)
-    {
-        auto itInfo = m_resources.find(name);
-        if (itInfo == m_resources.end())
-            return nullptr;
+    bool LoadFontFromFile(const std::string& name, const std::string& path);
 
-        return itInfo->second.Get();
-    }
+    T* GetResource(const std::string& name);
 
-    void ReleaseResource(const std::string& name)
-    {
-        auto itInfo = m_resources.find(name);
-        if (itInfo != m_resources.end())
-        {
-            itInfo->second.Release();
-        }
-    }
-
-    void InsertResourceInfo(const std::string& name, ResourceInfo<T> info)
-    {
-        m_resources.emplace(name, info);
-    }
-
-protected:
-    bool _ReLoadReource(const std::string& name)
-    {
-        return m_resources[name].Load();
-    }
+    void ReleaseResource(const std::string& name);
 
 protected:
     std::unordered_map<std::string, ResourceInfo<T>> m_resources;
@@ -123,6 +92,9 @@ bool ResourceInfo<T>::Load()
     return true;
 }
 
+template <>
+bool ResourceInfo<sf::Font>::Load();
+
 template <typename T>
 void ResourceInfo<T>::Release()
 {
@@ -131,5 +103,45 @@ void ResourceInfo<T>::Release()
     {
         delete m_res;
         m_res = nullptr;
+    }
+}
+
+template <typename T>
+ResourceManager<T>::~ResourceManager()
+{
+    for (auto& info : m_resources)
+    {
+        info.second.Release();
+    }
+}
+
+template <typename T>
+bool ResourceManager<T>::LoadFontFromFile(const std::string& name, const std::string& path)
+{
+    auto result = m_resources.try_emplace(name, ResourceInfo<T>());
+    if (result.second)
+    {
+        result.first->second.m_filePath = path;
+    }
+    return result.second;
+}
+
+template <typename T>
+T* ResourceManager<T>::GetResource(const std::string& name)
+{
+    auto itInfo = m_resources.find(name);
+    if (itInfo == m_resources.end())
+        return nullptr;
+
+    return itInfo->second.Get();
+}
+
+template <typename T>
+void ResourceManager<T>::ReleaseResource(const std::string& name)
+{
+    auto itInfo = m_resources.find(name);
+    if (itInfo != m_resources.end())
+    {
+        itInfo->second.Release();
     }
 }

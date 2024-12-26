@@ -1,23 +1,26 @@
 #include "Window.hpp"
 
-#include "../event/EventManager.hpp"
+#include "../event/InputManager.hpp"
+#include "SharedContext.hpp"
 
 #include <Windows.h>
 
-Window::Window(EventManager* eventManager)
+Window::Window(SharedContext* ctx)
     : m_isClose(false),
       m_isFocus(true),
       m_state(sf::State::Windowed),
-      m_eventManager(eventManager)
+      m_ctx(ctx)
 {
-    m_eventManager->AddInputBindingCallback<Window>(SceneType::None, ib::BindType::FullscreenToggle, "Window_FullscreenToggle", &Window::_ToggleFullscreen, this);
-    m_eventManager->AddInputBindingCallback<Window>(SceneType::None, ib::BindType::WindowClose, "Window_WindowClose", &Window::_WindowClose, this);
+    auto inputManager = m_ctx->Get<InputManager>();
+    inputManager->AddInputBindingCallback<Window>(SceneType::None, ib::BindType::FullscreenToggle, "Window_FullscreenToggle", &Window::_ToggleFullscreen, this);
+    inputManager->AddInputBindingCallback<Window>(SceneType::None, ib::BindType::WindowClose, "Window_WindowClose", &Window::_WindowClose, this);
 }
 
 Window::~Window()
 {
-    m_eventManager->DelInputBindingCallback(SceneType::None, ib::BindType::FullscreenToggle, "Window_FullscreenToggle");
-    m_eventManager->DelInputBindingCallback(SceneType::None, ib::BindType::WindowClose, "Window_WindowClose");
+    auto inputManager = m_ctx->Get<InputManager>();
+    inputManager->DelInputBindingCallback(SceneType::None, ib::BindType::FullscreenToggle, "Window_FullscreenToggle");
+    inputManager->DelInputBindingCallback(SceneType::None, ib::BindType::WindowClose, "Window_WindowClose");
 
     UnInit();
 }
@@ -38,17 +41,9 @@ void Window::UnInit()
     m_window.close();
 }
 
-void Window::Update()
+std::optional<sf::Event> Window::PollEvent()
 {
-    m_eventManager->Update();
-}
-
-void Window::HandleEvent()
-{
-    while (const std::optional<sf::Event> event = m_window.pollEvent())
-    {
-        m_eventManager->HandleEvent(event.value());
-    }
+    return m_window.pollEvent();
 }
 
 void Window::BeginRender()

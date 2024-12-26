@@ -32,18 +32,15 @@ struct Block
 class Game2048
 {
 public:
-    Game2048();
+    Game2048(sf::Font* font);
     ~Game2048();
 
     void Update(const sf::Time& elapsed);
     void Render(Window* window);
 
-    void OnNewGame(std::size_t rowCount, std::size_t colCount);
+    void OnNewGame(std::size_t rowCount, std::size_t colCount, float blockSize, float blockSpace);
 
     void SetPosition(const sf::Vector2f& pos);
-
-    void SetBoardSize(std::uint32_t width);
-    std::uint32_t GetBoardSize() { return m_boardWidth; }
 
     sf::Vector2f GetGridPosition(const sf::Vector2<std::size_t>& grid);
 
@@ -58,20 +55,14 @@ private:
     void _CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vector2size& dGrid, const Vector2size& pGrid);
 
 private:
-    static sf::Color s_boardColor;
-    static sf::Color s_baseBlockColor;
     static sf::Time s_moveTime;
 
     // Game2048Setting
-    std::uint32_t m_boardWidth;
     sf::Vector2f m_position;
     float m_blockSize;
     float m_blockSpace;
     std::size_t m_rowCount;
     std::size_t m_colCount;
-    sf::Font m_font;
-    sf::RectangleShape m_baseBoard;
-    sf::RectangleShape m_baseBlock;
     std::vector<BlockInfo> m_blockInfos;
 
     // Game2048 Data

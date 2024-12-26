@@ -42,12 +42,17 @@ public:
 
     virtual void Update(const sf::Time& elapsed);
     virtual void Render(sf::RenderTarget* target);
-    virtual void HandleInput(const std::optional<sf::Event>& event) {};
+    virtual void HandleInput(const sf::Event& event) {};
+
+    std::string GetName() { return m_name; }
 
 protected:
     Element* m_parent;
     bool m_activate;
+
+    std::string m_name;
     sf::Vector2f m_position; // leftTop corner
+    sf::Vector2f m_size;
 };
 
 using ElementPtr = std::shared_ptr<Element>;

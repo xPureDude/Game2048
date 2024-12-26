@@ -1,7 +1,9 @@
 #pragma once
 
-#include "../gameplay/Game2048.hpp"
+#include "../gui/Element.hpp"
 #include "Scene.hpp"
+
+class Game2048;
 
 class ScenePlay : public Scene
 {
@@ -25,5 +27,12 @@ private:
     void _OnMoveDown();
 
 private:
-    Game2048 m_game2048;
+    Game2048* m_game2048;
+
+    // UI
+    gui::ElementPtr m_guiPanel;
+
+    sf::RenderTexture m_boardTexture;
+    sf::Sprite m_boardSprite;
+    sf::RectangleShape m_blockBack;
 };

@@ -1,19 +1,17 @@
-#include "EventManager.hpp"
+#include "InputManager.hpp"
 
-#include "../core/Window.hpp"
-
-EventManager::EventManager()
+InputManager::InputManager()
     : SceneDependent(),
       m_isFocus(true)
 {
 }
 
-EventManager::~EventManager()
+InputManager::~InputManager()
 {
     m_bindings.clear();
 }
 
-void EventManager::Update()
+void InputManager::Update(const sf::Time& elapsed)
 {
     if (m_isFocus == false)
         return;
@@ -43,7 +41,7 @@ void EventManager::Update()
     // update gui event
 }
 
-void EventManager::HandleEvent(const sf::Event& event)
+void InputManager::HandleInput(const sf::Event& event)
 {
     auto globalBindings = m_bindings.find(SceneType::None);
     auto sceneBindings = m_bindings.find(s_curSceneType);
@@ -59,12 +57,12 @@ void EventManager::HandleEvent(const sf::Event& event)
     }
 }
 
-void EventManager::SetFocus(bool focus)
+void InputManager::SetFocus(bool focus)
 {
     m_isFocus = focus;
 }
 
-void EventManager::DelInputBindingCallback(SceneType type, ib::BindType bindType, const std::string_view& name)
+void InputManager::DelInputBindingCallback(SceneType type, ib::BindType bindType, const std::string_view& name)
 {
     auto sceneIter = m_bindings.find(type);
     if (sceneIter != m_bindings.end())
@@ -75,11 +73,4 @@ void EventManager::DelInputBindingCallback(SceneType type, ib::BindType bindType
             bindIter->second->DelBindingCallback(name);
         }
     }
-}
-
-sf::Vector2i EventManager::GetMousePosition(Window* window)
-{
-    if (window == nullptr)
-        return sf::Mouse::getPosition();
-    return sf::Mouse::getPosition(*(window->GetRenderWindow()));
 }

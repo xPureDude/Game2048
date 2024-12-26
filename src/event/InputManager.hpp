@@ -4,36 +4,20 @@
 #include "../scene/SceneDependent.hpp"
 #include "InputBinding.hpp"
 
-enum class EventType
-{
-    // Key hold event
-    KeyBoardHold,
-    MouseHold,
-    JoystickHold,
-
-    // Gui Event
-    GuiHovered,
-    GuiPressed,
-    GuiReleased,
-    GuiDetached,
-};
-
-class EventManager : public SceneDependent
+class InputManager : public SceneDependent
 {
 public:
-    EventManager();
-    ~EventManager();
+    InputManager();
+    ~InputManager();
 
-    void Update();
-    void HandleEvent(const sf::Event& event);
+    void Update(const sf::Time& elapsed);
+    void HandleInput(const sf::Event& event);
 
     void SetFocus(bool focus);
 
     template <typename T>
     bool AddInputBindingCallback(SceneType type, ib::BindType bindType, const std::string_view& name, void (T::*func)(), T* obj);
     void DelInputBindingCallback(SceneType type, ib::BindType bindType, const std::string_view& name);
-
-    sf::Vector2i GetMousePosition(Window* window = nullptr);
 
 private:
     bool m_isFocus;
@@ -42,7 +26,7 @@ private:
 };
 
 template <typename T>
-bool EventManager::AddInputBindingCallback(SceneType sceneType, ib::BindType bindType, const std::string_view& name, void (T::*func)(), T* obj)
+bool InputManager::AddInputBindingCallback(SceneType sceneType, ib::BindType bindType, const std::string_view& name, void (T::*func)(), T* obj)
 {
     if (m_bindings.find(sceneType) == m_bindings.end())
     {

@@ -46,13 +46,10 @@ void Block::Update(const sf::Time& elapsed)
     }
 }
 
-sf::Color Game2048::s_boardColor = sf::Color(0xBBADA0FF);
-sf::Color Game2048::s_baseBlockColor = sf::Color(0xEEE4DA5F);
 sf::Time Game2048::s_moveTime = sf::milliseconds(200);
 
-Game2048::Game2048()
-    : m_boardWidth(500),
-      m_createBlockIndex(0),
+Game2048::Game2048(sf::Font* font)
+    : m_createBlockIndex(0),
       m_blockSize(0),
       m_blockSpace(0),
       m_rowCount(0),
@@ -61,29 +58,22 @@ Game2048::Game2048()
       m_isPlaying(false),
       m_score(0)
 {
-    if (m_font.openFromFile("SourceHanSansCN-Regular.otf") == false)
-    {
-        std::cout << "Game2048::Game(), load font failed, file: SourceHanSansCN-Regular.otf" << std::endl;
-    }
-    m_baseBoard.setSize({(float)m_boardWidth, (float)m_boardWidth});
-    m_baseBoard.setFillColor(s_boardColor);
-
-    m_blockInfos.emplace_back(sf::Color(0xEEE4DAFF), m_font, sf::Color(0x776E65FF), 55, 2);
-    m_blockInfos.emplace_back(sf::Color(0xEDE0C8FF), m_font, sf::Color(0x776E65FF), 55, 4);
-    m_blockInfos.emplace_back(sf::Color(0xF2B179FF), m_font, sf::Color(0xFFFFFFFF), 55, 8);
-    m_blockInfos.emplace_back(sf::Color(0xF59563FF), m_font, sf::Color(0xFFFFFFFF), 50, 16);
-    m_blockInfos.emplace_back(sf::Color(0xF67C5FFF), m_font, sf::Color(0xFFFFFFFF), 50, 32);
-    m_blockInfos.emplace_back(sf::Color(0xF65E3BFF), m_font, sf::Color(0xFFFFFFFF), 50, 64);
-    m_blockInfos.emplace_back(sf::Color(0xEDCF72FF), m_font, sf::Color(0xFFFFFFFF), 45, 128);
-    m_blockInfos.emplace_back(sf::Color(0xEDCC61FF), m_font, sf::Color(0xFFFFFFFF), 45, 256);
-    m_blockInfos.emplace_back(sf::Color(0xEDC850FF), m_font, sf::Color(0xFFFFFFFF), 45, 512);
-    m_blockInfos.emplace_back(sf::Color(0xEDC53FFF), m_font, sf::Color(0xFFFFFFFF), 40, 1024);
-    m_blockInfos.emplace_back(sf::Color(0xEFC32FFF), m_font, sf::Color(0xFFFFFFFF), 40, 2048);
-    m_blockInfos.emplace_back(sf::Color(0xF0C734FF), m_font, sf::Color(0xFFFFFFFF), 40, 4096);
-    m_blockInfos.emplace_back(sf::Color(0xF2C939FF), m_font, sf::Color(0xFFFFFFFF), 40, 8192);
-    m_blockInfos.emplace_back(sf::Color(0xF2CD45FF), m_font, sf::Color(0xFFFFFFFF), 35, 16384);
-    m_blockInfos.emplace_back(sf::Color(0xF4D249FF), m_font, sf::Color(0xFFFFFFFF), 35, 32768);
-    m_blockInfos.emplace_back(sf::Color(0xF4E854FF), m_font, sf::Color(0xFFFFFFFF), 35, 65536);
+    m_blockInfos.emplace_back(sf::Color(0xEEE4DAFF), *font, sf::Color(0x776E65FF), 55, 2);
+    m_blockInfos.emplace_back(sf::Color(0xEDE0C8FF), *font, sf::Color(0x776E65FF), 55, 4);
+    m_blockInfos.emplace_back(sf::Color(0xF2B179FF), *font, sf::Color(0xFFFFFFFF), 55, 8);
+    m_blockInfos.emplace_back(sf::Color(0xF59563FF), *font, sf::Color(0xFFFFFFFF), 50, 16);
+    m_blockInfos.emplace_back(sf::Color(0xF67C5FFF), *font, sf::Color(0xFFFFFFFF), 50, 32);
+    m_blockInfos.emplace_back(sf::Color(0xF65E3BFF), *font, sf::Color(0xFFFFFFFF), 50, 64);
+    m_blockInfos.emplace_back(sf::Color(0xEDCF72FF), *font, sf::Color(0xFFFFFFFF), 45, 128);
+    m_blockInfos.emplace_back(sf::Color(0xEDCC61FF), *font, sf::Color(0xFFFFFFFF), 45, 256);
+    m_blockInfos.emplace_back(sf::Color(0xEDC850FF), *font, sf::Color(0xFFFFFFFF), 45, 512);
+    m_blockInfos.emplace_back(sf::Color(0xEDC53FFF), *font, sf::Color(0xFFFFFFFF), 40, 1024);
+    m_blockInfos.emplace_back(sf::Color(0xEFC32FFF), *font, sf::Color(0xFFFFFFFF), 40, 2048);
+    m_blockInfos.emplace_back(sf::Color(0xF0C734FF), *font, sf::Color(0xFFFFFFFF), 40, 4096);
+    m_blockInfos.emplace_back(sf::Color(0xF2C939FF), *font, sf::Color(0xFFFFFFFF), 40, 8192);
+    m_blockInfos.emplace_back(sf::Color(0xF2CD45FF), *font, sf::Color(0xFFFFFFFF), 35, 16384);
+    m_blockInfos.emplace_back(sf::Color(0xF4D249FF), *font, sf::Color(0xFFFFFFFF), 35, 32768);
+    m_blockInfos.emplace_back(sf::Color(0xF4E854FF), *font, sf::Color(0xFFFFFFFF), 35, 65536);
 }
 
 Game2048::~Game2048()
@@ -140,17 +130,6 @@ void Game2048::Update(const sf::Time& elapsed)
 
 void Game2048::Render(Window* window)
 {
-    window->Render(m_baseBoard);
-
-    for (std::size_t row = 0; row < m_rowCount; ++row)
-    {
-        for (std::size_t col = 0; col < m_colCount; ++col)
-        {
-            m_baseBlock.setPosition(GetGridPosition({row, col}));
-            window->Render(m_baseBlock);
-        }
-    }
-
     for (auto info : m_blocks)
     {
         m_blockInfos[info->m_index].SetPosition(info->m_pos);
@@ -158,15 +137,12 @@ void Game2048::Render(Window* window)
     }
 }
 
-void Game2048::OnNewGame(std::size_t rowCount, std::size_t colCount)
+void Game2048::OnNewGame(std::size_t rowCount, std::size_t colCount, float blockSize, float blockSpace)
 {
     m_rowCount = rowCount;
     m_colCount = colCount;
-    m_blockSpace = m_boardWidth / (m_colCount * 6.f + 1.f);
-    m_blockSize = m_blockSpace * 5.f;
-    m_baseBlock.setSize({m_blockSize, m_blockSize});
-    m_baseBlock.setFillColor(s_baseBlockColor);
-    m_baseBlock.setOrigin(m_baseBlock.getSize() / 2.f);
+    m_blockSize = blockSize;
+    m_blockSpace = blockSpace;
 
     for (auto& info : m_blockInfos)
     {
@@ -185,12 +161,6 @@ void Game2048::OnNewGame(std::size_t rowCount, std::size_t colCount)
 void Game2048::SetPosition(const sf::Vector2f& pos)
 {
     m_position = pos;
-    m_baseBoard.setPosition(pos);
-}
-
-void Game2048::SetBoardSize(std::uint32_t width)
-{
-    m_boardWidth = width;
 }
 
 sf::Vector2f Game2048::GetGridPosition(const sf::Vector2<std::size_t>& grid)
