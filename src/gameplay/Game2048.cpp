@@ -2,8 +2,9 @@
 
 #include "../core/Window.hpp"
 
-BlockInfo::BlockInfo(const sf::Color& backColor, const sf::Font& font, const sf::Color& valueColor, std::uint32_t charSize, std::int32_t value)
-    : m_value(font, std::to_string(value), charSize)
+BlockInfo::BlockInfo(const sf::Color& backColor, std::shared_ptr<sf::Font> font, const sf::Color& valueColor, std::uint32_t charSize, std::int32_t value)
+    : m_font(font),
+      m_value(*m_font, std::to_string(value), charSize)
 {
     m_back.setFillColor(backColor);
 
@@ -11,6 +12,12 @@ BlockInfo::BlockInfo(const sf::Color& backColor, const sf::Font& font, const sf:
     m_value.setStyle(sf::Text::Style::Bold);
     auto localBounds = m_value.getLocalBounds();
     m_value.setOrigin(localBounds.getCenter());
+}
+
+void BlockInfo::Render(sf::RenderTarget& target)
+{
+    target.draw(m_back);
+    target.draw(m_value);
 }
 
 void BlockInfo::Render(Window* window)
@@ -48,32 +55,33 @@ void Block::Update(const sf::Time& elapsed)
 
 sf::Time Game2048::s_moveTime = sf::milliseconds(200);
 
-Game2048::Game2048(sf::Font* font)
-    : m_createBlockIndex(0),
+Game2048::Game2048(std::shared_ptr<sf::Font> font)
+    : m_boardSprite(m_boardTexture.getTexture()),
       m_blockSize(0),
       m_blockSpace(0),
       m_rowCount(0),
       m_colCount(0),
       m_isMoving(false),
       m_isPlaying(false),
-      m_score(0)
+      m_score(0),
+      m_createBlockIndex(0)
 {
-    m_blockInfos.emplace_back(sf::Color(0xEEE4DAFF), *font, sf::Color(0x776E65FF), 55, 2);
-    m_blockInfos.emplace_back(sf::Color(0xEDE0C8FF), *font, sf::Color(0x776E65FF), 55, 4);
-    m_blockInfos.emplace_back(sf::Color(0xF2B179FF), *font, sf::Color(0xFFFFFFFF), 55, 8);
-    m_blockInfos.emplace_back(sf::Color(0xF59563FF), *font, sf::Color(0xFFFFFFFF), 50, 16);
-    m_blockInfos.emplace_back(sf::Color(0xF67C5FFF), *font, sf::Color(0xFFFFFFFF), 50, 32);
-    m_blockInfos.emplace_back(sf::Color(0xF65E3BFF), *font, sf::Color(0xFFFFFFFF), 50, 64);
-    m_blockInfos.emplace_back(sf::Color(0xEDCF72FF), *font, sf::Color(0xFFFFFFFF), 45, 128);
-    m_blockInfos.emplace_back(sf::Color(0xEDCC61FF), *font, sf::Color(0xFFFFFFFF), 45, 256);
-    m_blockInfos.emplace_back(sf::Color(0xEDC850FF), *font, sf::Color(0xFFFFFFFF), 45, 512);
-    m_blockInfos.emplace_back(sf::Color(0xEDC53FFF), *font, sf::Color(0xFFFFFFFF), 40, 1024);
-    m_blockInfos.emplace_back(sf::Color(0xEFC32FFF), *font, sf::Color(0xFFFFFFFF), 40, 2048);
-    m_blockInfos.emplace_back(sf::Color(0xF0C734FF), *font, sf::Color(0xFFFFFFFF), 40, 4096);
-    m_blockInfos.emplace_back(sf::Color(0xF2C939FF), *font, sf::Color(0xFFFFFFFF), 40, 8192);
-    m_blockInfos.emplace_back(sf::Color(0xF2CD45FF), *font, sf::Color(0xFFFFFFFF), 35, 16384);
-    m_blockInfos.emplace_back(sf::Color(0xF4D249FF), *font, sf::Color(0xFFFFFFFF), 35, 32768);
-    m_blockInfos.emplace_back(sf::Color(0xF4E854FF), *font, sf::Color(0xFFFFFFFF), 35, 65536);
+    m_blockInfos.emplace_back(sf::Color(0xEEE4DAFF), font, sf::Color(0x776E65FF), 55, 2);
+    m_blockInfos.emplace_back(sf::Color(0xEDE0C8FF), font, sf::Color(0x776E65FF), 55, 4);
+    m_blockInfos.emplace_back(sf::Color(0xF2B179FF), font, sf::Color(0xFFFFFFFF), 55, 8);
+    m_blockInfos.emplace_back(sf::Color(0xF59563FF), font, sf::Color(0xFFFFFFFF), 50, 16);
+    m_blockInfos.emplace_back(sf::Color(0xF67C5FFF), font, sf::Color(0xFFFFFFFF), 50, 32);
+    m_blockInfos.emplace_back(sf::Color(0xF65E3BFF), font, sf::Color(0xFFFFFFFF), 50, 64);
+    m_blockInfos.emplace_back(sf::Color(0xEDCF72FF), font, sf::Color(0xFFFFFFFF), 45, 128);
+    m_blockInfos.emplace_back(sf::Color(0xEDCC61FF), font, sf::Color(0xFFFFFFFF), 45, 256);
+    m_blockInfos.emplace_back(sf::Color(0xEDC850FF), font, sf::Color(0xFFFFFFFF), 45, 512);
+    m_blockInfos.emplace_back(sf::Color(0xEDC53FFF), font, sf::Color(0xFFFFFFFF), 40, 1024);
+    m_blockInfos.emplace_back(sf::Color(0xEFC32FFF), font, sf::Color(0xFFFFFFFF), 40, 2048);
+    m_blockInfos.emplace_back(sf::Color(0xF0C734FF), font, sf::Color(0xFFFFFFFF), 40, 4096);
+    m_blockInfos.emplace_back(sf::Color(0xF2C939FF), font, sf::Color(0xFFFFFFFF), 40, 8192);
+    m_blockInfos.emplace_back(sf::Color(0xF2CD45FF), font, sf::Color(0xFFFFFFFF), 35, 16384);
+    m_blockInfos.emplace_back(sf::Color(0xF4D249FF), font, sf::Color(0xFFFFFFFF), 35, 32768);
+    m_blockInfos.emplace_back(sf::Color(0xF4E854FF), font, sf::Color(0xFFFFFFFF), 35, 65536);
 }
 
 Game2048::~Game2048()
@@ -102,7 +110,6 @@ void Game2048::Update(const sf::Time& elapsed)
                 {
                     destBlock->m_index++;
                     m_score += static_cast<std::size_t>(std::pow(2, destBlock->m_index + 1));
-                    std::cout << "score: " << m_score << std::endl;
                     destBlock->m_needGrow = false;
                     if (destBlock->m_index == m_blockInfos.size() - 1)
                     {
@@ -110,6 +117,15 @@ void Game2048::Update(const sf::Time& elapsed)
                     }
                     delete (*info);
                     info = m_blocks.erase(info);
+
+                    if (m_callbacks.contains(GameSignal::ScoreChange))
+                    {
+                        std::any param = m_score;
+                        for (auto& callback : m_callbacks[GameSignal::ScoreChange])
+                        {
+                            callback(param);
+                        }
+                    }
                     continue;
                 }
             }
@@ -128,21 +144,32 @@ void Game2048::Update(const sf::Time& elapsed)
     }
 }
 
-void Game2048::Render(Window* window)
+void Game2048::Render(sf::RenderTarget* target)
 {
+    m_boardTexture.clear(sf::Color::Transparent);
     for (auto info : m_blocks)
     {
         m_blockInfos[info->m_index].SetPosition(info->m_pos);
-        m_blockInfos[info->m_index].Render(window);
+        m_blockInfos[info->m_index].Render(m_boardTexture);
     }
+    m_boardTexture.display();
+    target->draw(m_boardSprite);
 }
 
-void Game2048::OnNewGame(std::size_t rowCount, std::size_t colCount, float blockSize, float blockSpace)
+void Game2048::OnNewGame(const NewGameInfo& info)
 {
-    m_rowCount = rowCount;
-    m_colCount = colCount;
-    m_blockSize = blockSize;
-    m_blockSpace = blockSpace;
+    m_rowCount = info.m_rowCount;
+    m_colCount = info.m_colCount;
+    m_blockSize = info.m_blockSize;
+    m_blockSpace = info.m_blockSpace;
+    m_position = info.m_position;
+    bool ret = m_boardTexture.resize(info.m_boardSize);
+    if (!ret)
+    {
+        return;
+    }
+    m_boardSprite.setTexture(m_boardTexture.getTexture(), true);
+    m_boardSprite.setPosition(m_position);
 
     for (auto& info : m_blockInfos)
     {
@@ -161,6 +188,7 @@ void Game2048::OnNewGame(std::size_t rowCount, std::size_t colCount, float block
 void Game2048::SetPosition(const sf::Vector2f& pos)
 {
     m_position = pos;
+    m_boardSprite.setPosition(pos);
 }
 
 sf::Vector2f Game2048::GetGridPosition(const sf::Vector2<std::size_t>& grid)
@@ -168,7 +196,12 @@ sf::Vector2f Game2048::GetGridPosition(const sf::Vector2<std::size_t>& grid)
     auto [row, col] = grid;
     auto xpos = (col + 1) * m_blockSpace + col * m_blockSize + m_blockSize / 2.f;
     auto ypos = (row + 1) * m_blockSpace + row * m_blockSize + m_blockSize / 2.f;
-    return {xpos + m_position.x, ypos + m_position.y};
+    return {xpos, ypos};
+}
+
+void Game2048::ConnectGameSignalCallback(GameSignal signal, CallbackType callback)
+{
+    m_callbacks[signal].push_back(callback);
 }
 
 void Game2048::OnMoveLeft()
@@ -318,7 +351,7 @@ void Game2048::_CreateNewBlock()
     }
     if (availableGrid.empty())
     {
-        // Game2048Over
+        // Game Over
         m_isPlaying = true;
         return;
     }

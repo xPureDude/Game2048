@@ -16,7 +16,7 @@ bool AtlasPackage::LoadFromXmlElement(tinyxml2::XMLElement* elem)
 
     m_name = elem->Attribute("name");
     m_textureName = elem->Attribute("collectionName");
-    m_texture = m_textureManager->GetResource(m_textureName);
+    m_texture = m_textureManager->RequestResource(m_textureName);
 
     tinyxml2::XMLElement* animateElem = nullptr;
     for (auto e = elem->FirstChildElement(); e != nullptr; e = e->NextSiblingElement())

@@ -1,20 +1,18 @@
 #pragma once
 
 #include "../pch.hpp" // IWYU pragma: keep
+#include "SharedContextDependent.hpp"
 
-class Window
+class Window : public SharedContextDependent
 {
 public:
     Window(SharedContext* ctx);
     ~Window();
 
-    void Init(const std::string& title, const sf::Vector2u& size, std::int32_t style, sf::State state);
-    void UnInit();
-
     std::optional<sf::Event> PollEvent();
     void BeginRender();
-    void Render(sf::Drawable& drawable) { m_window.draw(drawable); }
-    void EndRender() { m_window.display(); }
+    void Render(sf::Drawable& drawable);
+    void EndRender();
 
     void Close() { m_isClose = true; }
 
@@ -38,12 +36,10 @@ public:
     sf::FloatRect GetViewSpace();
 
 private:
-    void _ToggleFullscreen();
-    void _WindowClose();
+    void _ToggleFullscreen(const std::any& param);
+    void _WindowClose(const std::any& param);
 
 private:
-    SharedContext* m_ctx;
-
     bool m_isClose;
     bool m_isFocus;
     sf::Vector2u m_size;

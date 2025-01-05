@@ -1,61 +1,96 @@
 #ifndef ELEMENT_HPP
 #define ELEMENT_HPP
 
+#include "../input/InputVisitorDependent.hpp"
 #include "../pch.hpp" // IWYU pragma: keep
-
-class Window;
 
 namespace gui
 {
 
 enum class Signal
 {
+    // All
+    OnLeave,
     OnHover,
+
+    // Button
     OnPress,
     OnRelease,
     OnClicked,
 };
 
-class BaseObserver
+struct SignalTriggerInfo
 {
-public:
-    BaseObserver();
-    virtual ~BaseObserver();
+    Signal m_sig;
+    std::any m_data;
 };
-/*
-    void SubscribeObserver(BaseObserver* observer);
-    void UnSubscribeObserver(BaseObserver* observer);
 
-private:
-    void _NotifyObserverDirect();
-    void _NotifyObserverQueued();
+enum class ElementState
+{
+    Default,
+    Hover,
+    Pressed,
+    Disable,
+};
 
-protected:
-    std::vector<BaseObserver*> m_observers;
-*/
+struct TextInfo
+{
+    std::shared_ptr<sf::Font> m_font;
+    std::string m_textStr;
+    std::int32_t m_charSize{30};
+    sf::Color m_color;
+    std::uint32_t m_style;
+};
 
-class Element
+class Widget;
+
+class Element : public InputVisitorDependent
 {
 public:
-    Element(Element* parent = nullptr);
+    Element();
     virtual ~Element();
 
     virtual void Update(const sf::Time& elapsed);
-    virtual void Render(sf::RenderTarget* target);
-    virtual void HandleInput(const sf::Event& event) {};
+    void Render(sf::RenderTarget* target);
 
+    bool ConnectSignalCallback(Signal sig, const std::string_view& name, CallbackType callback);
+    void DisConnectSignalCallback(Signal sig, const std::string_view& name);
+
+    void SetName(const std::string& name) { m_name = name; }
+    void SetParent(std::shared_ptr<Element> parent);
+    void SetPosition(const sf::Vector2f& pos);
+    void SetSize(const sf::Vector2f& size);
+    void SetText(const std::string& textStr);
+    void SetTextInfo(const TextInfo& info);
+
+    sf::Vector2f GetGlobalPosition();
+    sf::Vector2f GetLocalPosition();
     std::string GetName() { return m_name; }
+    TextInfo GetTextInfo() { return m_textInfo; }
+
+private:
+    void _RedrawParent();
+    void _ProcessCallback();
+    void _UpdateText();
+    virtual void _RenderPrimitive(sf::RenderTarget* target) = 0;
+    virtual void _UpdatePosition() {}
+    virtual void _UpdateSize() {}
 
 protected:
-    Element* m_parent;
+    std::weak_ptr<Widget> m_parent;
     bool m_activate;
+    ElementState m_state;
 
     std::string m_name;
     sf::Vector2f m_position; // leftTop corner
     sf::Vector2f m_size;
-};
 
-using ElementPtr = std::shared_ptr<Element>;
+    TextInfo m_textInfo;
+    std::shared_ptr<sf::Text> m_text;
+
+    std::vector<SignalTriggerInfo> m_signalQueue;
+    std::map<Signal, std::map<std::string_view, CallbackType>> m_callbacks;
+};
 
 } // namespace gui
 

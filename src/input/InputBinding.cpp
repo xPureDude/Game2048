@@ -29,7 +29,7 @@ void Binding::TriggerCallbacks()
 {
     for (auto& callbackIter : m_callbacks)
     {
-        callbackIter.second();
+        callbackIter.second(m_param);
     }
     m_isTriggered = false;
 }
@@ -39,9 +39,10 @@ WindowClose::WindowClose()
 {
 }
 
-void WindowClose::operator()(const sf::Event::Closed& event)
+bool WindowClose::operator()(const sf::Event::Closed& event)
 {
     m_isTriggered = true;
+    return true;
 }
 
 FullscreenToggle::FullscreenToggle()
@@ -49,12 +50,13 @@ FullscreenToggle::FullscreenToggle()
 {
 }
 
-void FullscreenToggle::operator()(const sf::Event::KeyPressed& event)
+bool FullscreenToggle::operator()(const sf::Event::KeyPressed& event)
 {
     if (event.alt && event.scancode == sf::Keyboard::Scancode::Enter)
     {
         m_isTriggered = true;
     }
+    return true;
 }
 
 MoveLeft::MoveLeft()
@@ -62,12 +64,13 @@ MoveLeft::MoveLeft()
 {
 }
 
-void MoveLeft::operator()(const sf::Event::KeyPressed& event)
+bool MoveLeft::operator()(const sf::Event::KeyPressed& event)
 {
-    if (event.scancode == sf::Keyboard::Scancode::Left || event.code == sf::Keyboard::Key::A)
+    if (event.scancode == sf::Keyboard::Scancode::Left || event.scancode == sf::Keyboard::Scancode::A)
     {
         m_isTriggered = true;
     }
+    return true;
 }
 
 MoveRight::MoveRight()
@@ -75,12 +78,13 @@ MoveRight::MoveRight()
 {
 }
 
-void MoveRight::operator()(const sf::Event::KeyPressed& event)
+bool MoveRight::operator()(const sf::Event::KeyPressed& event)
 {
-    if (event.scancode == sf::Keyboard::Scancode::Right || event.code == sf::Keyboard::Key::D)
+    if (event.scancode == sf::Keyboard::Scancode::Right || event.scancode == sf::Keyboard::Scancode::D)
     {
         m_isTriggered = true;
     }
+    return true;
 }
 
 MoveUp::MoveUp()
@@ -88,12 +92,13 @@ MoveUp::MoveUp()
 {
 }
 
-void MoveUp::operator()(const sf::Event::KeyPressed& event)
+bool MoveUp::operator()(const sf::Event::KeyPressed& event)
 {
-    if (event.scancode == sf::Keyboard::Scancode::Up || event.code == sf::Keyboard::Key::W)
+    if (event.scancode == sf::Keyboard::Scancode::Up || event.scancode == sf::Keyboard::Scancode::W)
     {
         m_isTriggered = true;
     }
+    return true;
 }
 
 MoveDown::MoveDown()
@@ -101,12 +106,13 @@ MoveDown::MoveDown()
 {
 }
 
-void MoveDown::operator()(const sf::Event::KeyPressed& event)
+bool MoveDown::operator()(const sf::Event::KeyPressed& event)
 {
-    if (event.scancode == sf::Keyboard::Scancode::Down || event.code == sf::Keyboard::Key::S)
+    if (event.scancode == sf::Keyboard::Scancode::Down || event.scancode == sf::Keyboard::Scancode::S)
     {
         m_isTriggered = true;
     }
+    return true;
 }
 
 } // namespace ib

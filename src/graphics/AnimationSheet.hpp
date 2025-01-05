@@ -24,7 +24,7 @@ public:
     sf::FloatRect GetGlobalBounds();
     sf::Vector2u GetTextureSize() { return m_texture->getSize(); }
     TextureManager* GetTextureManager() { return m_textureManager; }
-    sf::Texture& GetTexture() { return *m_texture; }
+    std::shared_ptr<sf::Texture> GetTexture() { return m_texture; }
     Animation* GetCurAnimation() { return m_curAnimation; }
     Animation* GetAnimation(const std::string& name);
     std::string GetSheetName() { return m_name; }
@@ -38,7 +38,7 @@ protected:
     std::string m_name;
     TextureManager* m_textureManager;
     std::string m_textureName;
-    sf::Texture* m_texture;
+    std::shared_ptr<sf::Texture> m_texture;
 
     bool m_left;
     Animation* m_curAnimation;

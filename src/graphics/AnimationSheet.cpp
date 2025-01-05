@@ -7,7 +7,6 @@
 
 AnimationSheet::AnimationSheet(TextureManager* manager)
     : m_textureManager(manager),
-      m_texture(nullptr),
       m_left(true),
       m_curAnimation(nullptr)
 {
@@ -22,7 +21,6 @@ AnimationSheet::~AnimationSheet()
             delete it.second;
         }
     }
-    m_textureManager->ReleaseResource(m_textureName);
 }
 
 void AnimationSheet::Update(const sf::Time& elapsed)
@@ -55,9 +53,9 @@ void AnimationSheet::SetDirection(bool left)
 
 void AnimationSheet::SetTextureName(const std::string& name)
 {
-    m_textureName = m_name = name;
-    m_texture = m_textureManager->GetResource(name);
-    assert(m_texture != nullptr);
+    m_name = name;
+    m_texture = m_textureManager->RequestResource(name);
+    assert(m_texture);
 }
 
 void AnimationSheet::SetCurAnimation(const std::string& name, bool loop)

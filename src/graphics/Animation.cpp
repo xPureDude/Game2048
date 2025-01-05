@@ -9,7 +9,7 @@ Animation::Animation(AnimationSheet* sheet)
       m_curFrame(0),
       m_maxFrame(0),
       m_sheet(sheet),
-      m_sprite(sheet->GetTexture())
+      m_sprite(*sheet->GetTexture())
 {
 }
 

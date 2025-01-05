@@ -2,10 +2,6 @@
 
 #include "../common/Log.hpp"
 
-TextureManager::TextureManager() {}
-
-TextureManager::~TextureManager() {}
-
 bool TextureManager::LoadResourceInfo(const std::string& file)
 {
     if (file.ends_with(".xml"))

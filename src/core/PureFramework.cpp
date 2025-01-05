@@ -1,10 +1,11 @@
 #include "PureFramework.hpp"
 
-#include "../event/InputManager.hpp"
 #include "../gui/GuiManager.hpp"
+#include "../input/InputManager.hpp"
 #include "../resource/FontManager.hpp"
 #include "../resource/TextureManager.hpp"
 #include "../scene/SceneManager.hpp"
+#include "ConfigManager.hpp"
 #include "Window.hpp"
 
 #define FRAME_ELASPED 1000.0f / 144.0f
@@ -21,6 +22,7 @@ PureFramework::~PureFramework() {}
 
 bool PureFramework::Init()
 {
+    m_ctx.Emplace<ConfigManager>([](void* obj) { delete (ConfigManager*)obj; });
     m_ctx.Emplace<TextureManager>([](void* obj) { delete (TextureManager*)obj; });
     m_ctx.Emplace<FontManager>([](void* obj) { delete (FontManager*)obj; });
     m_ctx.Emplace<InputManager>([](void* obj) { delete (InputManager*)obj; });
@@ -39,6 +41,7 @@ void PureFramework::UnInit()
     m_ctx.Release<FontManager>();
     m_ctx.Release<Window>();
     m_ctx.Release<InputManager>();
+    m_ctx.Release<ConfigManager>();
 }
 
 void PureFramework::Run()
@@ -57,6 +60,8 @@ void PureFramework::Run()
         Update();
         Render();
         LateUpdate();
+
+        _SlowUpdate();
     }
 }
 
@@ -88,4 +93,15 @@ void PureFramework::HandleEvent()
 void PureFramework::LateUpdate()
 {
     m_ctx.Get<SceneManager>()->ProcessRemoves();
+}
+
+void PureFramework::_SlowUpdate()
+{
+    m_lastSlowUpdate += m_elasped;
+    if (m_lastSlowUpdate < sf::seconds(1.0))
+        return;
+
+    m_lastSlowUpdate -= sf::seconds(1.0);
+    m_ctx.Get<TextureManager>()->SlowUpdate();
+    m_ctx.Get<FontManager>()->SlowUpdate();
 }

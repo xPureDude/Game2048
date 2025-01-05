@@ -2,16 +2,16 @@
 
 #include "../pch.hpp" // IWYU pragma: keep
 
-class Window;
-
 using Vector2size = sf::Vector2<std::size_t>;
 
 struct BlockInfo
 {
-    BlockInfo(const sf::Color& backColor, const sf::Font& font, const sf::Color& valueColor, std::uint32_t charSize, std::int32_t value);
+    BlockInfo(const sf::Color& backColor, std::shared_ptr<sf::Font> font, const sf::Color& valueColor, std::uint32_t charSize, std::int32_t value);
+    void Render(sf::RenderTarget& window);
     void Render(Window* window);
     void SetPosition(const sf::Vector2f& pos);
     sf::RectangleShape m_back;
+    std::shared_ptr<sf::Font> m_font;
     sf::Text m_value;
 };
 
@@ -29,20 +29,37 @@ struct Block
     sf::Time m_moveElapsed;
 };
 
+struct NewGameInfo
+{
+    sf::Vector2u m_boardSize;
+    sf::Vector2f m_position;
+    std::size_t m_rowCount;
+    std::size_t m_colCount;
+    float m_blockSize;
+    float m_blockSpace;
+};
+
+enum class GameSignal
+{
+    ScoreChange,
+};
+
 class Game2048
 {
 public:
-    Game2048(sf::Font* font);
+    Game2048(std::shared_ptr<sf::Font> font);
     ~Game2048();
 
     void Update(const sf::Time& elapsed);
-    void Render(Window* window);
+    void Render(sf::RenderTarget* target);
 
-    void OnNewGame(std::size_t rowCount, std::size_t colCount, float blockSize, float blockSpace);
+    void OnNewGame(const NewGameInfo& info);
 
     void SetPosition(const sf::Vector2f& pos);
 
     sf::Vector2f GetGridPosition(const sf::Vector2<std::size_t>& grid);
+
+    void ConnectGameSignalCallback(GameSignal signal, CallbackType callback);
 
     void OnMoveLeft();
     void OnMoveRight();
@@ -56,6 +73,9 @@ private:
 
 private:
     static sf::Time s_moveTime;
+
+    sf::RenderTexture m_boardTexture;
+    sf::Sprite m_boardSprite;
 
     // Game2048Setting
     sf::Vector2f m_position;
@@ -73,4 +93,6 @@ private:
 
     std::list<Block*> m_blocks;
     std::vector<std::vector<Block*>> m_board;
+
+    std::map<GameSignal, std::vector<CallbackType>> m_callbacks;
 };

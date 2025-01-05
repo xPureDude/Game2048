@@ -1,19 +1,29 @@
 #include "Window.hpp"
 
-#include "../event/InputManager.hpp"
+#include "../input/InputManager.hpp"
+#include "ConfigManager.hpp"
 #include "SharedContext.hpp"
 
 #include <Windows.h>
 
 Window::Window(SharedContext* ctx)
-    : m_isClose(false),
+    : SharedContextDependent(ctx),
+      m_isClose(false),
       m_isFocus(true),
-      m_state(sf::State::Windowed),
-      m_ctx(ctx)
+      m_state(sf::State::Windowed)
 {
     auto inputManager = m_ctx->Get<InputManager>();
-    inputManager->AddInputBindingCallback<Window>(SceneType::None, ib::BindType::FullscreenToggle, "Window_FullscreenToggle", &Window::_ToggleFullscreen, this);
-    inputManager->AddInputBindingCallback<Window>(SceneType::None, ib::BindType::WindowClose, "Window_WindowClose", &Window::_WindowClose, this);
+    inputManager->AddInputBindingCallback(SceneType::None, ib::BindType::FullscreenToggle, "Window_FullscreenToggle", BindCallback(&Window::_ToggleFullscreen));
+    inputManager->AddInputBindingCallback(SceneType::None, ib::BindType::WindowClose, "Window_WindowClose", BindCallback(&Window::_WindowClose));
+
+    auto& windowConfig = m_ctx->Get<ConfigManager>()->GetWindowConfig();
+    m_title = windowConfig.m_title;
+    m_size = {windowConfig.m_width, windowConfig.m_height};
+    m_style = windowConfig.m_style;
+    m_state = static_cast<sf::State>(windowConfig.m_state);
+
+    m_window.create(sf::VideoMode(m_size), m_title, m_style, m_state);
+    m_window.setKeyRepeatEnabled(false);
 }
 
 Window::~Window()
@@ -21,24 +31,6 @@ Window::~Window()
     auto inputManager = m_ctx->Get<InputManager>();
     inputManager->DelInputBindingCallback(SceneType::None, ib::BindType::FullscreenToggle, "Window_FullscreenToggle");
     inputManager->DelInputBindingCallback(SceneType::None, ib::BindType::WindowClose, "Window_WindowClose");
-
-    UnInit();
-}
-
-void Window::Init(const std::string& title, const sf::Vector2u& size, std::int32_t style, sf::State state)
-{
-    m_title = title;
-    m_size = size;
-    m_style = style;
-    m_state = state;
-
-    m_window.create(sf::VideoMode({size.x, size.y}), title, m_style, m_state);
-    m_window.setKeyRepeatEnabled(false);
-}
-
-void Window::UnInit()
-{
-    m_window.close();
 }
 
 std::optional<sf::Event> Window::PollEvent()
@@ -49,6 +41,17 @@ std::optional<sf::Event> Window::PollEvent()
 void Window::BeginRender()
 {
     m_window.clear(sf::Color::Black);
+}
+
+void Window::Render(sf::Drawable& drawable)
+{
+    auto ret = m_window.setActive();
+    m_window.draw(drawable);
+}
+
+void Window::EndRender()
+{
+    m_window.display();
 }
 
 void Window::SetPosition(const sf::Vector2i& position)
@@ -75,17 +78,18 @@ sf::FloatRect Window::GetViewSpace()
     return sf::FloatRect(center - halfSize, size);
 }
 
-void Window::_ToggleFullscreen()
+void Window::_ToggleFullscreen(const std::any& param)
 {
     if (m_state == sf::State::Windowed)
         m_state = sf::State::Fullscreen;
     else
         m_state = sf::State::Windowed;
-    UnInit();
-    Init(m_title, m_size, m_style, m_state);
+
+    m_window.close();
+    m_window.create(sf::VideoMode(m_size), m_title, m_style, m_state);
 }
 
-void Window::_WindowClose()
+void Window::_WindowClose(const std::any& param)
 {
     m_isClose = true;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../core/SharedContextDependent.hpp"
 #include "Scene.hpp"
 
 struct SceneInfo
@@ -13,7 +14,7 @@ struct SceneInfo
     }
 };
 
-class SceneManager
+class SceneManager : public SharedContextDependent
 {
 public:
     SceneManager(SharedContext* ctx);
@@ -36,15 +37,12 @@ public:
 
     void ProcessRemoves();
 
-    SharedContext* GetSharedContext() { return m_ctx; }
-
 private:
     bool _CreateScene(SceneType type);
     void _DestroyScene(SceneType type);
     bool _IsInRemoveLater(SceneType type);
 
 private:
-    SharedContext* m_ctx;
     std::vector<SceneInfo> m_scenes;
     std::set<SceneType> m_removeLater;
     SceneFactory m_factory;

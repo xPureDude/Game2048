@@ -1,12 +1,14 @@
 #ifndef GUIMANAGER_HPP
 #define GUIMANAGER_HPP
 
-#include "../pch.hpp" // IWYU pragma: keep
+#include "../core/SharedContextDependent.hpp"
 #include "../scene/SceneDependent.hpp"
-#include "Element.hpp"
+#include "ElementFactory.hpp"
 
-class GuiManager : public SceneDependent
+class GuiManager : public SceneDependent, public SharedContextDependent
 {
+    using ElementContainer = std::vector<std::shared_ptr<gui::Element>>;
+
 public:
     GuiManager(SharedContext* ctx);
     ~GuiManager();
@@ -16,16 +18,19 @@ public:
     void Render();
 
     void ClearSceneGui(SceneType type);
+    void AddSceneGui(SceneType type, std::shared_ptr<gui::Element> elem);
+    void AddSceneGui(SceneType type, std::vector<std::shared_ptr<gui::Element>>& elem);
 
-    std::optional<std::vector<gui::ElementPtr>> GetAllSceneElements(SceneType type);
-    gui::ElementPtr GetSceneElement(SceneType type, const std::string& name);
+    std::optional<ElementContainer> GetAllSceneElements(SceneType type);
+    std::shared_ptr<gui::Element> GetSceneElementByName(SceneType type, const std::string& name);
+
+    gui::ElementFactory& GetElementFactory() { return m_factory; }
 
 private:
-    SharedContext* m_ctx;
-
+    gui::ElementFactory m_factory;
     sf::RenderTexture m_target;
     sf::Sprite m_sprite;
-    std::map<SceneType, std::vector<gui::ElementPtr>> m_elements;
+    std::map<SceneType, ElementContainer> m_elements;
 };
 
 #endif // GUIMANAGER_HPP

@@ -14,7 +14,7 @@ bool SpriteSheet::LoadFromXmlElement(tinyxml2::XMLElement* e)
     m_name = e->Attribute("name");
     m_textureName = e->Attribute("texture_name");
 
-    m_texture = m_textureManager->GetResource(m_textureName);
+    m_texture = m_textureManager->RequestResource(m_textureName);
 
     for (auto eChild = e->FirstChildElement(); eChild != nullptr; eChild = eChild->NextSiblingElement())
     {

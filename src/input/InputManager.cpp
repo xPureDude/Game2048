@@ -36,9 +36,6 @@ void InputManager::Update(const sf::Time& elapsed)
             itBinding.second->TriggerCallbacks();
         }
     }
-
-    // update game event
-    // update gui event
 }
 
 void InputManager::HandleInput(const sf::Event& event)
@@ -60,6 +57,27 @@ void InputManager::HandleInput(const sf::Event& event)
 void InputManager::SetFocus(bool focus)
 {
     m_isFocus = focus;
+}
+
+bool InputManager::AddInputBindingCallback(SceneType sceneType, ib::BindType bindType, const std::string_view& name, CallbackType callback)
+{
+    auto& sceneBindings = m_bindings[sceneType];
+
+    if (sceneBindings.find(bindType) == sceneBindings.end())
+    {
+        // Try create new Binding;
+        auto newBindPtr = m_inputBindingFactory.CreateInputBinding(bindType);
+        if (newBindPtr == nullptr)
+        {
+            return false;
+        }
+        sceneBindings.emplace(bindType, newBindPtr);
+    }
+
+    auto& bindPtr = sceneBindings[bindType];
+
+    bindPtr->AddBindingCallback(name, callback);
+    return true;
 }
 
 void InputManager::DelInputBindingCallback(SceneType type, ib::BindType bindType, const std::string_view& name)

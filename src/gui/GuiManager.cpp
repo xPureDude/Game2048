@@ -1,12 +1,15 @@
 #include "GuiManager.hpp"
 
+#include "../core/ConfigManager.hpp"
 #include "../core/SharedContext.hpp"
 #include "../core/Window.hpp"
+#include "../gui/Widget.hpp"
+#include "../pch.hpp"
 
 GuiManager::GuiManager(SharedContext* ctx)
     : SceneDependent(),
-      m_ctx(ctx),
-      m_target(),
+      SharedContextDependent(ctx),
+      m_target({m_ctx->Get<ConfigManager>()->GetWindowConfig().m_width, m_ctx->Get<ConfigManager>()->GetWindowConfig().m_height}),
       m_sprite(m_target.getTexture())
 {
 }
@@ -33,19 +36,24 @@ void GuiManager::HandleInput(const sf::Event& event)
 {
     for (auto& elem : m_elements[SceneType::None])
     {
-        elem->HandleInput(event);
+        if ((*elem)(event))
+        {
+            return;
+        }
     }
 
     for (auto& elem : m_elements[s_curSceneType])
     {
-        elem->HandleInput(event);
+        if ((*elem)(event))
+        {
+            return;
+        }
     }
 }
 
 void GuiManager::Render()
 {
     Window* window = m_ctx->Get<Window>();
-    m_target.clear(sf::Color::Transparent);
     for (auto& elem : m_elements[s_curSceneType])
     {
         elem->Render(&m_target);
@@ -55,6 +63,7 @@ void GuiManager::Render()
     {
         elem->Render(&m_target);
     }
+    m_target.display();
     auto view = window->GetViewSpace();
     m_sprite.setPosition(view.position);
 
@@ -70,9 +79,22 @@ void GuiManager::ClearSceneGui(SceneType type)
     }
 }
 
-std::optional<std::vector<gui::ElementPtr>> GuiManager::GetAllSceneElements(SceneType type)
+void GuiManager::AddSceneGui(SceneType type, std::shared_ptr<gui::Element> elem)
 {
-    std::optional<std::vector<gui::ElementPtr>> elements = std::nullopt;
+    m_elements[type].emplace_back(elem);
+}
+
+void GuiManager::AddSceneGui(SceneType type, std::vector<std::shared_ptr<gui::Element>>& elem)
+{
+    for (auto& elemPtr : elem)
+    {
+        m_elements[type].emplace_back(elemPtr);
+    }
+}
+
+std::optional<std::vector<std::shared_ptr<gui::Element>>> GuiManager::GetAllSceneElements(SceneType type)
+{
+    std::optional<ElementContainer> elements = std::nullopt;
     if (m_elements.find(type) != m_elements.end())
     {
         elements = m_elements[type];
@@ -80,7 +102,7 @@ std::optional<std::vector<gui::ElementPtr>> GuiManager::GetAllSceneElements(Scen
     return elements;
 }
 
-gui::ElementPtr GuiManager::GetSceneElement(SceneType type, const std::string& name)
+std::shared_ptr<gui::Element> GuiManager::GetSceneElementByName(SceneType type, const std::string& name)
 {
     if (m_elements.find(type) != m_elements.end())
     {
@@ -89,6 +111,13 @@ gui::ElementPtr GuiManager::GetSceneElement(SceneType type, const std::string& n
             if (item->GetName() == name)
             {
                 return item;
+            }
+            else if (auto widget = std::dynamic_pointer_cast<gui::Widget>(item))
+            {
+                if (auto child = widget->FindChild(name))
+                {
+                    return child;
+                }
             }
         }
     }

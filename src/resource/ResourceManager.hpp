@@ -16,59 +16,29 @@ template <typename T>
 struct ResourceInfo
 {
     ResourceInfo();
-    ~ResourceInfo();
 
-    T* Get();
-    bool Load();
-    void Release();
+    std::shared_ptr<T> Get();
 
     std::string m_filePath;
-    int m_count;
-    T* m_res;
-};
+    std::shared_ptr<T> m_res;
 
-template <typename T>
-class ResourceManager
-{
-public:
-    ResourceManager() = default;
-
-    virtual ~ResourceManager();
-
-    virtual bool LoadResourceInfo(const std::string& file) = 0;
-
-    bool LoadFontFromFile(const std::string& name, const std::string& path);
-
-    T* GetResource(const std::string& name);
-
-    void ReleaseResource(const std::string& name);
-
-protected:
-    std::unordered_map<std::string, ResourceInfo<T>> m_resources;
+private:
+    bool _Load();
 };
 
 template <typename T>
 ResourceInfo<T>::ResourceInfo()
-    : m_count(0),
-      m_res(nullptr)
+    : m_res(nullptr)
 {
 }
 
 template <typename T>
-ResourceInfo<T>::~ResourceInfo()
+std::shared_ptr<T> ResourceInfo<T>::Get()
 {
-    if (m_res != nullptr)
-        delete m_res;
-}
-
-template <typename T>
-T* ResourceInfo<T>::Get()
-{
-    if (m_res == nullptr)
+    if (!m_res)
     {
-        if (Load() == true)
+        if (_Load())
         {
-            m_count++;
             return m_res;
         }
         else
@@ -76,47 +46,55 @@ T* ResourceInfo<T>::Get()
             return nullptr;
         }
     }
-    m_count++;
     return m_res;
 }
 
 template <typename T>
-bool ResourceInfo<T>::Load()
+bool ResourceInfo<T>::_Load()
 {
     if (m_res != nullptr)
         return false;
-    m_res = new T;
+    m_res = std::make_shared<T>();
     if (m_res->loadFromFile(m_filePath) == false)
         return false;
-    m_count = 0;
     return true;
 }
 
 template <>
-bool ResourceInfo<sf::Font>::Load();
+bool ResourceInfo<sf::Font>::_Load();
 
 template <typename T>
-void ResourceInfo<T>::Release()
+class ResourceManager
 {
-    --m_count;
-    if (m_count <= 0 && m_res != nullptr)
+public:
+    ResourceManager() = default;
+    virtual ~ResourceManager() {}
+
+    virtual bool LoadResourceInfo(const std::string& file) = 0;
+
+    void SlowUpdate();
+
+    bool LoadResourceInfoFromFile(const std::string& name, const std::string& path);
+    std::shared_ptr<T> RequestResource(const std::string& name);
+
+protected:
+    std::unordered_map<std::string, ResourceInfo<T>> m_resources;
+};
+
+template <typename T>
+void ResourceManager<T>::SlowUpdate()
+{
+    for (auto& item : m_resources)
     {
-        delete m_res;
-        m_res = nullptr;
+        if (item.second.m_res.use_count() == 1)
+        {
+            item.second.m_res = nullptr;
+        }
     }
 }
 
 template <typename T>
-ResourceManager<T>::~ResourceManager()
-{
-    for (auto& info : m_resources)
-    {
-        info.second.Release();
-    }
-}
-
-template <typename T>
-bool ResourceManager<T>::LoadFontFromFile(const std::string& name, const std::string& path)
+bool ResourceManager<T>::LoadResourceInfoFromFile(const std::string& name, const std::string& path)
 {
     auto result = m_resources.try_emplace(name, ResourceInfo<T>());
     if (result.second)
@@ -127,21 +105,11 @@ bool ResourceManager<T>::LoadFontFromFile(const std::string& name, const std::st
 }
 
 template <typename T>
-T* ResourceManager<T>::GetResource(const std::string& name)
+std::shared_ptr<T> ResourceManager<T>::RequestResource(const std::string& name)
 {
     auto itInfo = m_resources.find(name);
     if (itInfo == m_resources.end())
         return nullptr;
 
     return itInfo->second.Get();
-}
-
-template <typename T>
-void ResourceManager<T>::ReleaseResource(const std::string& name)
-{
-    auto itInfo = m_resources.find(name);
-    if (itInfo != m_resources.end())
-    {
-        itInfo->second.Release();
-    }
 }

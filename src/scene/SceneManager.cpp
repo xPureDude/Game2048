@@ -7,7 +7,7 @@
 #include "SceneDependent.hpp"
 
 SceneManager::SceneManager(SharedContext* ctx)
-    : m_ctx(ctx)
+    : SharedContextDependent(ctx)
 {
 }
 

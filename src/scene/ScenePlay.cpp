@@ -2,8 +2,12 @@
 
 #include "../core/SharedContext.hpp"
 #include "../core/Window.hpp"
-#include "../event/InputManager.hpp"
 #include "../gameplay/Game2048.hpp"
+#include "../gui/Button.hpp"
+#include "../gui/GuiManager.hpp"
+#include "../gui/Label.hpp"
+#include "../gui/Widget.hpp"
+#include "../input/InputManager.hpp"
 #include "../resource/FontManager.hpp"
 #include "SceneManager.hpp"
 
@@ -25,37 +29,39 @@ bool ScenePlay::OnCreate(SceneManager* manager)
     SharedContext* ctx = m_sceneManager->GetSharedContext();
 
     InputManager* inputManager = ctx->Get<InputManager>();
-    inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveLeft, "ScenePlay_MoveLeft", &ScenePlay::_OnMoveLeft, this);
-    inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveRight, "ScenePlay_MoveRight", &ScenePlay::_OnMoveRight, this);
-    inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveUp, "ScenePlay_MoveUp", &ScenePlay::_OnMoveUp, this);
-    inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveDown, "ScenePlay_MoveDown", &ScenePlay::_OnMoveDown, this);
+    inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveLeft, "ScenePlay_MoveLeft", BindCallback(&ScenePlay::_OnMoveLeft));
+    inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveRight, "ScenePlay_MoveRight", BindCallback(&ScenePlay::_OnMoveRight));
+    inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveUp, "ScenePlay_MoveUp", BindCallback(&ScenePlay::_OnMoveUp));
+    inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveDown, "ScenePlay_MoveDown", BindCallback(&ScenePlay::_OnMoveDown));
 
     FontManager* fontManager = ctx->Get<FontManager>();
-    if (!fontManager->LoadFontFromFile("block", "SourceHanSansCN-Regular.otf"))
+    if (!fontManager->LoadResourceInfoFromFile("block", "SourceHanSansCN-Regular.otf"))
     {
         return false;
     }
-    auto blockFont = fontManager->GetResource("block");
+    auto blockFont = fontManager->RequestResource("block");
     if (blockFont == nullptr)
     {
         return false;
     }
 
     m_game2048 = new Game2048(blockFont);
+    m_game2048->ConnectGameSignalCallback(GameSignal::ScoreChange, BindCallback(&ScenePlay::_OnScoreChange));
+
+    _InitGui();
 
     return true;
 }
 
 void ScenePlay::OnDestroy()
 {
+    delete m_game2048;
+
     InputManager* inputManager = m_sceneManager->GetSharedContext()->Get<InputManager>();
     inputManager->DelInputBindingCallback(SceneType::Play, ib::BindType::MoveLeft, "ScenePlay_MoveLeft");
     inputManager->DelInputBindingCallback(SceneType::Play, ib::BindType::MoveRight, "ScenePlay_MoveRight");
     inputManager->DelInputBindingCallback(SceneType::Play, ib::BindType::MoveUp, "ScenePlay_MoveUp");
     inputManager->DelInputBindingCallback(SceneType::Play, ib::BindType::MoveDown, "ScenePlay_MoveDown");
-
-    FontManager* fontManager = m_sceneManager->GetSharedContext()->Get<FontManager>();
-    fontManager->ReleaseResource("block");
 }
 
 void ScenePlay::Update(const sf::Time& elapsed)
@@ -67,7 +73,7 @@ void ScenePlay::Update(const sf::Time& elapsed)
 void ScenePlay::Render(Window* window)
 {
     window->Render(m_boardSprite);
-    m_game2048->Render(window);
+    m_game2048->Render(window->GetRenderWindow());
 }
 
 void ScenePlay::OnEnter()
@@ -82,9 +88,17 @@ void ScenePlay::OnEnter()
 
     float blockSpace = boardWidth / (colCount * 6.f + 1.f);
     float blockSize = blockSpace * 5.f;
-    m_game2048->OnNewGame(rowCount, colCount, blockSize, blockSpace);
     sf::Vector2f offset = {0, float(windowSize.y - boardWidth)};
     m_game2048->SetPosition(offset);
+
+    NewGameInfo info;
+    info.m_boardSize = {boardWidth, boardWidth};
+    info.m_blockSize = blockSize;
+    info.m_blockSpace = blockSpace;
+    info.m_rowCount = rowCount;
+    info.m_colCount = colCount;
+    info.m_position = offset;
+    m_game2048->OnNewGame(info);
 
     bool ret = m_boardTexture.resize({boardWidth, boardWidth});
     m_boardTexture.clear(sf::Color(0xBBADA0FF));
@@ -94,6 +108,7 @@ void ScenePlay::OnEnter()
     rect.setFillColor(sf::Color(0xEEE4DA5F));
     rect.setOrigin(rect.getLocalBounds().getCenter());
 
+    ret = m_boardTexture.setActive(true);
     for (std::size_t row = 0; row < rowCount; ++row)
     {
         for (std::size_t col = 0; col < colCount; ++col)
@@ -110,22 +125,91 @@ void ScenePlay::OnEnter()
 
 void ScenePlay::OnLeave() {}
 
-void ScenePlay::_OnMoveLeft()
+void ScenePlay::_InitGui()
+{
+    auto guiManager = m_sceneManager->GetSharedContext()->Get<GuiManager>();
+    auto fontManager = m_sceneManager->GetSharedContext()->Get<FontManager>();
+    auto& elementFactory = guiManager->GetElementFactory();
+
+    auto topWidget = std::dynamic_pointer_cast<gui::Widget>(elementFactory.CreateElement(gui::ElementType::Widget, guiManager));
+    guiManager->AddSceneGui(SceneType::Play, topWidget);
+
+    topWidget->SetName("head_widget");
+    topWidget->SetSize({500.f, 300.f});
+
+    auto scoreLabel = std::dynamic_pointer_cast<gui::Label>(elementFactory.CreateElement(gui::ElementType::Label));
+    scoreLabel->SetName("score_label");
+    topWidget->AppendChild(scoreLabel);
+    scoreLabel->SetParent(topWidget);
+    scoreLabel->SetPosition({10.f, 100.f});
+    scoreLabel->SetSize({200, 80});
+
+    gui::TextInfo textInfo;
+    textInfo.m_charSize = 25;
+    textInfo.m_textStr = "Score: 0";
+    textInfo.m_color = sf::Color::Black;
+    textInfo.m_style = sf::Text::Style::Regular;
+    textInfo.m_font = fontManager->RequestResource("block");
+
+    scoreLabel->SetTextInfo(textInfo);
+
+    gui::LabelInfo labelInfo;
+    labelInfo.m_color = sf::Color::Green;
+    labelInfo.m_outlineColor = sf::Color::White;
+    labelInfo.m_outlineSize = 3;
+
+    scoreLabel->SetLabelInfo(labelInfo);
+
+    auto newButton = std::dynamic_pointer_cast<gui::Button>(elementFactory.CreateElement(gui::ElementType::Button));
+    newButton->SetName("new_button");
+    topWidget->AppendChild(newButton);
+    newButton->SetParent(topWidget);
+    newButton->SetPosition({290.f, 100.f});
+    newButton->SetSize({200, 80});
+
+    textInfo.m_textStr = "New Game";
+    textInfo.m_color = sf::Color::White;
+
+    newButton->SetTextInfo(textInfo);
+
+    gui::ButtonInfo buttonInfo;
+    buttonInfo.m_color = sf::Color::Red;
+    buttonInfo.m_outlineColor = sf::Color::White;
+    buttonInfo.m_outlineSize = 3;
+
+    newButton->SetButtonInfo(gui::ElementState::Default, buttonInfo);
+}
+
+void ScenePlay::_OnMoveLeft(const std::any& param)
 {
     m_game2048->OnMoveLeft();
 }
 
-void ScenePlay::_OnMoveRight()
+void ScenePlay::_OnMoveRight(const std::any& param)
 {
     m_game2048->OnMoveRight();
 }
 
-void ScenePlay::_OnMoveUp()
+void ScenePlay::_OnMoveUp(const std::any& param)
 {
     m_game2048->OnMoveUp();
 }
 
-void ScenePlay::_OnMoveDown()
+void ScenePlay::_OnMoveDown(const std::any& param)
 {
     m_game2048->OnMoveDown();
+}
+
+void ScenePlay::_OnScoreChange(const std::any& param)
+{
+    if (auto score = std::any_cast<std::size_t>(param))
+    {
+        auto element = m_sceneManager->GetSharedContext()->Get<GuiManager>()->GetSceneElementByName(SceneType::Play, "score_label");
+        if (element)
+        {
+            auto info = element->GetTextInfo();
+            info.m_textStr = "Score: " + std::to_string(score);
+            element->SetTextInfo(info);
+        }
+    }
 }

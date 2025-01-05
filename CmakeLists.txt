@@ -11,8 +11,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(project_output_directory "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(targetSourceDir "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-find_package(SFML REQUIRED System Window Graphics Main)
-
 file(GLOB_RECURSE headerFiles "${targetSourceDir}/*.hpp")
 file(GLOB_RECURSE srcFiles "${targetSourceDir}/*.cpp")
 
@@ -23,6 +21,10 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC "${SFML_ROOT}/include"
     PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
+
+# Change to set dll or lib
+set(SFML_STATIC_LIBRARIES OFF)
+find_package(SFML REQUIRED System Window Graphics Main)
 target_link_libraries(${PROJECT_NAME} PUBLIC SFML::Main SFML::Window SFML::Graphics SFML::System)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES 

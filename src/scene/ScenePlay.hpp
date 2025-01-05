@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../gui/Element.hpp"
 #include "Scene.hpp"
 
 class Game2048;
@@ -21,16 +20,16 @@ public:
     virtual void OnLeave() override;
 
 private:
-    void _OnMoveLeft();
-    void _OnMoveRight();
-    void _OnMoveUp();
-    void _OnMoveDown();
+    void _InitGui();
+    void _OnMoveLeft(const std::any& param);
+    void _OnMoveRight(const std::any& param);
+    void _OnMoveUp(const std::any& param);
+    void _OnMoveDown(const std::any& param);
+
+    void _OnScoreChange(const std::any& param);
 
 private:
     Game2048* m_game2048;
-
-    // UI
-    gui::ElementPtr m_guiPanel;
 
     sf::RenderTexture m_boardTexture;
     sf::Sprite m_boardSprite;
