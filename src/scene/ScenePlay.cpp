@@ -2,7 +2,6 @@
 
 #include "../core/SharedContext.hpp"
 #include "../core/Window.hpp"
-#include "../gameplay/Game2048.hpp"
 #include "../gui/Button.hpp"
 #include "../gui/GuiManager.hpp"
 #include "../gui/Label.hpp"
@@ -91,14 +90,13 @@ void ScenePlay::OnEnter()
     sf::Vector2f offset = {0, float(windowSize.y - boardWidth)};
     m_game2048->SetPosition(offset);
 
-    NewGameInfo info;
-    info.m_boardSize = {boardWidth, boardWidth};
-    info.m_blockSize = blockSize;
-    info.m_blockSpace = blockSpace;
-    info.m_rowCount = rowCount;
-    info.m_colCount = colCount;
-    info.m_position = offset;
-    m_game2048->OnNewGame(info);
+    m_info.m_boardSize = {boardWidth, boardWidth};
+    m_info.m_blockSize = blockSize;
+    m_info.m_blockSpace = blockSpace;
+    m_info.m_rowCount = rowCount;
+    m_info.m_colCount = colCount;
+    m_info.m_position = offset;
+    m_game2048->OnNewGame(m_info);
 
     bool ret = m_boardTexture.resize({boardWidth, boardWidth});
     m_boardTexture.clear(sf::Color(0xBBADA0FF));
@@ -135,14 +133,19 @@ void ScenePlay::_InitGui()
     guiManager->AddSceneGui(SceneType::Play, topWidget);
 
     topWidget->SetName("head_widget");
-    topWidget->SetSize({500.f, 300.f});
+    topWidget->SetSize({500.f, 200.f});
+
+    gui::WidgetInfo widgetInfo;
+    widgetInfo.m_backColor = sf::Color(0xEEE4DAFF);
+
+    topWidget->SetWidgetInfo(widgetInfo);
 
     auto scoreLabel = std::dynamic_pointer_cast<gui::Label>(elementFactory.CreateElement(gui::ElementType::Label));
     scoreLabel->SetName("score_label");
     topWidget->AppendChild(scoreLabel);
     scoreLabel->SetParent(topWidget);
-    scoreLabel->SetPosition({10.f, 100.f});
-    scoreLabel->SetSize({200, 80});
+    scoreLabel->SetPosition({10.f, 120.f});
+    scoreLabel->SetSize({200, 60});
 
     gui::TextInfo textInfo;
     textInfo.m_charSize = 25;
@@ -155,7 +158,7 @@ void ScenePlay::_InitGui()
 
     gui::LabelInfo labelInfo;
     labelInfo.m_color = sf::Color::Green;
-    labelInfo.m_outlineColor = sf::Color::White;
+    labelInfo.m_outlineColor = sf::Color::Black;
     labelInfo.m_outlineSize = 3;
 
     scoreLabel->SetLabelInfo(labelInfo);
@@ -164,8 +167,8 @@ void ScenePlay::_InitGui()
     newButton->SetName("new_button");
     topWidget->AppendChild(newButton);
     newButton->SetParent(topWidget);
-    newButton->SetPosition({290.f, 100.f});
-    newButton->SetSize({200, 80});
+    newButton->SetPosition({290.f, 120.f});
+    newButton->SetSize({200, 60});
 
     textInfo.m_textStr = "New Game";
     textInfo.m_color = sf::Color::White;
@@ -174,10 +177,11 @@ void ScenePlay::_InitGui()
 
     gui::ButtonInfo buttonInfo;
     buttonInfo.m_color = sf::Color::Red;
-    buttonInfo.m_outlineColor = sf::Color::White;
+    buttonInfo.m_outlineColor = sf::Color::Black;
     buttonInfo.m_outlineSize = 3;
 
     newButton->SetButtonInfo(gui::ElementState::Default, buttonInfo);
+    newButton->ConnectSignalCallback(gui::Signal::OnClicked, "OnNewButtonClicked", BindCallback(&ScenePlay::_OnNewGameClicked));
 }
 
 void ScenePlay::_OnMoveLeft(const std::any& param)
@@ -212,4 +216,12 @@ void ScenePlay::_OnScoreChange(const std::any& param)
             element->SetTextInfo(info);
         }
     }
+}
+
+void ScenePlay::_OnNewGameClicked(const std::any& param)
+{
+    std::any score = std::size_t(0);
+    _OnScoreChange(score);
+
+    m_game2048->OnNewGame(m_info);
 }

@@ -51,6 +51,7 @@ public:
     virtual ~Element();
 
     virtual void Update(const sf::Time& elapsed);
+    virtual bool HandleInput(const sf::Event& event);
     void Render(sf::RenderTarget* target);
 
     bool ConnectSignalCallback(Signal sig, const std::string_view& name, CallbackType callback);

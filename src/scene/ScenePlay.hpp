@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../gameplay/Game2048.hpp"
 #include "Scene.hpp"
 
-class Game2048;
 
 class ScenePlay : public Scene
 {
@@ -27,8 +27,10 @@ private:
     void _OnMoveDown(const std::any& param);
 
     void _OnScoreChange(const std::any& param);
+    void _OnNewGameClicked(const std::any& param);
 
 private:
+    NewGameInfo m_info;
     Game2048* m_game2048;
 
     sf::RenderTexture m_boardTexture;

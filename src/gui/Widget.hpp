@@ -8,6 +8,7 @@ namespace gui
 
 struct WidgetInfo
 {
+    sf::Color m_backColor{sf::Color::Transparent};
 };
 
 class Widget : public Element
@@ -16,9 +17,12 @@ public:
     Widget();
     virtual ~Widget();
 
-    virtual void Update(const sf::Time& elapsed);
+    virtual void Update(const sf::Time& elapsed) override;
+    virtual bool HandleInput(const sf::Event& event) override;
 
-    void SetRedraw(bool flag = true);
+    void SetWidgetInfo(const WidgetInfo& info);
+
+    void SetRedraw(bool flag);
 
     std::shared_ptr<Element> FindChild(const std::string& name);
     bool AppendChild(std::shared_ptr<Element> child);
@@ -26,12 +30,13 @@ public:
 
 private:
     void _RedrawPanel();
-    virtual void _RenderPrimitive(sf::RenderTarget* target);
-    virtual void _UpdatePosition();
-    virtual void _UpdateSize();
+    virtual void _RenderPrimitive(sf::RenderTarget* target) override;
+    virtual void _UpdatePosition() override;
+    virtual void _UpdateSize() override;
 
 protected:
     bool m_needRedraw;
+    WidgetInfo m_info;
     sf::RenderTexture m_panelTexture;
     sf::Sprite m_panelSprite;
 

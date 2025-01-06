@@ -36,7 +36,7 @@ void GuiManager::HandleInput(const sf::Event& event)
 {
     for (auto& elem : m_elements[SceneType::None])
     {
-        if ((*elem)(event))
+        if (elem->HandleInput(event))
         {
             return;
         }
@@ -44,7 +44,7 @@ void GuiManager::HandleInput(const sf::Event& event)
 
     for (auto& elem : m_elements[s_curSceneType])
     {
-        if ((*elem)(event))
+        if (elem->HandleInput(event))
         {
             return;
         }

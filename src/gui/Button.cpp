@@ -1,5 +1,9 @@
 #include "Button.hpp"
 
+#include "../common/Log.hpp"
+#include "../pch.hpp" // IWYU pragma: keep
+#include "Widget.hpp"
+
 namespace gui
 {
 
@@ -22,6 +26,7 @@ bool Button::operator()(const sf::Event::MouseMoved& event)
             m_state = ElementState::Hover;
             _UpdateCurrentState();
             m_signalQueue.emplace_back(Signal::OnHover, std::any());
+            DBG("Button {} OnHover", m_name);
         }
         return true;
     }
@@ -32,6 +37,7 @@ bool Button::operator()(const sf::Event::MouseMoved& event)
             m_state = ElementState::Default;
             _UpdateCurrentState();
             m_signalQueue.emplace_back(Signal::OnLeave, std::any());
+            DBG("Button {} OnDefault", m_name);
         }
     }
 
@@ -103,6 +109,11 @@ void Button::_UpdateCurrentState()
             m_shape.setFillColor(info.m_color);
             m_shape.setOutlineColor(info.m_outlineColor);
             m_shape.setOutlineThickness(info.m_outlineSize);
+        }
+
+        if (!m_parent.expired())
+        {
+            m_parent.lock()->SetRedraw(true);
         }
     }
 }

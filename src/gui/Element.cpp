@@ -20,6 +20,13 @@ void Element::Update(const sf::Time& elapsed)
     _ProcessCallback();
 }
 
+bool Element::HandleInput(const sf::Event& event)
+{
+    if (event.visit(*this))
+        return true;
+    return false;
+}
+
 void Element::Render(sf::RenderTarget* target)
 {
     _RenderPrimitive(target);

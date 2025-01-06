@@ -22,6 +22,21 @@ void Widget::Update(const sf::Time& elapsed)
     }
 }
 
+bool Widget::HandleInput(const sf::Event& event)
+{
+    for (auto& elem : m_childs)
+    {
+        if (elem->HandleInput(event))
+            return true;
+    }
+    return false;
+}
+
+void Widget::SetWidgetInfo(const WidgetInfo& info)
+{
+    m_info = info;
+}
+
 void Widget::SetRedraw(bool flag)
 {
     m_needRedraw = flag;
@@ -75,7 +90,7 @@ void Widget::RemoveChild(const std::string& name)
 
 void Widget::_RedrawPanel()
 {
-    m_panelTexture.clear(sf::Color::Transparent);
+    m_panelTexture.clear(m_info.m_backColor);
     for (auto& elem : m_childs)
     {
         elem->Render(&m_panelTexture);

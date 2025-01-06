@@ -14,9 +14,15 @@
 
 std::string ParseSrcFileName(std::string_view str);
 
+#ifdef _DEBUG
 #define INF(...) Log::instance()->writeLog(std::format("[INFO ] [{}:{}] {}", ParseSrcFileName(__FILE__), __LINE__, std::format(__VA_ARGS__)))
 #define DBG(...) Log::instance()->writeLog(std::format("[DEBUG] [{}:{}] {}", ParseSrcFileName(__FILE__), __LINE__, std::format(__VA_ARGS__)))
 #define ERR(...) Log::instance()->writeLog(std::format("[ERROR] [{}:{}] {}", ParseSrcFileName(__FILE__), __LINE__, std::format(__VA_ARGS__)))
+#else
+#define INF(...)
+#define DBG(...)
+#define ERR(...)
+#endif
 
 class Log
 {
