@@ -22,6 +22,8 @@ void Label::SetLabelInfo(const LabelInfo& info)
     {
         m_shape.setTexture(m_info.m_texture.get(), true);
         m_shape.setTextureRect(m_info.m_rect);
+        SetSize(sf::Vector2f(info.m_rect.size));
+        Element::_UpdateText();
     }
     else
     {

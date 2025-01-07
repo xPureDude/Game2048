@@ -69,10 +69,12 @@ public:
     std::string GetName() { return m_name; }
     TextInfo GetTextInfo() { return m_textInfo; }
 
+protected:
+    void _UpdateText();
+
 private:
     void _RedrawParent();
     void _ProcessCallback();
-    void _UpdateText();
     virtual void _RenderPrimitive(sf::RenderTarget* target) = 0;
     virtual void _UpdatePosition() {}
     virtual void _UpdateSize() {}

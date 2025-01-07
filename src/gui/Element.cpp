@@ -113,6 +113,21 @@ sf::Vector2f Element::GetLocalPosition()
     return m_position;
 }
 
+void Element::_UpdateText()
+{
+    if (!m_text)
+    {
+        m_text = std::make_shared<sf::Text>(*(m_textInfo.m_font));
+    }
+
+    m_text->setString(m_textInfo.m_textStr);
+    m_text->setCharacterSize(m_textInfo.m_charSize);
+    m_text->setFillColor(m_textInfo.m_color);
+    m_text->setStyle(m_textInfo.m_style);
+    m_text->setOrigin(m_text->getLocalBounds().getCenter());
+    m_text->setPosition(m_position + m_size / 2.f);
+}
+
 void Element::_RedrawParent()
 {
     if (!m_parent.expired())
@@ -133,21 +148,7 @@ void Element::_ProcessCallback()
             callback.second(info.m_data);
         }
     }
-}
-
-void Element::_UpdateText()
-{
-    if (!m_text)
-    {
-        m_text = std::make_shared<sf::Text>(*(m_textInfo.m_font));
-    }
-
-    m_text->setString(m_textInfo.m_textStr);
-    m_text->setCharacterSize(m_textInfo.m_charSize);
-    m_text->setFillColor(m_textInfo.m_color);
-    m_text->setStyle(m_textInfo.m_style);
-    m_text->setOrigin(m_text->getLocalBounds().getCenter());
-    m_text->setPosition(m_position + m_size / 2.f);
+    m_signalQueue.clear();
 }
 
 } // namespace gui

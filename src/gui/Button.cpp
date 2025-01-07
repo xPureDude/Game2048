@@ -103,6 +103,8 @@ void Button::_UpdateCurrentState()
         {
             m_shape.setTexture(info.m_texture.get());
             m_shape.setTextureRect(info.m_rect);
+            SetSize(sf::Vector2f(info.m_rect.size));
+            Element::_UpdateText();
         }
         else
         {

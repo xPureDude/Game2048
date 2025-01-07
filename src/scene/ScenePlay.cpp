@@ -8,6 +8,7 @@
 #include "../gui/Widget.hpp"
 #include "../input/InputManager.hpp"
 #include "../resource/FontManager.hpp"
+#include "../resource/TextureManager.hpp"
 #include "SceneManager.hpp"
 
 ScenePlay::ScenePlay()
@@ -40,6 +41,12 @@ bool ScenePlay::OnCreate(SceneManager* manager)
     }
     auto blockFont = fontManager->RequestResource("block");
     if (blockFont == nullptr)
+    {
+        return false;
+    }
+
+    TextureManager* textureManager = ctx->Get<TextureManager>();
+    if (!textureManager->LoadResourceInfoFromFile("element_base", "button_sheet.png"))
     {
         return false;
     }
@@ -145,21 +152,24 @@ void ScenePlay::_InitGui()
     topWidget->AppendChild(scoreLabel);
     scoreLabel->SetParent(topWidget);
     scoreLabel->SetPosition({10.f, 120.f});
-    scoreLabel->SetSize({200, 60});
 
     gui::TextInfo textInfo;
     textInfo.m_charSize = 25;
     textInfo.m_textStr = "Score: 0";
-    textInfo.m_color = sf::Color::Black;
+    textInfo.m_color = sf::Color::White;
     textInfo.m_style = sf::Text::Style::Regular;
     textInfo.m_font = fontManager->RequestResource("block");
 
     scoreLabel->SetTextInfo(textInfo);
 
+    auto textureManager = m_sceneManager->GetSharedContext()->Get<TextureManager>();
+    auto texture = textureManager->RequestResource("element_base");
+
+    sf::Vector2i gridSize = {200, 60};
+
     gui::LabelInfo labelInfo;
-    labelInfo.m_color = sf::Color::Green;
-    labelInfo.m_outlineColor = sf::Color::Black;
-    labelInfo.m_outlineSize = 3;
+    labelInfo.m_texture = texture;
+    labelInfo.m_rect = sf::IntRect({0, 0}, gridSize);
 
     scoreLabel->SetLabelInfo(labelInfo);
 
@@ -168,19 +178,20 @@ void ScenePlay::_InitGui()
     topWidget->AppendChild(newButton);
     newButton->SetParent(topWidget);
     newButton->SetPosition({290.f, 120.f});
-    newButton->SetSize({200, 60});
 
     textInfo.m_textStr = "New Game";
-    textInfo.m_color = sf::Color::White;
-
     newButton->SetTextInfo(textInfo);
 
     gui::ButtonInfo buttonInfo;
-    buttonInfo.m_color = sf::Color::Red;
-    buttonInfo.m_outlineColor = sf::Color::Black;
-    buttonInfo.m_outlineSize = 3;
+    buttonInfo.m_texture = texture;
 
+    buttonInfo.m_rect = sf::IntRect({0, 0}, gridSize);
     newButton->SetButtonInfo(gui::ElementState::Default, buttonInfo);
+    buttonInfo.m_rect = sf::IntRect({200, 0}, gridSize);
+    newButton->SetButtonInfo(gui::ElementState::Hover, buttonInfo);
+    buttonInfo.m_rect = sf::IntRect({400, 0}, gridSize);
+    newButton->SetButtonInfo(gui::ElementState::Pressed, buttonInfo);
+
     newButton->ConnectSignalCallback(gui::Signal::OnClicked, "OnNewButtonClicked", BindCallback(&ScenePlay::_OnNewGameClicked));
 }
 
