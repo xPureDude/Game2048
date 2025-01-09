@@ -9,6 +9,7 @@ struct BlockInfo
     BlockInfo(const sf::Color& backColor, std::shared_ptr<sf::Font> font, const sf::Color& valueColor, std::uint32_t charSize, std::int32_t value);
     void Render(sf::RenderTarget& window);
     void Render(Window* window);
+    void SetScale(const sf::Vector2f& scale);
     void SetPosition(const sf::Vector2f& pos);
     sf::RectangleShape m_back;
     std::shared_ptr<sf::Font> m_font;
@@ -16,17 +17,32 @@ struct BlockInfo
 };
 
 class Game2048;
+
+enum class BlockState
+{
+    Idle,
+    Borning,
+    Moving,
+    Growing
+};
+
 struct Block
 {
     void Update(const sf::Time& elapsed);
 
     Game2048* m_game;
     bool m_needGrow{false};
+    BlockState m_state;
     std::int64_t m_index{-1};
     sf::Vector2f m_pos;
     Vector2size m_originGrid;
     Vector2size m_destGrid;
-    sf::Time m_moveElapsed;
+    sf::Vector2f m_scale;
+    sf::Time m_actionElapsed;
+
+private:
+    void _UpdateMove(const sf::Time& elapsed);
+    void _UpdateGrow(const sf::Time& elapsed);
 };
 
 struct NewGameInfo
@@ -42,6 +58,8 @@ struct NewGameInfo
 enum class GameSignal
 {
     ScoreChange,
+    GameWin,
+    GameLose,
 };
 
 class Game2048
@@ -86,12 +104,13 @@ private:
     std::vector<BlockInfo> m_blockInfos;
 
     // Game2048 Data
-    bool m_isMoving;
+    bool m_canMove;
     bool m_isPlaying;
     std::size_t m_score;
     std::uint32_t m_createBlockIndex;
 
-    std::list<Block*> m_blocks;
+    std::vector<Block*> m_blocks;
+    std::vector<Block*> m_blockCache;
     std::vector<std::vector<Block*>> m_board;
 
     std::map<GameSignal, std::vector<CallbackType>> m_callbacks;

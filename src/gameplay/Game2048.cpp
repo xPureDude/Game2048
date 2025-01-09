@@ -1,5 +1,6 @@
 #include "Game2048.hpp"
 
+#include "../common/Log.hpp"
 #include "../core/Window.hpp"
 
 BlockInfo::BlockInfo(const sf::Color& backColor, std::shared_ptr<sf::Font> font, const sf::Color& valueColor, std::uint32_t charSize, std::int32_t value)
@@ -26,6 +27,12 @@ void BlockInfo::Render(Window* window)
     window->Render(m_value);
 }
 
+void BlockInfo::SetScale(const sf::Vector2f& scale)
+{
+    m_back.setScale(scale);
+    m_value.setScale(scale);
+}
+
 void BlockInfo::SetPosition(const sf::Vector2f& pos)
 {
     m_back.setPosition(pos);
@@ -34,22 +41,61 @@ void BlockInfo::SetPosition(const sf::Vector2f& pos)
 
 void Block::Update(const sf::Time& elapsed)
 {
+    switch (m_state)
+    {
+    case BlockState::Moving:
+        _UpdateMove(elapsed);
+        break;
+
+    case BlockState::Growing:
+    case BlockState::Borning:
+        _UpdateGrow(elapsed);
+        break;
+
+    default:
+        break;
+    }
+}
+
+void Block::_UpdateMove(const sf::Time& elapsed)
+{
     auto originPos = m_game->GetGridPosition(m_originGrid);
     auto destPos = m_game->GetGridPosition(m_destGrid);
     if (m_pos != destPos)
     {
-        m_moveElapsed += elapsed;
-        if (m_moveElapsed >= sf::milliseconds(200))
+        m_actionElapsed += elapsed;
+        if (m_actionElapsed >= sf::milliseconds(200))
         {
-            m_moveElapsed = sf::Time::Zero;
+            m_actionElapsed = sf::Time::Zero;
             m_pos = destPos;
             m_originGrid = m_destGrid;
+            m_state = BlockState::Idle;
         }
         else
         {
-            float rate = m_moveElapsed / sf::milliseconds(200);
+            float rate = m_actionElapsed / sf::milliseconds(200);
             m_pos = originPos + (destPos - originPos) * rate;
         }
+    }
+    else
+    {
+        m_state = BlockState::Idle;
+    }
+}
+
+void Block::_UpdateGrow(const sf::Time& elapsed)
+{
+    m_actionElapsed += elapsed;
+    if (m_actionElapsed >= sf::milliseconds(100))
+    {
+        m_actionElapsed = sf::Time::Zero;
+        m_scale = {1, 1};
+        m_state = BlockState::Idle;
+    }
+    else
+    {
+        float scale = m_actionElapsed / sf::milliseconds(100);
+        m_scale = {scale, scale};
     }
 }
 
@@ -61,7 +107,7 @@ Game2048::Game2048(std::shared_ptr<sf::Font> font)
       m_blockSpace(0),
       m_rowCount(0),
       m_colCount(0),
-      m_isMoving(false),
+      m_canMove(true),
       m_isPlaying(false),
       m_score(0),
       m_createBlockIndex(0)
@@ -94,51 +140,83 @@ Game2048::~Game2048()
 
 void Game2048::Update(const sf::Time& elapsed)
 {
-    bool prevMoving = m_isMoving;
-    m_isMoving = false;
-    auto info = m_blocks.begin();
-    while (info != m_blocks.end())
+    m_canMove = true;
+    bool needCreate = false;
+
+    std::set<std::size_t> deleteLater;
+
+    for (auto i = 0; i < m_blocks.size(); ++i)
     {
-        if ((*info)->m_originGrid != (*info)->m_destGrid)
+        auto block = m_blocks[i];
+        if (block->m_state == BlockState::Moving)
         {
-            (*info)->Update(elapsed);
-            // After update
-            if ((*info)->m_originGrid == (*info)->m_destGrid)
+            block->Update(elapsed);
+            if (block->m_state == BlockState::Idle)
             {
-                auto destBlock = m_board[(*info)->m_destGrid.x][(*info)->m_destGrid.y];
-                if (destBlock != nullptr && destBlock->m_needGrow && *info != destBlock)
+                needCreate = true;
+                auto destBlock = m_board[block->m_destGrid.x][block->m_destGrid.y];
+                if (destBlock && block != destBlock && destBlock->m_needGrow)
                 {
                     destBlock->m_index++;
-                    m_score += static_cast<std::size_t>(std::pow(2, destBlock->m_index + 1));
+                    destBlock->m_state = BlockState::Growing;
                     destBlock->m_needGrow = false;
-                    if (destBlock->m_index == m_blockInfos.size() - 1)
-                    {
-                        // Win
-                    }
-                    delete (*info);
-                    info = m_blocks.erase(info);
+                    destBlock->m_scale = {0, 0};
+                    m_canMove = false;
 
-                    if (m_callbacks.contains(GameSignal::ScoreChange))
-                    {
-                        std::any param = m_score;
-                        for (auto& callback : m_callbacks[GameSignal::ScoreChange])
-                        {
-                            callback(param);
-                        }
-                    }
-                    continue;
+                    deleteLater.insert(i);
                 }
             }
             else
             {
-                m_isMoving = true;
+                DBG("Block is moving: {},{}", block->m_originGrid.x, block->m_originGrid.y);
+                m_canMove = false;
             }
         }
-        ++info;
+        else if (block->m_state == BlockState::Growing)
+        {
+            block->Update(elapsed);
+            if (block->m_state == BlockState::Idle)
+            {
+                m_score += static_cast<std::size_t>(std::pow(2, block->m_index + 1));
+                if (block->m_index == m_blockInfos.size() - 1)
+                {
+                    // Win
+                }
+
+                if (m_callbacks.contains(GameSignal::ScoreChange))
+                {
+                    std::any param = std::make_any<std::size_t>(m_score);
+                    for (auto& callback : m_callbacks[GameSignal::ScoreChange])
+                    {
+                        callback(param);
+                    }
+                }
+            }
+            else
+            {
+                m_canMove = false;
+                DBG("Block is growing: {},{}", block->m_originGrid.x, block->m_originGrid.y);
+            }
+        }
+        else if (block->m_state == BlockState::Borning)
+        {
+            block->Update(elapsed);
+            if (block->m_state != BlockState::Idle)
+            {
+                m_canMove = false;
+            }
+        }
     }
 
-    // Create new block after move
-    if (prevMoving && !m_isMoving)
+    for (auto riter = deleteLater.rbegin(); riter != deleteLater.rend(); ++riter)
+    {
+        std::swap(m_blocks[*riter], m_blocks[m_blocks.size() - 1]);
+        m_blockCache.push_back(m_blocks.back());
+        m_blocks.pop_back();
+    }
+
+    // Check need create block: Every move over time
+    if (needCreate)
     {
         _CreateNewBlock();
     }
@@ -149,6 +227,7 @@ void Game2048::Render(sf::RenderTarget* target)
     m_boardTexture.clear(sf::Color::Transparent);
     for (auto info : m_blocks)
     {
+        m_blockInfos[info->m_index].SetScale(info->m_scale);
         m_blockInfos[info->m_index].SetPosition(info->m_pos);
         m_blockInfos[info->m_index].Render(m_boardTexture);
     }
@@ -206,7 +285,7 @@ void Game2048::ConnectGameSignalCallback(GameSignal signal, CallbackType callbac
 
 void Game2048::OnMoveLeft()
 {
-    if (m_isMoving)
+    if (!m_canMove)
         return;
     // move row by row
     for (std::size_t row = 0; row < m_rowCount; ++row)
@@ -236,7 +315,7 @@ void Game2048::OnMoveLeft()
 
 void Game2048::OnMoveRight()
 {
-    if (m_isMoving)
+    if (!m_canMove)
         return;
     // move row by row
     for (std::size_t row = 0; row < m_rowCount; ++row)
@@ -265,7 +344,7 @@ void Game2048::OnMoveRight()
 
 void Game2048::OnMoveUp()
 {
-    if (m_isMoving)
+    if (!m_canMove)
         return;
     // move col by col
     for (std::size_t col = 0; col < m_colCount; ++col)
@@ -293,7 +372,7 @@ void Game2048::OnMoveUp()
 
 void Game2048::OnMoveDown()
 {
-    if (m_isMoving)
+    if (!m_canMove)
         return;
     // move col by col
     for (std::size_t col = 0; col < m_colCount; ++col)
@@ -365,14 +444,27 @@ void Game2048::_CreateNewBlock()
     auto [row, col] = availableGrid[index];
 
     // three "2" block then one "4" block
-    auto block = new Block;
+    Block* block = nullptr;
+    if (!m_blockCache.empty())
+    {
+        block = m_blockCache.back();
+        m_blockCache.pop_back();
+    }
+    else
+    {
+        block = new Block;
+    }
     block->m_index = m_createBlockIndex == 3 ? 1 : 0;
     block->m_originGrid = block->m_destGrid = {row, col};
     block->m_pos = GetGridPosition({row, col});
     block->m_game = this;
+    block->m_state = BlockState::Borning;
+    block->m_scale = {0, 0};
 
     m_blocks.push_back(block);
     m_board[row][col] = block;
+
+    DBG("Create new Block: {},{}", row, col);
 
     ++m_createBlockIndex;
     m_createBlockIndex %= 4;
@@ -380,26 +472,33 @@ void Game2048::_CreateNewBlock()
 
 void Game2048::_CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vector2size& dGrid, const Vector2size& pGrid)
 {
-    m_board[oGrid.x][oGrid.y] = nullptr;
+    auto realGrid = dGrid;
+    bool needGrow = false;
 
     auto destBlock = m_board[dGrid.x][dGrid.y];
-    if (destBlock == nullptr)
-    {
-        block->m_destGrid = dGrid;
-        m_board[dGrid.x][dGrid.y] = block;
-    }
-    else
+    if (destBlock)
     {
         if (block->m_index == destBlock->m_index && !destBlock->m_needGrow)
         {
             // Move to merge
             destBlock->m_needGrow = true;
-            block->m_destGrid = dGrid;
+            needGrow = true;
         }
         else
         {
-            block->m_destGrid = pGrid;
-            m_board[pGrid.x][pGrid.y] = block;
+            realGrid = pGrid;
         }
+    }
+
+    if (oGrid != realGrid)
+    {
+        m_board[oGrid.x][oGrid.y] = nullptr;
+        if (!needGrow)
+        {
+            m_board[realGrid.x][realGrid.y] = block;
+        }
+        block->m_destGrid = realGrid;
+        block->m_state = BlockState::Moving;
+        DBG("Block Move: {},{} to {},{}", oGrid.x, oGrid.y, realGrid.x, realGrid.y);
     }
 }

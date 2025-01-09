@@ -1,5 +1,6 @@
 #include "ScenePlay.hpp"
 
+#include "../common/Log.hpp"
 #include "../core/SharedContext.hpp"
 #include "../core/Window.hpp"
 #include "../gui/Button.hpp"
@@ -217,8 +218,9 @@ void ScenePlay::_OnMoveDown(const std::any& param)
 
 void ScenePlay::_OnScoreChange(const std::any& param)
 {
-    if (auto score = std::any_cast<std::size_t>(param))
+    try
     {
+        auto score = std::any_cast<std::size_t>(param);
         auto element = m_sceneManager->GetSharedContext()->Get<GuiManager>()->GetSceneElementByName(SceneType::Play, "score_label");
         if (element)
         {
@@ -227,11 +229,15 @@ void ScenePlay::_OnScoreChange(const std::any& param)
             element->SetTextInfo(info);
         }
     }
+    catch (const std::bad_any_cast& err)
+    {
+        DBG("ScenePlay::_OnScoreChange, wrong param type {}", err.what());
+    }
 }
 
 void ScenePlay::_OnNewGameClicked(const std::any& param)
 {
-    std::any score = std::size_t(0);
+    std::any score = std::make_any<std::size_t>(0);
     _OnScoreChange(score);
 
     m_game2048->OnNewGame(m_info);
