@@ -5,21 +5,6 @@
 namespace gui
 {
 
-struct ButtonInfo
-{
-    // base
-    sf::Vector2f m_scale{1.f, 1.f};
-
-    // shape
-    float m_outlineSize{0.f};
-    sf::Color m_color;
-    sf::Color m_outlineColor;
-
-    // texture
-    std::shared_ptr<sf::Texture> m_texture;
-    sf::IntRect m_rect;
-};
-
 class Button : public Element
 {
 public:
@@ -30,8 +15,8 @@ public:
     virtual bool operator()(const sf::Event::MouseButtonPressed& event) override;
     virtual bool operator()(const sf::Event::MouseButtonReleased& event) override;
 
-    void SetButtonInfo(ElementState state, const ButtonInfo& info);
-    ButtonInfo* GetButtonInfo(ElementState state);
+    void SetButtonStyle(ElementState state, ButtonStyle* style);
+    ButtonStyle* GetButtonStyle(ElementState state);
 
 private:
     virtual void _RenderPrimitive(sf::RenderTarget* target) override;
@@ -40,7 +25,7 @@ private:
     void _UpdateCurrentState();
 
 private:
-    std::map<ElementState, ButtonInfo> m_infos;
+    std::map<ElementState, ButtonStyle*> m_styles;
     sf::RectangleShape m_shape;
 };
 

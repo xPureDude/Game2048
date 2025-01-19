@@ -1,6 +1,6 @@
 #include "ElementFactory.hpp"
 
-#include "../pch.hpp"
+#include "../pch.hpp" // IWYU pragma: keep
 #include "Button.hpp"
 #include "Label.hpp"
 #include "Widget.hpp"
@@ -8,7 +8,7 @@
 namespace gui
 {
 
-std::shared_ptr<Element> ElementFactory::CreateElement(ElementType type, GuiManager* manager)
+std::shared_ptr<Element> ElementFactory::CreateElement(ElementType type)
 {
     switch (type)
     {

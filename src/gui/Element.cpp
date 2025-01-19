@@ -88,12 +88,17 @@ void Element::SetSize(const sf::Vector2f& size)
     m_size = size;
     _UpdateSize();
 
+    if (m_text)
+    {
+        m_text->setPosition(m_position + m_size / 2.f);
+    }
+
     _RedrawParent();
 }
 
-void Element::SetTextInfo(const TextInfo& info)
+void Element::SetTextStyle(TextStyle* style)
 {
-    m_textInfo = info;
+    m_textStyle = style;
     _UpdateText();
 
     _RedrawParent();
@@ -117,13 +122,13 @@ void Element::_UpdateText()
 {
     if (!m_text)
     {
-        m_text = std::make_shared<sf::Text>(*(m_textInfo.m_font));
+        m_text = std::make_shared<sf::Text>(*(m_textStyle->m_font));
     }
 
-    m_text->setString(m_textInfo.m_textStr);
-    m_text->setCharacterSize(m_textInfo.m_charSize);
-    m_text->setFillColor(m_textInfo.m_color);
-    m_text->setStyle(m_textInfo.m_style);
+    m_text->setString(m_textStyle->m_textStr);
+    m_text->setCharacterSize(m_textStyle->m_charSize);
+    m_text->setFillColor(m_textStyle->m_color);
+    m_text->setStyle(m_textStyle->m_style);
     m_text->setOrigin(m_text->getLocalBounds().getCenter());
     m_text->setPosition(m_position + m_size / 2.f);
 }

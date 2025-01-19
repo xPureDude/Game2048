@@ -1,0 +1,10 @@
+<Elements>
+    <Widget name="top_widget" posx="0" posy="0" width="200" height="130" stylesheet="widget_default">
+        <Button name="Begin_Button" posx="0" posy="0"  default="button_default" hover="button_hover" press="button_press" text="button_text" textStr="Begin Game">
+            <SignalTrigger signal="Clicked" callback="OnBeginGame">
+        </Button>
+        <Button name="Quit_Button"  posx="0" posy="70" default="button_default" hover="button_hover" press="button_press" text="button_text" textStr="Quit Game">
+            <SignalTrigger signal="Clicked" callback="OnQuitGame">
+        </Button>
+    </Widget>
+</Elements>

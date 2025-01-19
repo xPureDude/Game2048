@@ -1,7 +1,7 @@
 #ifndef ELEMENTFACTORY_HPP
 #define ELEMENTFACTORY_HPP
 
-#include "Element.hpp"
+#include <memory>
 
 namespace gui
 {
@@ -16,10 +16,12 @@ enum class ElementType
     Widget,
 };
 
+class Element;
+
 class ElementFactory
 {
 public:
-    static std::shared_ptr<Element> CreateElement(ElementType type, GuiManager* manager = nullptr);
+    static std::shared_ptr<Element> CreateElement(ElementType type);
 };
 
 } // namespace gui

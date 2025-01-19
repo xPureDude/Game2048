@@ -5,7 +5,7 @@
 class TextureManager : public ResourceManager<sf::Texture>
 {
 public:
-    virtual bool LoadResourceInfo(const std::string& file);
+    virtual bool LoadResourceInfoFromFile(const std::string& file);
 
 private:
     bool _LoadResourceInfoFromXml(const std::string& file);

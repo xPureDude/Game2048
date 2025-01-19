@@ -18,7 +18,9 @@ PureFramework::PureFramework()
     m_fpsTime = fps144;
 }
 
-PureFramework::~PureFramework() {}
+PureFramework::~PureFramework()
+{
+}
 
 bool PureFramework::Init()
 {

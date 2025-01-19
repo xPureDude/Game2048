@@ -70,10 +70,17 @@ bool Button::operator()(const sf::Event::MouseButtonReleased& event)
     return false;
 }
 
-void Button::SetButtonInfo(ElementState state, const ButtonInfo& info)
+void Button::SetButtonStyle(ElementState state, ButtonStyle* style)
 {
-    m_infos[state] = info;
+    m_styles[state] = style;
     _UpdateCurrentState();
+}
+
+ButtonStyle* Button::GetButtonStyle(ElementState state)
+{
+    if (m_styles.contains(state))
+        return m_styles[state];
+    return nullptr;
 }
 
 void Button::_RenderPrimitive(sf::RenderTarget* target)
@@ -93,24 +100,22 @@ void Button::_UpdateSize()
 
 void Button::_UpdateCurrentState()
 {
-    if (m_infos.contains(m_state))
+    if (m_styles.contains(m_state))
     {
-        auto& info = m_infos[m_state];
+        auto& style = m_styles[m_state];
 
-        m_shape.setScale(info.m_scale);
+        m_shape.setScale(style->m_scale);
 
-        if (info.m_texture)
+        if (style->m_texture)
         {
-            m_shape.setTexture(info.m_texture.get());
-            m_shape.setTextureRect(info.m_rect);
-            SetSize(sf::Vector2f(info.m_rect.size));
-            Element::_UpdateText();
+            m_shape.setTexture(style->m_texture.get());
+            m_shape.setTextureRect(style->m_rect);
         }
         else
         {
-            m_shape.setFillColor(info.m_color);
-            m_shape.setOutlineColor(info.m_outlineColor);
-            m_shape.setOutlineThickness(info.m_outlineSize);
+            m_shape.setFillColor(style->m_color);
+            m_shape.setOutlineColor(style->m_outlineColor);
+            m_shape.setOutlineThickness(style->m_outlineSize);
         }
 
         if (!m_parent.expired())

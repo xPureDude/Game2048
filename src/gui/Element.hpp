@@ -2,7 +2,8 @@
 #define ELEMENT_HPP
 
 #include "../input/InputVisitorDependent.hpp"
-#include "../pch.hpp" // IWYU pragma: keep
+#include "../pch.hpp"
+#include "ElementStyle.hpp"
 
 namespace gui
 {
@@ -33,15 +34,6 @@ enum class ElementState
     Disable,
 };
 
-struct TextInfo
-{
-    std::shared_ptr<sf::Font> m_font;
-    std::string m_textStr;
-    std::int32_t m_charSize{30};
-    sf::Color m_color;
-    std::uint32_t m_style;
-};
-
 class Widget;
 
 class Element : public InputVisitorDependent
@@ -62,12 +54,12 @@ public:
     void SetPosition(const sf::Vector2f& pos);
     void SetSize(const sf::Vector2f& size);
     void SetText(const std::string& textStr);
-    void SetTextInfo(const TextInfo& info);
+    void SetTextStyle(TextStyle* style);
 
     sf::Vector2f GetGlobalPosition();
     sf::Vector2f GetLocalPosition();
     std::string GetName() { return m_name; }
-    TextInfo GetTextInfo() { return m_textInfo; }
+    TextStyle* GetTextStyle() { return m_textStyle; }
 
 protected:
     void _UpdateText();
@@ -88,7 +80,7 @@ protected:
     sf::Vector2f m_position; // leftTop corner
     sf::Vector2f m_size;
 
-    TextInfo m_textInfo;
+    TextStyle* m_textStyle;
     std::shared_ptr<sf::Text> m_text;
 
     std::vector<SignalTriggerInfo> m_signalQueue;

@@ -6,14 +6,11 @@ using Vector2size = sf::Vector2<std::size_t>;
 
 struct BlockInfo
 {
-    BlockInfo(const sf::Color& backColor, std::shared_ptr<sf::Font> font, const sf::Color& valueColor, std::uint32_t charSize, std::int32_t value);
+    BlockInfo(sf::Texture* texture, const sf::IntRect& rect);
     void Render(sf::RenderTarget& window);
-    void Render(Window* window);
     void SetScale(const sf::Vector2f& scale);
     void SetPosition(const sf::Vector2f& pos);
-    sf::RectangleShape m_back;
-    std::shared_ptr<sf::Font> m_font;
-    sf::Text m_value;
+    sf::RectangleShape m_block;
 };
 
 class Game2048;
@@ -62,14 +59,29 @@ enum class GameSignal
     GameLose,
 };
 
+struct GameSignalInfo
+{
+    GameSignal m_signal;
+    std::any m_param;
+};
+
 class Game2048
 {
+    enum class DelayMove
+    {
+        None,
+        Left,
+        Right,
+        Up,
+        Down
+    };
+
 public:
-    Game2048(std::shared_ptr<sf::Font> font);
+    Game2048(std::shared_ptr<sf::Texture> blockTexture);
     ~Game2048();
 
     void Update(const sf::Time& elapsed);
-    void Render(sf::RenderTarget* target);
+    void Render(Window* window);
 
     void OnNewGame(const NewGameInfo& info);
 
@@ -87,11 +99,15 @@ public:
 private:
     void _ResetBoard();
     void _CreateNewBlock();
-    void _CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vector2size& dGrid, const Vector2size& pGrid);
+    bool _CheckLose();
+    [[nodiscard]] bool _CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vector2size& dGrid, const Vector2size& pGrid);
+    void _OnMovingState();
+    void _OnGrowingState();
+    void _OnBorningState();
+    void _OnIdleState();
 
 private:
-    static sf::Time s_moveTime;
-
+    DelayMove m_delayInput;
     sf::RenderTexture m_boardTexture;
     sf::Sprite m_boardSprite;
 
@@ -101,10 +117,11 @@ private:
     float m_blockSpace;
     std::size_t m_rowCount;
     std::size_t m_colCount;
+    std::shared_ptr<sf::Texture> m_blockTexture;
     std::vector<BlockInfo> m_blockInfos;
 
     // Game2048 Data
-    bool m_canMove;
+    BlockState m_totalState;
     bool m_isPlaying;
     std::size_t m_score;
     std::uint32_t m_createBlockIndex;
@@ -113,5 +130,6 @@ private:
     std::vector<Block*> m_blockCache;
     std::vector<std::vector<Block*>> m_board;
 
+    std::vector<GameSignalInfo> m_signalQueue;
     std::map<GameSignal, std::vector<CallbackType>> m_callbacks;
 };

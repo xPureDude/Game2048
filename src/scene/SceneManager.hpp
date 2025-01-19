@@ -27,17 +27,16 @@ public:
     void Render();
 
     // Pop Current Scene && Push New Scene "type"
-    void ChangeScene(SceneType type);
+    void ChangeScene(SceneType type, const std::any& param);
 
     // Push New Scene on top
-    void PushScene(SceneType type);
-
-    // Pop Current Scene
-    void PopScene();
+    void PushScene(SceneType type, const std::any& param);
 
     void ProcessRemoves();
 
 private:
+    // Pop Current Scene
+    void _PopScene();
     bool _CreateScene(SceneType type);
     void _DestroyScene(SceneType type);
     bool _IsInRemoveLater(SceneType type);

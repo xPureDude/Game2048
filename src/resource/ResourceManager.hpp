@@ -70,11 +70,11 @@ public:
     ResourceManager() = default;
     virtual ~ResourceManager() {}
 
-    virtual bool LoadResourceInfo(const std::string& file) = 0;
+    virtual bool LoadResourceInfoFromFile(const std::string& file) = 0;
 
     void SlowUpdate();
 
-    bool LoadResourceInfoFromFile(const std::string& name, const std::string& path);
+    bool LoadResourceInfo(const std::string& name, const std::string& path);
     std::shared_ptr<T> RequestResource(const std::string& name);
 
 protected:
@@ -94,7 +94,7 @@ void ResourceManager<T>::SlowUpdate()
 }
 
 template <typename T>
-bool ResourceManager<T>::LoadResourceInfoFromFile(const std::string& name, const std::string& path)
+bool ResourceManager<T>::LoadResourceInfo(const std::string& name, const std::string& path)
 {
     auto result = m_resources.try_emplace(name, ResourceInfo<T>());
     if (result.second)

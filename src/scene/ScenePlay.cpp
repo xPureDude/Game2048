@@ -3,30 +3,23 @@
 #include "../common/Log.hpp"
 #include "../core/SharedContext.hpp"
 #include "../core/Window.hpp"
-#include "../gui/Button.hpp"
+#include "../gui/Element.hpp"
 #include "../gui/GuiManager.hpp"
-#include "../gui/Label.hpp"
-#include "../gui/Widget.hpp"
 #include "../input/InputManager.hpp"
 #include "../resource/FontManager.hpp"
 #include "../resource/TextureManager.hpp"
 #include "SceneManager.hpp"
 
-ScenePlay::ScenePlay()
-    : Scene(),
-      m_game2048(nullptr),
-      m_boardTexture({500, 500}),
-      m_boardSprite(m_boardTexture.getTexture())
+ScenePlay::ScenePlay(SceneManager* manager)
+    : Scene(manager),
+      m_game2048(nullptr)
 {
 }
 
 ScenePlay::~ScenePlay() {}
 
-bool ScenePlay::OnCreate(SceneManager* manager)
+bool ScenePlay::OnCreate()
 {
-    if (Scene::OnCreate(manager) == false)
-        return false;
-
     SharedContext* ctx = m_sceneManager->GetSharedContext();
 
     InputManager* inputManager = ctx->Get<InputManager>();
@@ -35,27 +28,24 @@ bool ScenePlay::OnCreate(SceneManager* manager)
     inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveUp, "ScenePlay_MoveUp", BindCallback(&ScenePlay::_OnMoveUp));
     inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveDown, "ScenePlay_MoveDown", BindCallback(&ScenePlay::_OnMoveDown));
 
-    FontManager* fontManager = ctx->Get<FontManager>();
-    if (!fontManager->LoadResourceInfoFromFile("block", "SourceHanSansCN-Regular.otf"))
-    {
-        return false;
-    }
-    auto blockFont = fontManager->RequestResource("block");
-    if (blockFont == nullptr)
-    {
-        return false;
-    }
-
     TextureManager* textureManager = ctx->Get<TextureManager>();
-    if (!textureManager->LoadResourceInfoFromFile("element_base", "button_sheet.png"))
+    auto blockTexture = textureManager->RequestResource("blocks");
+    if (!blockTexture)
     {
+        DBG("ScenePlay::OnCreate, blockTexture is nullptr, name: {}", "blocks");
         return false;
     }
 
-    m_game2048 = new Game2048(blockFont);
+    m_game2048 = new Game2048(blockTexture);
     m_game2048->ConnectGameSignalCallback(GameSignal::ScoreChange, BindCallback(&ScenePlay::_OnScoreChange));
+    m_game2048->ConnectGameSignalCallback(GameSignal::GameLose, BindCallback(&ScenePlay::_OnGameLose));
+    m_game2048->ConnectGameSignalCallback(GameSignal::GameWin, BindCallback(&ScenePlay::_OnGameWin));
 
-    _InitGui();
+    if (!_InitGui())
+    {
+        DBG("ScenePlay::OnCreate, InitGui failed");
+        return false;
+    }
 
     return true;
 }
@@ -79,21 +69,28 @@ void ScenePlay::Update(const sf::Time& elapsed)
 
 void ScenePlay::Render(Window* window)
 {
-    window->Render(m_boardSprite);
-    m_game2048->Render(window->GetRenderWindow());
+    window->Render(m_background);
+    m_game2048->Render(window);
 }
 
-void ScenePlay::OnEnter()
+void ScenePlay::OnEnter(const std::any& param)
 {
     Window* window = m_sceneManager->GetSharedContext()->Get<Window>();
     auto windowSize = window->GetSize();
 
-    // Note: Temp default 4x4
-    std::size_t rowCount, colCount;
-    rowCount = colCount = 4;
+    std::size_t rowCount = 0;
+    try
+    {
+        rowCount = std::any_cast<std::size_t>(param);
+    }
+    catch (const std::bad_any_cast& err)
+    {
+        DBG("ScenePlay::OnEnter, wrong param type {}", err.what());
+    }
+
     std::uint32_t boardWidth = 500;
 
-    float blockSpace = boardWidth / (colCount * 6.f + 1.f);
+    float blockSpace = boardWidth / (rowCount * 6.f + 1.f);
     float blockSize = blockSpace * 5.f;
     sf::Vector2f offset = {0, float(windowSize.y - boardWidth)};
     m_game2048->SetPosition(offset);
@@ -102,98 +99,39 @@ void ScenePlay::OnEnter()
     m_info.m_blockSize = blockSize;
     m_info.m_blockSpace = blockSpace;
     m_info.m_rowCount = rowCount;
-    m_info.m_colCount = colCount;
+    m_info.m_colCount = rowCount;
     m_info.m_position = offset;
     m_game2048->OnNewGame(m_info);
-
-    bool ret = m_boardTexture.resize({boardWidth, boardWidth});
-    m_boardTexture.clear(sf::Color(0xBBADA0FF));
-
-    sf::RectangleShape rect;
-    rect.setSize({blockSize, blockSize});
-    rect.setFillColor(sf::Color(0xEEE4DA5F));
-    rect.setOrigin(rect.getLocalBounds().getCenter());
-
-    ret = m_boardTexture.setActive(true);
-    for (std::size_t row = 0; row < rowCount; ++row)
-    {
-        for (std::size_t col = 0; col < colCount; ++col)
-        {
-            auto xpos = (col + 1) * blockSpace + col * blockSize + blockSize / 2.f;
-            auto ypos = (row + 1) * blockSpace + row * blockSize + blockSize / 2.f;
-            rect.setPosition({xpos, ypos});
-            m_boardTexture.draw(rect);
-        }
-    }
-    m_boardSprite.setTexture(m_boardTexture.getTexture());
-    m_boardSprite.setPosition(offset);
 }
 
 void ScenePlay::OnLeave() {}
 
-void ScenePlay::_InitGui()
+bool ScenePlay::_InitGui()
 {
-    auto guiManager = m_sceneManager->GetSharedContext()->Get<GuiManager>();
-    auto fontManager = m_sceneManager->GetSharedContext()->Get<FontManager>();
-    auto& elementFactory = guiManager->GetElementFactory();
+    SharedContext* ctx = m_sceneManager->GetSharedContext();
 
-    auto topWidget = std::dynamic_pointer_cast<gui::Widget>(elementFactory.CreateElement(gui::ElementType::Widget, guiManager));
-    guiManager->AddSceneGui(SceneType::Play, topWidget);
+    std::map<std::string_view, CallbackType> callbacks;
+    callbacks.emplace("OnNewGame", BindCallback(&ScenePlay::_OnNewGameClicked));
 
-    topWidget->SetName("head_widget");
-    topWidget->SetSize({500.f, 200.f});
+    GuiManager* guiManager = ctx->Get<GuiManager>();
 
-    gui::WidgetInfo widgetInfo;
-    widgetInfo.m_backColor = sf::Color(0xEEE4DAFF);
+    TextureManager* textureManager = ctx->Get<TextureManager>();
+    m_backgroundTexture = textureManager->RequestResource("scene_play_bg");
+    if (!m_backgroundTexture)
+    {
+        return false;
+    }
+    m_background.setTexture(m_backgroundTexture.get(), true);
+    m_background.setSize({500, 700});
 
-    topWidget->SetWidgetInfo(widgetInfo);
+    FontManager* fontManager = ctx->Get<FontManager>();
+    auto blockFont = fontManager->RequestResource("block_font");
+    if (blockFont == nullptr)
+    {
+        return false;
+    }
 
-    auto scoreLabel = std::dynamic_pointer_cast<gui::Label>(elementFactory.CreateElement(gui::ElementType::Label));
-    scoreLabel->SetName("score_label");
-    topWidget->AppendChild(scoreLabel);
-    scoreLabel->SetParent(topWidget);
-    scoreLabel->SetPosition({10.f, 120.f});
-
-    gui::TextInfo textInfo;
-    textInfo.m_charSize = 25;
-    textInfo.m_textStr = "Score: 0";
-    textInfo.m_color = sf::Color::White;
-    textInfo.m_style = sf::Text::Style::Regular;
-    textInfo.m_font = fontManager->RequestResource("block");
-
-    scoreLabel->SetTextInfo(textInfo);
-
-    auto textureManager = m_sceneManager->GetSharedContext()->Get<TextureManager>();
-    auto texture = textureManager->RequestResource("element_base");
-
-    sf::Vector2i gridSize = {200, 60};
-
-    gui::LabelInfo labelInfo;
-    labelInfo.m_texture = texture;
-    labelInfo.m_rect = sf::IntRect({0, 0}, gridSize);
-
-    scoreLabel->SetLabelInfo(labelInfo);
-
-    auto newButton = std::dynamic_pointer_cast<gui::Button>(elementFactory.CreateElement(gui::ElementType::Button));
-    newButton->SetName("new_button");
-    topWidget->AppendChild(newButton);
-    newButton->SetParent(topWidget);
-    newButton->SetPosition({290.f, 120.f});
-
-    textInfo.m_textStr = "New Game";
-    newButton->SetTextInfo(textInfo);
-
-    gui::ButtonInfo buttonInfo;
-    buttonInfo.m_texture = texture;
-
-    buttonInfo.m_rect = sf::IntRect({0, 0}, gridSize);
-    newButton->SetButtonInfo(gui::ElementState::Default, buttonInfo);
-    buttonInfo.m_rect = sf::IntRect({200, 0}, gridSize);
-    newButton->SetButtonInfo(gui::ElementState::Hover, buttonInfo);
-    buttonInfo.m_rect = sf::IntRect({400, 0}, gridSize);
-    newButton->SetButtonInfo(gui::ElementState::Pressed, buttonInfo);
-
-    newButton->ConnectSignalCallback(gui::Signal::OnClicked, "OnNewButtonClicked", BindCallback(&ScenePlay::_OnNewGameClicked));
+    return true;
 }
 
 void ScenePlay::_OnMoveLeft(const std::any& param)
@@ -224,9 +162,9 @@ void ScenePlay::_OnScoreChange(const std::any& param)
         auto element = m_sceneManager->GetSharedContext()->Get<GuiManager>()->GetSceneElementByName(SceneType::Play, "score_label");
         if (element)
         {
-            auto info = element->GetTextInfo();
-            info.m_textStr = "Score: " + std::to_string(score);
-            element->SetTextInfo(info);
+            auto style = element->GetTextStyle();
+            style->m_textStr = "Score: " + std::to_string(score);
+            element->SetTextStyle(style);
         }
     }
     catch (const std::bad_any_cast& err)
@@ -241,4 +179,12 @@ void ScenePlay::_OnNewGameClicked(const std::any& param)
     _OnScoreChange(score);
 
     m_game2048->OnNewGame(m_info);
+}
+
+void ScenePlay::_OnGameLose(const std::any& param)
+{
+}
+
+void ScenePlay::_OnGameWin(const std::any& param)
+{
 }

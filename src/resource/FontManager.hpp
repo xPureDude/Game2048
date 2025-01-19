@@ -6,7 +6,10 @@
 class FontManager : public ResourceManager<sf::Font>
 {
 public:
-    virtual bool LoadResourceInfo(const std::string& file) override;
+    virtual bool LoadResourceInfoFromFile(const std::string& file) override;
+
+private:
+    bool _LoadResourceInfoFromXml(const std::string& file);
 };
 
 #endif // FONTMANAGER_HPP

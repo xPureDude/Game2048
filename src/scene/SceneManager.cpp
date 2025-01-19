@@ -96,16 +96,16 @@ void SceneManager::Render()
     }
 }
 
-void SceneManager::ChangeScene(SceneType type)
+void SceneManager::ChangeScene(SceneType type, const std::any& param)
 {
     if (m_scenes.back().m_type == type)
         return;
 
-    PopScene();
-    PushScene(type);
+    _PopScene();
+    PushScene(type, param);
 }
 
-void SceneManager::PushScene(SceneType type)
+void SceneManager::PushScene(SceneType type, const std::any& param)
 {
     auto iter = std::find(m_scenes.begin(), m_scenes.end(), SceneInfo({.m_type = type, .m_scene = nullptr}));
     if (iter != m_scenes.end())
@@ -122,19 +122,11 @@ void SceneManager::PushScene(SceneType type)
             return;
         }
     }
-    m_scenes.back().m_scene->OnEnter();
+    m_scenes.back().m_scene->OnEnter(param);
 
     // Inform SceneType related Manager
     SceneDependent::ChangeCurrentSceneType(type);
     m_ctx->Get<Window>()->SetView(m_scenes.back().m_scene->GetView());
-}
-
-void SceneManager::PopScene()
-{
-    if (m_scenes.empty())
-        return;
-    m_removeLater.insert(m_scenes.back().m_type);
-    m_scenes.pop_back();
 }
 
 void SceneManager::ProcessRemoves()
@@ -146,17 +138,28 @@ void SceneManager::ProcessRemoves()
     m_removeLater.clear();
 }
 
+void SceneManager::_PopScene()
+{
+    if (m_scenes.empty())
+        return;
+    m_removeLater.insert(m_scenes.back().m_type);
+    m_scenes.pop_back();
+}
+
 bool SceneManager::_CreateScene(SceneType type)
 {
-    std::shared_ptr<Scene> scene = m_factory.CreateScene(type);
+    std::shared_ptr<Scene> scene = m_factory.CreateScene(type, this);
     if (scene == nullptr)
     {
         std::cout << "SceneManager::_CreateScene failed, Type " << static_cast<int>(type) << " not found" << std::endl;
         return false;
     }
 
-    if (scene->OnCreate(this) == false)
+    if (scene->OnCreate() == false)
+    {
+        scene->OnDestroy();
         return false;
+    }
     m_scenes.emplace_back(type, scene);
     return true;
 }

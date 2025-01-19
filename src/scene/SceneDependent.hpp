@@ -15,6 +15,8 @@ public:
 protected:
     static SceneType s_curSceneType;
 
+    virtual void _OnCurrentSceneChange() {};
+
 private:
     static std::vector<SceneDependent*> s_instances;
 };

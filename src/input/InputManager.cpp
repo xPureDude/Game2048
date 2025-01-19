@@ -18,7 +18,6 @@ void InputManager::Update(const sf::Time& elapsed)
 
     // update input event binding
     auto globalBindings = m_bindings.find(SceneType::None);
-    auto sceneBindings = m_bindings.find(s_curSceneType);
 
     // Key hold event
     for (auto& itBinding : globalBindings->second)
@@ -29,11 +28,14 @@ void InputManager::Update(const sf::Time& elapsed)
         }
     }
 
-    for (auto& itBinding : sceneBindings->second)
+    if (m_bindings.contains(s_curSceneType))
     {
-        if (itBinding.second->IsTriggered())
+        for (auto& itBinding : m_bindings[s_curSceneType])
         {
-            itBinding.second->TriggerCallbacks();
+            if (itBinding.second->IsTriggered())
+            {
+                itBinding.second->TriggerCallbacks();
+            }
         }
     }
 }
@@ -41,16 +43,18 @@ void InputManager::Update(const sf::Time& elapsed)
 void InputManager::HandleInput(const sf::Event& event)
 {
     auto globalBindings = m_bindings.find(SceneType::None);
-    auto sceneBindings = m_bindings.find(s_curSceneType);
 
     for (auto& itBinding : globalBindings->second)
     {
         event.visit(*(itBinding.second));
     }
 
-    for (auto& itBinding : sceneBindings->second)
+    if (m_bindings.contains(s_curSceneType))
     {
-        event.visit(*(itBinding.second));
+        for (auto& itBinding : m_bindings[s_curSceneType])
+        {
+            event.visit(*(itBinding.second));
+        }
     }
 }
 

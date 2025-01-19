@@ -1,52 +1,78 @@
 #ifndef ELEMENTSTYLE_HPP
 #define ELEMENTSTYLE_HPP
 
-#include "SFML/Graphics/RectangleShape.hpp"
-#include "SFML/Graphics/Sprite.hpp"
-#include "SFML/Graphics/Text.hpp"
+#include "../tinyxml/tinyxml2.h"
+#include "SFML/Graphics.hpp" // IWYU pragma: keep
+
+#include <memory>
+#include <string>
+
+class SharedContext;
 
 namespace gui
 {
 
-struct DefaultStyle
+struct StyleSheet
 {
-    std::uint32_t m_borderSize;
-    sf::Color m_backColor;
-    sf::RectangleShape m_back;
-    sf::Color m_contentColor;
-    sf::RectangleShape m_content;
-    sf::Color m_controlColor;
-    sf::RectangleShape m_control;
+    virtual ~StyleSheet() = default;
+    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) = 0;
+
+    std::string m_name;
 };
 
-struct TextStyle
+struct TextStyle : public StyleSheet
 {
-    TextStyle(const sf::Font& font)
-        : m_text(font)
-    {
-    }
+    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) override;
 
-    float m_textSize;
-    sf::Color m_textColor;
-    sf::Text m_text;
+    std::string m_fontName;
+    std::shared_ptr<sf::Font> m_font;
+    std::string m_textStr;
+    std::int32_t m_charSize{30};
+    sf::Color m_color;
+    std::uint32_t m_style;
 };
 
-struct TextureStyle
+struct ButtonStyle : public StyleSheet
 {
-    TextureStyle(sf::Texture& texture)
-        : m_sprite(texture)
-    {
-    }
+    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) override;
 
+    // base
+    sf::Vector2f m_scale{1.f, 1.f};
+
+    // shape
+    float m_outlineSize{0.f};
+    sf::Color m_color;
+    sf::Color m_outlineColor;
+
+    // texture
     std::string m_textureName;
-    sf::Sprite m_sprite;
+    std::shared_ptr<sf::Texture> m_texture;
+    sf::IntRect m_rect;
 };
 
-struct ElementStyle
+struct LabelStyle : public StyleSheet
 {
-    std::shared_ptr<DefaultStyle> m_default;
-    std::shared_ptr<TextStyle> m_textComp;
-    std::shared_ptr<TextureStyle> m_texture;
+    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) override;
+
+    // base
+    sf::Vector2f m_scale{1.f, 1.f};
+
+    // shape
+    float m_outlineSize{0.f};
+    sf::Color m_color;
+    sf::Color m_outlineColor;
+
+    // texture
+    std::string m_textureName;
+    std::shared_ptr<sf::Texture> m_texture{nullptr};
+    sf::IntRect m_rect;
+};
+
+struct WidgetStyle : public StyleSheet
+{
+    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) override;
+
+    sf::Color m_backColor{sf::Color::Transparent};
 };
 
 } // namespace gui

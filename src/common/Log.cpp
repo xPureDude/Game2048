@@ -1,5 +1,7 @@
 #include "log.hpp"
 
+#include "../pch.hpp" // IWYU pragma: keep
+
 // #include <chrono>
 
 Log* Log::s_log = nullptr;

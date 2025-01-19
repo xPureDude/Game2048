@@ -3,24 +3,23 @@
 #include "../gameplay/Game2048.hpp"
 #include "Scene.hpp"
 
-
 class ScenePlay : public Scene
 {
 public:
-    ScenePlay();
+    ScenePlay(SceneManager* manager);
     virtual ~ScenePlay();
 
-    virtual bool OnCreate(SceneManager* manager) override;
+    virtual bool OnCreate() override;
     virtual void OnDestroy() override;
 
     virtual void Update(const sf::Time& elapsed) override;
     virtual void Render(Window* window) override;
 
-    virtual void OnEnter() override;
+    virtual void OnEnter(const std::any& param) override;
     virtual void OnLeave() override;
 
 private:
-    void _InitGui();
+    bool _InitGui();
     void _OnMoveLeft(const std::any& param);
     void _OnMoveRight(const std::any& param);
     void _OnMoveUp(const std::any& param);
@@ -28,12 +27,13 @@ private:
 
     void _OnScoreChange(const std::any& param);
     void _OnNewGameClicked(const std::any& param);
+    void _OnGameLose(const std::any& param);
+    void _OnGameWin(const std::any& param);
 
 private:
     NewGameInfo m_info;
     Game2048* m_game2048;
 
-    sf::RenderTexture m_boardTexture;
-    sf::Sprite m_boardSprite;
-    sf::RectangleShape m_blockBack;
+    std::shared_ptr<sf::Texture> m_backgroundTexture;
+    sf::RectangleShape m_background;
 };

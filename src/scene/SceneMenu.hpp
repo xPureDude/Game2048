@@ -1,27 +1,31 @@
 #ifndef SCENEMENU_HPP
 #define SCENEMENU_HPP
 
-#include "../gui/Button.hpp"
 #include "Scene.hpp"
 
 class SceneMenu : public Scene
 {
 public:
-    SceneMenu();
+    SceneMenu(SceneManager* manager);
     virtual ~SceneMenu();
 
-    virtual bool OnCreate(SceneManager* manager) override;
+    virtual bool OnCreate() override;
     virtual void OnDestroy() override;
 
     virtual void Update(const sf::Time& elasped) override;
     virtual void Render(Window* window) override;
 
-    virtual void OnEnter() override;
+    virtual void OnEnter(const std::any& param) override;
     virtual void OnLeave() override;
 
 private:
-    gui::Button m_beginButton;
-    gui::Button m_quitButton;
+    bool _InitGui();
+    void _OnBeginGame(const std::any& param);
+    void _OnQuitGame(const std::any& param);
+
+private:
+    std::shared_ptr<sf::Texture> m_backgroundTexture;
+    sf::RectangleShape m_background;
 };
 
 #endif // SCENEMENU_HPP

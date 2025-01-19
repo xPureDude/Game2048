@@ -12,24 +12,22 @@ Label::~Label()
 {
 }
 
-void Label::SetLabelInfo(const LabelInfo& info)
+void Label::SetLabelStyle(LabelStyle* style)
 {
-    m_info = info;
+    m_style = style;
 
-    m_shape.setScale(m_info.m_scale);
+    m_shape.setScale(m_style->m_scale);
 
-    if (m_info.m_texture)
+    if (m_style->m_texture)
     {
-        m_shape.setTexture(m_info.m_texture.get(), true);
-        m_shape.setTextureRect(m_info.m_rect);
-        SetSize(sf::Vector2f(info.m_rect.size));
-        Element::_UpdateText();
+        m_shape.setTexture(m_style->m_texture.get(), true);
+        m_shape.setTextureRect(m_style->m_rect);
     }
     else
     {
-        m_shape.setFillColor(info.m_color);
-        m_shape.setOutlineColor(info.m_outlineColor);
-        m_shape.setOutlineThickness(info.m_outlineSize);
+        m_shape.setFillColor(m_style->m_color);
+        m_shape.setOutlineColor(m_style->m_outlineColor);
+        m_shape.setOutlineThickness(m_style->m_outlineSize);
     }
 }
 

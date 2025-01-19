@@ -6,11 +6,6 @@
 namespace gui
 {
 
-struct WidgetInfo
-{
-    sf::Color m_backColor{sf::Color::Transparent};
-};
-
 class Widget : public Element
 {
 public:
@@ -20,7 +15,9 @@ public:
     virtual void Update(const sf::Time& elapsed) override;
     virtual bool HandleInput(const sf::Event& event) override;
 
-    void SetWidgetInfo(const WidgetInfo& info);
+    void SetWidgetStyle(WidgetStyle* style);
+
+    WidgetStyle* GetWidgetStyle() { return m_style; }
 
     void SetRedraw(bool flag);
 
@@ -36,7 +33,7 @@ private:
 
 protected:
     bool m_needRedraw;
-    WidgetInfo m_info;
+    WidgetStyle* m_style;
     sf::RenderTexture m_panelTexture;
     sf::Sprite m_panelSprite;
 

@@ -10,7 +10,8 @@
 
    ========================================================================== */
 
-#include "../pch.hpp" // IWYU pragma: keep
+#include <fstream>
+#include <string_view>
 
 std::string ParseSrcFileName(std::string_view str);
 

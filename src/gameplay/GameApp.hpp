@@ -7,4 +7,7 @@ public:
     virtual ~GameApp();
 
     bool Init();
+
+private:
+    bool _LoadResources();
 };
