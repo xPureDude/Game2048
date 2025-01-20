@@ -7,7 +7,8 @@ namespace gui
 
 Element::Element()
     : m_activate(true),
-      m_state(ElementState::Default)
+      m_state(ElementState::Default),
+      m_textStyle(nullptr)
 {
 }
 
@@ -96,6 +97,15 @@ void Element::SetSize(const sf::Vector2f& size)
     _RedrawParent();
 }
 
+void Element::SetText(const std::string& textStr)
+{
+    m_textStr = textStr;
+    if (m_textStyle)
+    {
+        _UpdateText();
+    }
+}
+
 void Element::SetTextStyle(TextStyle* style)
 {
     m_textStyle = style;
@@ -125,7 +135,7 @@ void Element::_UpdateText()
         m_text = std::make_shared<sf::Text>(*(m_textStyle->m_font));
     }
 
-    m_text->setString(m_textStyle->m_textStr);
+    m_text->setString(m_textStr);
     m_text->setCharacterSize(m_textStyle->m_charSize);
     m_text->setFillColor(m_textStyle->m_color);
     m_text->setStyle(m_textStyle->m_style);

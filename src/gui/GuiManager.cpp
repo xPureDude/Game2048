@@ -269,7 +269,7 @@ bool GuiManager::_ParseGuiElements(tinyxml2::XMLElement* e)
     {
         if (std::strcmp(elem->Name(), "Widget") == 0)
         {
-            auto widget = std::dynamic_pointer_cast<gui::Widget>(m_factory.CreateElement(gui::ElementType::Widget));
+            auto widget = std::dynamic_pointer_cast<gui::Widget>(m_factory.CreateElement(gui::ElementType::Widget, ""));
             if (!_ParseWidget(widget, elem))
             {
                 DBG("GuiManager::LoadSceneGuiFromFile, Parse Widget failed");
@@ -278,7 +278,7 @@ bool GuiManager::_ParseGuiElements(tinyxml2::XMLElement* e)
         }
         else if (std::strcmp(elem->Name(), "Button") == 0)
         {
-            auto button = std::dynamic_pointer_cast<gui::Button>(m_factory.CreateElement(gui::ElementType::Button));
+            auto button = std::dynamic_pointer_cast<gui::Button>(m_factory.CreateElement(gui::ElementType::Button, ""));
             if (!_ParseButton(button, elem))
             {
                 DBG("GuiManager::LoadSceneGuiFromFile, Parse Button failed");
@@ -287,7 +287,7 @@ bool GuiManager::_ParseGuiElements(tinyxml2::XMLElement* e)
         }
         else if (std::strcmp(elem->Name(), "Label") == 0)
         {
-            auto label = std::dynamic_pointer_cast<gui::Label>(m_factory.CreateElement(gui::ElementType::Label));
+            auto label = std::dynamic_pointer_cast<gui::Label>(m_factory.CreateElement(gui::ElementType::Label, ""));
             if (!_ParseLabel(label, elem))
             {
                 DBG("GuiManager::LoadSceneGuiFromFile, Parse Button failed");

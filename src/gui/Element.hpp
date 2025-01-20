@@ -80,6 +80,7 @@ protected:
     sf::Vector2f m_position; // leftTop corner
     sf::Vector2f m_size;
 
+    std::string m_textStr;
     TextStyle* m_textStyle;
     std::shared_ptr<sf::Text> m_text;
 

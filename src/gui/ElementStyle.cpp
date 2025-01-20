@@ -137,6 +137,13 @@ bool LabelStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* c
 
     LoadTextureBase(this, elem);
 
+    m_texture = ctx->Get<TextureManager>()->RequestResource(m_textureName);
+    if (!m_texture)
+    {
+        DBG("LabelStyle::LoadFromXmlElement, texture is nullptr, textureName: {}", m_textureName);
+        return false;
+    }
+
     return true;
 }
 

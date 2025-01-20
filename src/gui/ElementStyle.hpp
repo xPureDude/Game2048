@@ -26,7 +26,6 @@ struct TextStyle : public StyleSheet
 
     std::string m_fontName;
     std::shared_ptr<sf::Font> m_font;
-    std::string m_textStr;
     std::int32_t m_charSize{30};
     sf::Color m_color;
     std::uint32_t m_style;

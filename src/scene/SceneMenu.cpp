@@ -61,8 +61,8 @@ bool SceneMenu::_InitGui()
     GuiManager* guiManager = m_sceneManager->GetSharedContext()->Get<GuiManager>();
     gui::ElementFactory& factory = guiManager->GetElementFactory();
 
-    auto beginButton = std::dynamic_pointer_cast<gui::Button>(factory.CreateElement(gui::ElementType::Button));
-    auto quitButton = std::dynamic_pointer_cast<gui::Button>(factory.CreateElement(gui::ElementType::Button));
+    auto beginButton = std::dynamic_pointer_cast<gui::Button>(factory.CreateElement(gui::ElementType::Button, "beginButton"));
+    auto quitButton = std::dynamic_pointer_cast<gui::Button>(factory.CreateElement(gui::ElementType::Button, "quitButton"));
     if (auto style = static_cast<gui::ButtonStyle*>(guiManager->GetStyleSheetByName("button_default")); style)
     {
         beginButton->SetButtonStyle(gui::ElementState::Default, style);
@@ -81,11 +81,12 @@ bool SceneMenu::_InitGui()
 
     if (auto style = static_cast<gui::TextStyle*>(guiManager->GetStyleSheetByName("text_default")); style)
     {
-        style->m_textStr = "Begin Game";
+        beginButton->SetText("Begin Game");
         beginButton->SetTextStyle(style);
-        style->m_textStr = "Quit Game";
+        quitButton->SetText("Quit Game");
         quitButton->SetTextStyle(style);
     }
+
     beginButton->SetPosition({150, 400});
     beginButton->SetSize({200, 60});
     beginButton->ConnectSignalCallback(gui::Signal::OnClicked, "OnBeginGame", BindCallback(&SceneMenu::_OnBeginGame));

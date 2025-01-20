@@ -8,19 +8,30 @@
 namespace gui
 {
 
-std::shared_ptr<Element> ElementFactory::CreateElement(ElementType type)
+std::shared_ptr<Element> ElementFactory::CreateElement(ElementType type, const std::string& name)
 {
+    std::shared_ptr<Element> elem;
     switch (type)
     {
     case gui::ElementType::Button:
-        return std::make_shared<Button>();
+        elem = std::make_shared<Button>();
+        break;
     case gui::ElementType::Label:
-        return std::make_shared<Label>();
+        elem = std::make_shared<Label>();
+        break;
     case gui::ElementType::Widget:
-        return std::make_shared<Widget>();
+        elem = std::make_shared<Widget>();
+        break;
     default:
-        return nullptr;
+        elem = nullptr;
+        break;
     }
+    if (elem)
+    {
+        elem->SetName(name);
+    }
+
+    return elem;
 }
 
 } // namespace gui

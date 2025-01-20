@@ -100,7 +100,7 @@ private:
     void _ResetBoard();
     void _CreateNewBlock();
     bool _CheckLose();
-    [[nodiscard]] bool _CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vector2size& dGrid, const Vector2size& pGrid);
+    bool _CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vector2size& dGrid, const Vector2size& pGrid);
     void _OnMovingState();
     void _OnGrowingState();
     void _OnBorningState();
