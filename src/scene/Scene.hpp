@@ -10,7 +10,8 @@ enum class SceneType
     Intro,
     MainMenu,
     Play,
-    Paused
+    Paused,
+    GameOver,
 };
 
 class Scene

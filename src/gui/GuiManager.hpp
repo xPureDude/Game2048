@@ -9,6 +9,13 @@
 #include "Label.hpp"
 #include "Widget.hpp"
 
+struct SceneGuiInfo
+{
+    SceneType m_type;
+    std::string_view m_fileName;
+    std::map<std::string_view, CallbackType> m_callbacks;
+};
+
 class GuiManager : public SceneDependent, public SharedContextDependent
 {
     using ElementContainer = std::vector<std::shared_ptr<gui::Element>>;
@@ -26,20 +33,19 @@ public:
     void AddSceneGui(SceneType type, std::vector<std::shared_ptr<gui::Element>>& elem);
 
     std::optional<ElementContainer> GetAllSceneElements(SceneType type);
-    std::shared_ptr<gui::Element> GetSceneElementByName(SceneType type, const std::string& name);
-    gui::StyleSheet* GetStyleSheetByName(const std::string& name);
+    std::shared_ptr<gui::Element> FindSceneElementByName(SceneType type, const std::string& name);
+    gui::StyleSheet* FindStyleSheetByName(const std::string& name);
 
     gui::ElementFactory& GetElementFactory() { return m_factory; }
 
     bool LoadStyleSheetsFromFile(const std::string_view& file);
-    bool LoadSceneGuiFromFile(SceneType type, const std::string_view& file, const std::map<std::string_view, CallbackType>& callbacks);
+    bool LoadSceneGuiFromFile(const SceneGuiInfo& info);
 
 private:
-    bool _TryLoadEmplaceStyleSheet(gui::StyleSheet* style, tinyxml2::XMLElement* e);
-    bool _ParseGuiElements(tinyxml2::XMLElement* e);
-    bool _ParseWidget(std::shared_ptr<gui::Widget> widget, tinyxml2::XMLElement* e);
-    bool _ParseButton(std::shared_ptr<gui::Button> button, tinyxml2::XMLElement* e);
-    bool _ParseLabel(std::shared_ptr<gui::Label> label, tinyxml2::XMLElement* e);
+    bool _ParseGuiElements(const SceneGuiInfo& info, std::shared_ptr<gui::Widget> parent, tinyxml2::XMLElement* e);
+    std::shared_ptr<gui::Widget> _ParseWidget(const SceneGuiInfo& info, tinyxml2::XMLElement* e);
+    std::shared_ptr<gui::Button> _ParseButton(const SceneGuiInfo& info, tinyxml2::XMLElement* e);
+    std::shared_ptr<gui::Label> _ParseLabel(const SceneGuiInfo& info, tinyxml2::XMLElement* e);
 
 private:
     std::map<std::string, gui::StyleSheet*> m_styleSheets;

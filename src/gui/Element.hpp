@@ -20,6 +20,8 @@ enum class Signal
     OnClicked,
 };
 
+std::optional<Signal> TranslateStringToSignal(const std::string& str);
+
 struct SignalTriggerInfo
 {
     Signal m_sig;
@@ -46,6 +48,8 @@ public:
     virtual bool HandleInput(const sf::Event& event);
     void Render(sf::RenderTarget* target);
 
+    virtual bool operator()(const sf::Event::MouseMoved& event) override;
+
     bool ConnectSignalCallback(Signal sig, const std::string_view& name, CallbackType callback);
     void DisConnectSignalCallback(Signal sig, const std::string_view& name);
 
@@ -59,7 +63,7 @@ public:
     sf::Vector2f GetGlobalPosition();
     sf::Vector2f GetLocalPosition();
     std::string GetName() { return m_name; }
-    TextStyle* GetTextStyle() { return m_textStyle; }
+    TextStyle* GetTextStyle() { return &m_textStyle; }
 
 protected:
     void _UpdateText();
@@ -68,6 +72,7 @@ private:
     void _RedrawParent();
     void _ProcessCallback();
     virtual void _RenderPrimitive(sf::RenderTarget* target) = 0;
+    virtual void _UpdateCurrentState() {}
     virtual void _UpdatePosition() {}
     virtual void _UpdateSize() {}
 
@@ -81,7 +86,7 @@ protected:
     sf::Vector2f m_size;
 
     std::string m_textStr;
-    TextStyle* m_textStyle;
+    TextStyle m_textStyle;
     std::shared_ptr<sf::Text> m_text;
 
     std::vector<SignalTriggerInfo> m_signalQueue;

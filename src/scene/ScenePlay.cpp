@@ -6,7 +6,6 @@
 #include "../gui/Element.hpp"
 #include "../gui/GuiManager.hpp"
 #include "../input/InputManager.hpp"
-#include "../resource/FontManager.hpp"
 #include "../resource/TextureManager.hpp"
 #include "SceneManager.hpp"
 
@@ -108,6 +107,18 @@ void ScenePlay::OnLeave() {}
 
 bool ScenePlay::_InitGui()
 {
+    GuiManager* guiManager = m_sceneManager->GetSharedContext()->Get<GuiManager>();
+
+    SceneGuiInfo info;
+    info.m_type = SceneType::Play;
+    info.m_fileName = "Resource/ScenePlay.xml";
+    info.m_callbacks.try_emplace("OnNewGame", BindCallback(&ScenePlay::_OnNewGame));
+    if (!guiManager->LoadSceneGuiFromFile(info))
+    {
+        DBG("ScenePlay::_InitGui, failed to load SceneGui: {}", info.m_fileName);
+        return false;
+    };
+
     SharedContext* ctx = m_sceneManager->GetSharedContext();
 
     TextureManager* textureManager = ctx->Get<TextureManager>();
@@ -119,63 +130,6 @@ bool ScenePlay::_InitGui()
     }
     m_background.setTexture(m_backgroundTexture.get(), true);
     m_background.setSize({500, 700});
-
-    FontManager* fontManager = ctx->Get<FontManager>();
-    auto blockFont = fontManager->RequestResource("block_font");
-    if (blockFont == nullptr)
-    {
-        DBG("ScenePlay::_InitGui, blockFont is nullptr, fontName: {}", "block_font");
-        return false;
-    }
-
-    GuiManager* guiManager = ctx->Get<GuiManager>();
-    auto guiFactory = guiManager->GetElementFactory();
-    auto scoreLabel = std::dynamic_pointer_cast<gui::Label>(guiFactory.CreateElement(gui::ElementType::Label, "scoreLabel"));
-    if (!scoreLabel)
-    {
-        DBG("ScenePlay::_InitGui, scoreLabel is nullptr");
-        return false;
-    }
-
-    if (auto style = static_cast<gui::LabelStyle*>(guiManager->GetStyleSheetByName("score_label")); style)
-    {
-        scoreLabel->SetLabelStyle(style);
-    }
-    scoreLabel->SetSize({200, 60});
-    scoreLabel->SetPosition({10, 130});
-
-    auto replayButton = std::dynamic_pointer_cast<gui::Button>(guiFactory.CreateElement(gui::ElementType::Button, "replayButton"));
-    if (!replayButton)
-    {
-        DBG("ScenePlay::_InitGui, replayButton is nullptr");
-        return false;
-    }
-    replayButton->ConnectSignalCallback(gui::Signal::OnClicked, "OnNewGame", BindCallback(&ScenePlay::_OnNewGameClicked));
-    if (auto style = static_cast<gui::ButtonStyle*>(guiManager->GetStyleSheetByName("button_default")); style)
-    {
-        replayButton->SetButtonStyle(gui::ElementState::Default, style);
-    }
-    if (auto style = static_cast<gui::ButtonStyle*>(guiManager->GetStyleSheetByName("button_hover")); style)
-    {
-        replayButton->SetButtonStyle(gui::ElementState::Hover, style);
-    }
-    if (auto style = static_cast<gui::ButtonStyle*>(guiManager->GetStyleSheetByName("button_press")); style)
-    {
-        replayButton->SetButtonStyle(gui::ElementState::Pressed, style);
-    }
-    replayButton->SetSize({200, 60});
-    replayButton->SetPosition({290, 130});
-
-    if (auto style = static_cast<gui::TextStyle*>(guiManager->GetStyleSheetByName("text_default")); style)
-    {
-        scoreLabel->SetText("Score: 0");
-        scoreLabel->SetTextStyle(style);
-        replayButton->SetText("Replay");
-        replayButton->SetTextStyle(style);
-    }
-
-    guiManager->AddSceneGui(SceneType::Play, scoreLabel);
-    guiManager->AddSceneGui(SceneType::Play, replayButton);
 
     return true;
 }
@@ -205,11 +159,13 @@ void ScenePlay::_OnScoreChange(const std::any& param)
     try
     {
         auto score = std::any_cast<std::size_t>(param);
-        auto element = m_sceneManager->GetSharedContext()->Get<GuiManager>()->GetSceneElementByName(SceneType::Play, "scoreLabel");
-        if (element)
+        auto element = m_sceneManager->GetSharedContext()->Get<GuiManager>()->FindSceneElementByName(SceneType::Play, "score_label");
+        if (!element)
         {
-            element->SetText("Score: " + std::to_string(score));
+            DBG("ScenePlay::_OnScoreChange, failed to find Element: {}", "score_label");
+            return;
         }
+        element->SetText("Score: " + std::to_string(score));
     }
     catch (const std::bad_any_cast& err)
     {
@@ -217,7 +173,7 @@ void ScenePlay::_OnScoreChange(const std::any& param)
     }
 }
 
-void ScenePlay::_OnNewGameClicked(const std::any& param)
+void ScenePlay::_OnNewGame(const std::any& param)
 {
     std::any score = std::make_any<std::size_t>(0);
     _OnScoreChange(score);

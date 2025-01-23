@@ -14,7 +14,7 @@ class SharedContext
     };
 
 public:
-    SharedContext() {}
+    SharedContext();
     ~SharedContext();
 
     template <typename T>
@@ -32,14 +32,6 @@ public:
 private:
     std::map<std::type_index, Context> m_ctx;
 };
-
-inline SharedContext::~SharedContext()
-{
-    for (auto& it : m_ctx)
-    {
-        it.second.Release();
-    }
-}
 
 template <typename T>
 T* SharedContext::Emplace(Deletor deletor)

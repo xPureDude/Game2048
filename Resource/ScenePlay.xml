@@ -1,7 +1,8 @@
 <Elements>
-    <Widget posx="0" posy="0" width="500" height="300" stylesheet="widget_default">
-        <Button name="New_Button" posx="0" posy="0"  default="button_default" hover="button_hover" press="button_press" text="button_text" textStr="New Game">
-            <SignalTrigger signal="Clicked" callback="OnNewGame">
+    <Widget name="top_widget" x="0" y="0" w="500" h="200" style="widget_default">
+        <Label name="score_label" x = "10" y="130" w="200" h="60" style="label_default" text="text_default" textStr="Score: 0"/>
+        <Button name="replay_button" x="290" y="130" w="200" h="60" default="button_default" hover="button_hover" press="button_press" text="text_default" textStr="Replay">
+            <SignalTrigger signal="OnClicked" callback="OnNewGame"/>
         </Button>
     </Widget>
 </Elements>

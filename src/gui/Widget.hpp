@@ -17,7 +17,7 @@ public:
 
     void SetWidgetStyle(WidgetStyle* style);
 
-    WidgetStyle* GetWidgetStyle() { return m_style; }
+    WidgetStyle* GetWidgetStyle() { return &m_style; }
 
     void SetRedraw(bool flag);
 
@@ -33,7 +33,7 @@ private:
 
 protected:
     bool m_needRedraw;
-    WidgetStyle* m_style;
+    WidgetStyle m_style;
     sf::RenderTexture m_panelTexture;
     sf::Sprite m_panelSprite;
 

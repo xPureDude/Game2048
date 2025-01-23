@@ -11,7 +11,6 @@ public:
     Button();
     virtual ~Button();
 
-    virtual bool operator()(const sf::Event::MouseMoved& event) override;
     virtual bool operator()(const sf::Event::MouseButtonPressed& event) override;
     virtual bool operator()(const sf::Event::MouseButtonReleased& event) override;
 
@@ -20,12 +19,12 @@ public:
 
 private:
     virtual void _RenderPrimitive(sf::RenderTarget* target) override;
+    virtual void _UpdateCurrentState() override;
     virtual void _UpdatePosition() override;
     virtual void _UpdateSize() override;
-    void _UpdateCurrentState();
 
 private:
-    std::map<ElementState, ButtonStyle*> m_styles;
+    std::map<ElementState, ButtonStyle> m_styles;
     sf::RectangleShape m_shape;
 };
 

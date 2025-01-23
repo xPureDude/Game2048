@@ -22,8 +22,17 @@ class Element;
 class ElementFactory
 {
 public:
-    static std::shared_ptr<Element> CreateElement(ElementType type, const std::string& name);
+    template <typename T>
+    std::shared_ptr<T> CreateElement();
+
+    std::shared_ptr<Element> CreateElement(ElementType type, const std::string& name);
 };
+
+template <typename T>
+std::shared_ptr<T> ElementFactory::CreateElement()
+{
+    return std::make_shared<T>();
+}
 
 } // namespace gui
 

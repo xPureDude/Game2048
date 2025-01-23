@@ -34,7 +34,7 @@ bool Widget::HandleInput(const sf::Event& event)
 
 void Widget::SetWidgetStyle(WidgetStyle* style)
 {
-    m_style = style;
+    m_style = *style;
 }
 
 void Widget::SetRedraw(bool flag)
@@ -90,7 +90,7 @@ void Widget::RemoveChild(const std::string& name)
 
 void Widget::_RedrawPanel()
 {
-    m_panelTexture.clear(m_style->m_backColor);
+    m_panelTexture.clear(m_style.m_backColor);
     for (auto& elem : m_childs)
     {
         elem->Render(&m_panelTexture);

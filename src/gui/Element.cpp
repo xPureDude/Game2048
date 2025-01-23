@@ -5,10 +5,26 @@
 namespace gui
 {
 
+std::optional<Signal> TranslateStringToSignal(const std::string& str)
+{
+    std::optional<Signal> ret;
+    if (str == "OnLeave")
+        ret = Signal::OnLeave;
+    else if (str == "OnHover")
+        ret = Signal::OnHover;
+    else if (str == "OnPress")
+        ret = Signal::OnPress;
+    else if (str == "OnRelease")
+        ret = Signal::OnRelease;
+    else if (str == "OnClicked")
+        ret = Signal::OnClicked;
+
+    return ret;
+}
+
 Element::Element()
     : m_activate(true),
-      m_state(ElementState::Default),
-      m_textStyle(nullptr)
+      m_state(ElementState::Default)
 {
 }
 
@@ -23,7 +39,7 @@ void Element::Update(const sf::Time& elapsed)
 
 bool Element::HandleInput(const sf::Event& event)
 {
-    if (event.visit(*this))
+    if (event.visit<InputVisitorDependent&>(*this))
         return true;
     return false;
 }
@@ -35,6 +51,33 @@ void Element::Render(sf::RenderTarget* target)
     {
         target->draw(*m_text);
     }
+}
+
+bool Element::operator()(const sf::Event::MouseMoved& event)
+{
+    sf::Rect rect{GetGlobalPosition(), m_size};
+    if (rect.contains(sf::Vector2f{event.position}))
+    {
+        if (m_state == ElementState::Default)
+        {
+            m_state = ElementState::Hover;
+            _UpdateCurrentState();
+            m_signalQueue.emplace_back(Signal::OnHover, std::any());
+            DBG("Element '{}' OnHover", m_name);
+        }
+    }
+    else
+    {
+        if (m_state == ElementState::Pressed || m_state == ElementState::Hover)
+        {
+            m_state = ElementState::Default;
+            _UpdateCurrentState();
+            m_signalQueue.emplace_back(Signal::OnLeave, std::any());
+            DBG("Element '{}' OnDefault", m_name);
+        }
+    }
+
+    return false;
 }
 
 bool Element::ConnectSignalCallback(Signal sig, const std::string_view& name, CallbackType callback)
@@ -100,15 +143,14 @@ void Element::SetSize(const sf::Vector2f& size)
 void Element::SetText(const std::string& textStr)
 {
     m_textStr = textStr;
-    if (m_textStyle)
-    {
-        _UpdateText();
-    }
+
+    _UpdateText();
+    _RedrawParent();
 }
 
 void Element::SetTextStyle(TextStyle* style)
 {
-    m_textStyle = style;
+    m_textStyle = *style;
     _UpdateText();
 
     _RedrawParent();
@@ -132,13 +174,15 @@ void Element::_UpdateText()
 {
     if (!m_text)
     {
-        m_text = std::make_shared<sf::Text>(*(m_textStyle->m_font));
+        if (!m_textStyle.m_font)
+            return;
+        m_text = std::make_shared<sf::Text>(*(m_textStyle.m_font));
     }
 
     m_text->setString(m_textStr);
-    m_text->setCharacterSize(m_textStyle->m_charSize);
-    m_text->setFillColor(m_textStyle->m_color);
-    m_text->setStyle(m_textStyle->m_style);
+    m_text->setCharacterSize(m_textStyle.m_charSize);
+    m_text->setFillColor(m_textStyle.m_color);
+    m_text->setStyle(m_textStyle.m_style);
     m_text->setOrigin(m_text->getLocalBounds().getCenter());
     m_text->setPosition(m_position + m_size / 2.f);
 }

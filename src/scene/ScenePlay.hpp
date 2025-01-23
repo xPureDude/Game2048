@@ -26,7 +26,7 @@ private:
     void _OnMoveDown(const std::any& param);
 
     void _OnScoreChange(const std::any& param);
-    void _OnNewGameClicked(const std::any& param);
+    void _OnNewGame(const std::any& param);
     void _OnGameLose(const std::any& param);
     void _OnGameWin(const std::any& param);
 
