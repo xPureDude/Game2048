@@ -47,6 +47,19 @@ void Button::SetButtonStyle(ElementState state, ButtonStyle* style)
     _UpdateCurrentState();
 }
 
+void Button::SetButtonStyle(ButtonStyle* normal, ButtonStyle* hovered, ButtonStyle* pressed, ButtonStyle* disabled)
+{
+    if (normal)
+        m_styles[ElementState::Normal] = *normal;
+    if (hovered)
+        m_styles[ElementState::Hover] = *hovered;
+    if (pressed)
+        m_styles[ElementState::Pressed] = *pressed;
+    if (disabled)
+        m_styles[ElementState::Disable] = *disabled;
+    _UpdateCurrentState();
+}
+
 ButtonStyle* Button::GetButtonStyle(ElementState state)
 {
     if (m_styles.contains(state))

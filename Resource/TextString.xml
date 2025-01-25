@@ -1,0 +1,30 @@
+<TextStrings>
+    <Text id="0">
+        <English string="Begin Game"/>
+        <Chinese string="开始游戏"/>
+    </Text>
+    <Text id="1">
+        <English string="Quit Game"/>
+        <Chinese string="退出游戏"/>
+    </Text>
+    <Text id="2">
+        <English string="Continue"/>
+        <Chinese string="继续游戏"/>
+    </Text>
+    <Text id="3">
+        <English string="Replay"/>
+        <Chinese string="重新开始"/>
+    </Text>
+    <Text id="4">
+        <English string="You Win !"/>
+        <Chinese string="你获胜了！"/>
+    </Text>
+    <Text id="5">
+        <English string="You Lose !"/>
+        <Chinese string="你输了！"/>
+    </Text>
+    <Text id="6">
+        <English string="Back To Menu"/>
+        <Chinese string="退回主菜单"/>
+    </Text>
+</TextStrings>

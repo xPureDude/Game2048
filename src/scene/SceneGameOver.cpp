@@ -4,6 +4,8 @@
 #include "../core/Window.hpp"
 #include "../gui/GuiManager.hpp"
 #include "../pch.hpp"
+#include "../resource/FontManager.hpp"
+#include "../resource/TextStringManager.hpp"
 #include "SceneManager.hpp"
 
 SceneGameOver::SceneGameOver(SceneManager* manager)
@@ -21,6 +23,12 @@ bool SceneGameOver::OnCreate()
     if (!_InitGui())
         return false;
 
+    m_font = m_sceneManager->GetSharedContext()->Get<FontManager>()->RequestResource("block_font");
+    m_text = std::make_shared<sf::Text>(*m_font);
+    m_text->setCharacterSize(40);
+    m_text->setOutlineColor(sf::Color::White);
+    m_text->setOutlineThickness(2);
+
     return true;
 }
 
@@ -36,10 +44,36 @@ void SceneGameOver::Update(const sf::Time& elasped)
 
 void SceneGameOver::Render(Window* window)
 {
+    window->Render(m_background);
+    window->Render(*m_text);
 }
 
 void SceneGameOver::OnEnter(const std::any& param)
 {
+    try
+    {
+        bool isWin = std::any_cast<bool>(param);
+        auto button = m_sceneManager->GetSharedContext()->Get<GuiManager>()->FindSceneElementByName(SceneType::GameOver, "FirstButton");
+        if (isWin)
+        {
+            button->SetText("Continue");
+            m_text->setFillColor(sf::Color::Red);
+            m_text->setString("You Win !");
+        }
+        else
+        {
+            button->SetText("Replay");
+            m_text->setFillColor(sf::Color::Black);
+            m_text->setString("You Lose !");
+        }
+
+        auto bounds = m_text->getLocalBounds();
+        m_text->setPosition({250 - bounds.size.x / 2, 250 - bounds.size.y});
+    }
+    catch (std::bad_any_cast& err)
+    {
+        DBG("SceneGameOver::OnEnter, param is not bool");
+    }
 }
 
 void SceneGameOver::OnLeave()
@@ -48,18 +82,80 @@ void SceneGameOver::OnLeave()
 
 bool SceneGameOver::_InitGui()
 {
+    Window* window = m_sceneManager->GetSharedContext()->Get<Window>();
+    m_background.setSize(sf::Vector2f(window->GetSize()));
+    m_background.setFillColor(sf::Color(0xFFFFFF77));
+
+    GuiManager* guiManager = m_sceneManager->GetSharedContext()->Get<GuiManager>();
+    auto factory = guiManager->GetElementFactory();
+
+    sf::Vector2f buttonSize{200, 60};
+
+    auto textStyle = static_cast<gui::TextStyle*>(guiManager->FindStyleSheetByName("text_normal"));
+    if (!textStyle)
+    {
+        DBG("SceneGameOver::_InitGui, failed to find StyleSheet: text_normal");
+        return false;
+    }
+
+    std::string name = "button_normal";
+    auto normalStyle = static_cast<gui::ButtonStyle*>(guiManager->FindStyleSheetByName(name));
+    if (!normalStyle)
+    {
+        DBG("SceneGameOver::_InitGui, failed to find StyleSheet: {}", name);
+        return false;
+    }
+    name = "button_hover";
+    auto hoverStyle = static_cast<gui::ButtonStyle*>(guiManager->FindStyleSheetByName(name));
+    if (!hoverStyle)
+    {
+        DBG("SceneGameOver::_InitGui, failed to find StyleSheet: {}", name);
+        return false;
+    }
+    name = "button_press";
+    auto pressStyle = static_cast<gui::ButtonStyle*>(guiManager->FindStyleSheetByName(name));
+    if (!pressStyle)
+    {
+        DBG("SceneGameOver::_InitGui, failed to find StyleSheet: {}", name);
+        return false;
+    }
+
+    auto firstButton = factory.CreateElement<gui::Button>();
+    firstButton->SetName("FirstButton");
+    firstButton->SetPosition({150, 280});
+    firstButton->SetSize(buttonSize);
+    firstButton->SetTextStyle(textStyle);
+    firstButton->SetButtonStyle(normalStyle, hoverStyle, pressStyle, nullptr);
+    firstButton->ConnectSignalCallback(gui::Signal::OnClicked, "OnContinueOrReplay", BindCallback(&SceneGameOver::_OnFirstButtonClicked));
+    guiManager->AddSceneGui(SceneType::GameOver, firstButton);
+
+    sf::String str = m_sceneManager->GetSharedContext()->Get<TextStringManager>()->FindTextString(6);
+    auto backButton = factory.CreateElement<gui::Button>();
+    backButton->SetName("BackButton");
+    backButton->SetPosition({150, 360});
+    backButton->SetSize(buttonSize);
+    backButton->SetText(str, textStyle);
+    backButton->SetButtonStyle(normalStyle, hoverStyle, pressStyle, nullptr);
+    backButton->ConnectSignalCallback(gui::Signal::OnClicked, "OnBackToMenu", BindCallback(&SceneGameOver::_OnBackButtonClicked));
+    guiManager->AddSceneGui(SceneType::GameOver, backButton);
 
     return true;
 }
 
-void SceneGameOver::_OnNewGame(const std::any& param)
+void SceneGameOver::_OnFirstButtonClicked(const std::any& param)
 {
+    auto button = m_sceneManager->GetSharedContext()->Get<GuiManager>()->FindSceneElementByName(SceneType::GameOver, "FirstButton");
+    if (button->GetText() == "Continue")
+    {
+        m_sceneManager->PopScene();
+    }
+    else if (button->GetText() == "Replay")
+    {
+        m_sceneManager->ChangeScene(SceneType::Play, std::any());
+    }
 }
 
-void SceneGameOver::_OnContinuePlay(const std::any& param)
+void SceneGameOver::_OnBackButtonClicked(const std::any& param)
 {
-}
-
-void SceneGameOver::_OnQuitGame(const std::any& param)
-{
+    m_sceneManager->ChangeScene(SceneType::MainMenu, std::any());
 }

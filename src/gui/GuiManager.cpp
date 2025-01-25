@@ -412,16 +412,16 @@ std::shared_ptr<gui::Button> GuiManager::_ParseButton(const SceneGuiInfo& info, 
         return nullptr;
     }
 
-    auto defaultAttr = e->FindAttribute("default");
-    if (!defaultAttr)
+    auto normalAttr = e->FindAttribute("normal");
+    if (!normalAttr)
     {
-        DBG("GuiManager::_ParseButton, attr 'default' not found");
+        DBG("GuiManager::_ParseButton, attr 'normal' not found");
         return nullptr;
     }
-    auto defaultStyle = static_cast<gui::ButtonStyle*>(FindStyleSheetByName(defaultAttr->Value()));
-    if (!defaultStyle)
+    auto normalStyle = static_cast<gui::ButtonStyle*>(FindStyleSheetByName(normalAttr->Value()));
+    if (!normalStyle)
     {
-        DBG("GuiManager::_ParseButton, StyleSheet '{}' not found", defaultAttr->Value());
+        DBG("GuiManager::_ParseButton, StyleSheet '{}' not found", normalAttr->Value());
         return nullptr;
     }
 
@@ -463,9 +463,7 @@ std::shared_ptr<gui::Button> GuiManager::_ParseButton(const SceneGuiInfo& info, 
     button->SetName(nameAttr->Value());
     button->SetPosition(optRect->position);
     button->SetSize(optRect->size);
-    button->SetButtonStyle(gui::ElementState::Default, defaultStyle);
-    button->SetButtonStyle(gui::ElementState::Hover, hoverStyle);
-    button->SetButtonStyle(gui::ElementState::Pressed, pressStyle);
+    button->SetButtonStyle(normalStyle, hoverStyle, pressStyle, nullptr);
     if (textAttr && textStrAttr)
     {
         auto textStyle = static_cast<gui::TextStyle*>(FindStyleSheetByName(textAttr->Value()));

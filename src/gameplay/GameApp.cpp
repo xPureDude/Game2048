@@ -1,9 +1,11 @@
 #include "GameApp.hpp"
 
 #include "../common/Log.hpp"
+#include "../core/ConfigManager.hpp"
 #include "../core/SharedContext.hpp"
 #include "../gui/GuiManager.hpp"
 #include "../resource/FontManager.hpp"
+#include "../resource/TextStringManager.hpp"
 #include "../resource/TextureManager.hpp"
 #include "../scene/SceneManager.hpp"
 
@@ -25,7 +27,8 @@ bool GameApp::Init()
 
     SceneManager* sceneManager = m_ctx.Get<SceneManager>();
     std::any param = std::make_any<std::int32_t>(0);
-    sceneManager->PushScene(SceneType::MainMenu, param);
+    // std::any isWin = std::make_any<bool>(true);
+    sceneManager->PushScene(SceneType::MainMenu, std::any());
 
     return true;
 }
@@ -41,6 +44,13 @@ bool GameApp::_LoadResources()
     if (!m_ctx.Get<FontManager>()->LoadResourceInfoFromFile("Resource/FontInfo.xml"))
     {
         ERR("GameApp::_LoadResources, FontManager load failed, file: {}", "Resource/FontInfo.xml");
+        return false;
+    }
+
+    std::string& local = m_ctx.Get<ConfigManager>()->GetVisualConfig().m_language;
+    if (!m_ctx.Get<TextStringManager>()->LoadTextStringFromFile("Resource/TextString.xml", local))
+    {
+        ERR("GameApp::_LoadResources, TextStringManager load failed, file: {}", "Resource/TextString.xml");
         return false;
     }
 

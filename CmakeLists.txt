@@ -29,7 +29,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC SFML::Main SFML::Window SFML::Graph
 
 set_target_properties(${PROJECT_NAME} PROPERTIES 
     RUNTIME_OUTPUT_DIRECTORY "${project_output_directory}"
-    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../"
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 if(WIN32)

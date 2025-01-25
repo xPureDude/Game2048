@@ -1,8 +1,13 @@
 #pragma once
 
-#include "../pch.hpp" // IWYU pragma: keep
+#include "SFML/Graphics/View.hpp"
+#include "SFML/System/Time.hpp"
 
-struct EventDetail;
+#include <any>
+#include <memory>
+
+
+class Window;
 
 enum class SceneType
 {
@@ -13,6 +18,8 @@ enum class SceneType
     Paused,
     GameOver,
 };
+
+std::string_view TranslateSceneTypeToString(SceneType type);
 
 class Scene
 {

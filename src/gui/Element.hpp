@@ -30,7 +30,7 @@ struct SignalTriggerInfo
 
 enum class ElementState
 {
-    Default,
+    Normal,
     Hover,
     Pressed,
     Disable,
@@ -57,12 +57,13 @@ public:
     void SetParent(std::shared_ptr<Element> parent);
     void SetPosition(const sf::Vector2f& pos);
     void SetSize(const sf::Vector2f& size);
-    void SetText(const std::string& textStr);
+    void SetText(const std::string& textStr, TextStyle* style = nullptr);
     void SetTextStyle(TextStyle* style);
 
     sf::Vector2f GetGlobalPosition();
     sf::Vector2f GetLocalPosition();
     std::string GetName() { return m_name; }
+    std::string GetText() { return m_textStr; }
     TextStyle* GetTextStyle() { return &m_textStyle; }
 
 protected:

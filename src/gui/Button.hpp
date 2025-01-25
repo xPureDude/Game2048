@@ -15,6 +15,7 @@ public:
     virtual bool operator()(const sf::Event::MouseButtonReleased& event) override;
 
     void SetButtonStyle(ElementState state, ButtonStyle* style);
+    void SetButtonStyle(ButtonStyle* normal, ButtonStyle* hovered, ButtonStyle* pressed, ButtonStyle* disabled);
     ButtonStyle* GetButtonStyle(ElementState state);
 
 private:

@@ -18,6 +18,7 @@ struct StyleSheet
     virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) = 0;
 
     std::string m_name;
+    sf::Vector2f m_scale{1, 1};
 };
 
 struct TextStyle : public StyleSheet
@@ -35,9 +36,6 @@ struct ButtonStyle : public StyleSheet
 {
     virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) override;
 
-    // base
-    sf::Vector2f m_scale{1.f, 1.f};
-
     // shape
     float m_outlineSize{0.f};
     sf::Color m_color;
@@ -52,9 +50,6 @@ struct ButtonStyle : public StyleSheet
 struct LabelStyle : public StyleSheet
 {
     virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) override;
-
-    // base
-    sf::Vector2f m_scale{1.f, 1.f};
 
     // shape
     float m_outlineSize{0.f};

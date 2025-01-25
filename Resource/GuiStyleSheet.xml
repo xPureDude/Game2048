@@ -1,11 +1,11 @@
 <StyleSheet>
-    <TextStyle name="text_default" font="block_font" charsize="25" color="0xFFFFFFFF" style="regular"/>
+    <TextStyle name="text_normal" font="block_font" charsize="25" color="0xFFFFFFFF" style="regular"/>
 
-    <WidgetStyle name="widget_default" color="0xFFFFFF00"/>
+    <WidgetStyle name="widget_normal" color="0xFFFFFF00"/>
 
-    <ButtonStyle name="button_default" texture="button_sheet" rectx="0"   recty="0" rectw="200" recth="60"/>
+    <ButtonStyle name="button_normal" texture="button_sheet" rectx="0"   recty="0" rectw="200" recth="60"/>
     <ButtonStyle name="button_hover"   texture="button_sheet" rectx="200" recty="0" rectw="200" recth="60"/>
     <ButtonStyle name="button_press"   texture="button_sheet" rectx="400" recty="0" rectw="200" recth="60"/>
 
-    <LabelStyle name="label_default" texture="button_sheet" rectx="0" recty="0" rectw="200" recth="60"/>
+    <LabelStyle name="label_normal" texture="button_sheet" rectx="0" recty="0" rectw="200" recth="60"/>
 </StyleSheet>

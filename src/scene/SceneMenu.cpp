@@ -79,7 +79,7 @@ void SceneMenu::_OnBeginGame(const std::any& param)
 {
     // Note: Temp default 4x4
     std::any sceneParam = std::make_any<std::size_t>(4);
-    m_sceneManager->PushScene(SceneType::Play, sceneParam);
+    m_sceneManager->ChangeScene(SceneType::Play, sceneParam);
 }
 
 void SceneMenu::_OnQuitGame(const std::any& param)

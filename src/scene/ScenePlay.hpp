@@ -25,10 +25,9 @@ private:
     void _OnMoveUp(const std::any& param);
     void _OnMoveDown(const std::any& param);
 
-    void _OnScoreChange(const std::any& param);
     void _OnNewGame(const std::any& param);
-    void _OnGameLose(const std::any& param);
-    void _OnGameWin(const std::any& param);
+    void _OnScoreChange(const std::any& param);
+    void _OnGameOver(const std::any& param);
 
 private:
     NewGameInfo m_info;

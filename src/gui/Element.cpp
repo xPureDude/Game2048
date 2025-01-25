@@ -24,7 +24,7 @@ std::optional<Signal> TranslateStringToSignal(const std::string& str)
 
 Element::Element()
     : m_activate(true),
-      m_state(ElementState::Default)
+      m_state(ElementState::Normal)
 {
 }
 
@@ -58,7 +58,7 @@ bool Element::operator()(const sf::Event::MouseMoved& event)
     sf::Rect rect{GetGlobalPosition(), m_size};
     if (rect.contains(sf::Vector2f{event.position}))
     {
-        if (m_state == ElementState::Default)
+        if (m_state == ElementState::Normal)
         {
             m_state = ElementState::Hover;
             _UpdateCurrentState();
@@ -70,7 +70,7 @@ bool Element::operator()(const sf::Event::MouseMoved& event)
     {
         if (m_state == ElementState::Pressed || m_state == ElementState::Hover)
         {
-            m_state = ElementState::Default;
+            m_state = ElementState::Normal;
             _UpdateCurrentState();
             m_signalQueue.emplace_back(Signal::OnLeave, std::any());
             DBG("Element '{}' OnDefault", m_name);
@@ -140,9 +140,11 @@ void Element::SetSize(const sf::Vector2f& size)
     _RedrawParent();
 }
 
-void Element::SetText(const std::string& textStr)
+void Element::SetText(const std::string& textStr, TextStyle* style)
 {
     m_textStr = textStr;
+    if (style)
+        m_textStyle = *style;
 
     _UpdateText();
     _RedrawParent();

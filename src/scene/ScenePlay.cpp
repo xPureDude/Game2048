@@ -37,8 +37,7 @@ bool ScenePlay::OnCreate()
 
     m_game2048 = new Game2048(blockTexture);
     m_game2048->ConnectGameSignalCallback(GameSignal::ScoreChange, BindCallback(&ScenePlay::_OnScoreChange));
-    m_game2048->ConnectGameSignalCallback(GameSignal::GameLose, BindCallback(&ScenePlay::_OnGameLose));
-    m_game2048->ConnectGameSignalCallback(GameSignal::GameWin, BindCallback(&ScenePlay::_OnGameWin));
+    m_game2048->ConnectGameSignalCallback(GameSignal::GameOver, BindCallback(&ScenePlay::_OnGameOver));
 
     if (!_InitGui())
     {
@@ -77,7 +76,7 @@ void ScenePlay::OnEnter(const std::any& param)
     Window* window = m_sceneManager->GetSharedContext()->Get<Window>();
     auto windowSize = window->GetSize();
 
-    std::size_t rowCount = 0;
+    std::size_t rowCount = 4;
     try
     {
         rowCount = std::any_cast<std::size_t>(param);
@@ -101,6 +100,8 @@ void ScenePlay::OnEnter(const std::any& param)
     m_info.m_colCount = rowCount;
     m_info.m_position = offset;
     m_game2048->OnNewGame(m_info);
+
+    _OnScoreChange(std::make_any<std::size_t>(0));
 }
 
 void ScenePlay::OnLeave() {}
@@ -154,6 +155,14 @@ void ScenePlay::_OnMoveDown(const std::any& param)
     m_game2048->OnMoveDown();
 }
 
+void ScenePlay::_OnNewGame(const std::any& param)
+{
+    std::any score = std::make_any<std::size_t>(0);
+    _OnScoreChange(score);
+
+    m_game2048->OnNewGame(m_info);
+}
+
 void ScenePlay::_OnScoreChange(const std::any& param)
 {
     try
@@ -173,18 +182,7 @@ void ScenePlay::_OnScoreChange(const std::any& param)
     }
 }
 
-void ScenePlay::_OnNewGame(const std::any& param)
+void ScenePlay::_OnGameOver(const std::any& param)
 {
-    std::any score = std::make_any<std::size_t>(0);
-    _OnScoreChange(score);
-
-    m_game2048->OnNewGame(m_info);
-}
-
-void ScenePlay::_OnGameLose(const std::any& param)
-{
-}
-
-void ScenePlay::_OnGameWin(const std::any& param)
-{
+    m_sceneManager->PushScene(SceneType::GameOver, param);
 }

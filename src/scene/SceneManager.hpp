@@ -3,6 +3,8 @@
 #include "../core/SharedContextDependent.hpp"
 #include "Scene.hpp"
 
+#include <set>
+
 struct SceneInfo
 {
     SceneType m_type{SceneType::None};
@@ -31,12 +33,12 @@ public:
 
     // Push New Scene on top
     void PushScene(SceneType type, const std::any& param);
+    void PopScene();
 
     void ProcessRemoves();
 
 private:
     // Pop Current Scene
-    void _PopScene();
     bool _CreateScene(SceneType type);
     void _DestroyScene(SceneType type);
     bool _IsInRemoveLater(SceneType type);

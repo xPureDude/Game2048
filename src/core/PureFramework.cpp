@@ -3,6 +3,7 @@
 #include "../gui/GuiManager.hpp"
 #include "../input/InputManager.hpp"
 #include "../resource/FontManager.hpp"
+#include "../resource/TextStringManager.hpp"
 #include "../resource/TextureManager.hpp"
 #include "../scene/SceneManager.hpp"
 #include "ConfigManager.hpp"
@@ -11,7 +12,7 @@
 #define FRAME_ELASPED 1000.0f / 144.0f
 const sf::Time fpsNil = sf::Time::Zero;
 const sf::Time fps60 = sf::milliseconds(1000 / 60.f);
-const sf::Time fps144 = sf::milliseconds(1000 / 60.f);
+const sf::Time fps144 = sf::milliseconds(1000 / 144.f);
 
 PureFramework::PureFramework()
 {
@@ -25,6 +26,7 @@ PureFramework::~PureFramework()
 bool PureFramework::Init()
 {
     m_ctx.Emplace<ConfigManager>([](void* obj) { delete (ConfigManager*)obj; });
+    m_ctx.Emplace<TextStringManager>([](void* obj) { delete (TextStringManager*)obj; });
     m_ctx.Emplace<TextureManager>([](void* obj) { delete (TextureManager*)obj; });
     m_ctx.Emplace<FontManager>([](void* obj) { delete (FontManager*)obj; });
     m_ctx.Emplace<InputManager>([](void* obj) { delete (InputManager*)obj; });
@@ -43,6 +45,7 @@ void PureFramework::UnInit()
     m_ctx.Release<FontManager>();
     m_ctx.Release<Window>();
     m_ctx.Release<InputManager>();
+    m_ctx.Release<TextStringManager>();
     m_ctx.Release<ConfigManager>();
 }
 

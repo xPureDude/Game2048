@@ -13,6 +13,12 @@ struct WindowConfig
     std::int32_t m_state;
 };
 
+struct VisualConfig
+{
+    std::string m_language;
+    std::int32_t m_fps;
+};
+
 class ConfigManager
 {
 public:
@@ -20,6 +26,7 @@ public:
     ~ConfigManager();
 
     WindowConfig& GetWindowConfig();
+    VisualConfig& GetVisualConfig();
 
 private:
     void InitDefaultConfig();
@@ -27,6 +34,7 @@ private:
 private:
     // Window
     WindowConfig m_windowConfig;
+    VisualConfig m_visualConfig;
 };
 
 #endif // CONFIGMANAGER_HPP

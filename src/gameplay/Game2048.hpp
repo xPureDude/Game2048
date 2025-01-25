@@ -55,8 +55,7 @@ struct NewGameInfo
 enum class GameSignal
 {
     ScoreChange,
-    GameWin,
-    GameLose,
+    GameOver,
 };
 
 struct GameSignalInfo
@@ -101,6 +100,7 @@ private:
     void _CreateNewBlock();
     bool _CheckLose();
     bool _CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vector2size& dGrid, const Vector2size& pGrid);
+    void _DelayMove();
     void _OnMovingState();
     void _OnGrowingState();
     void _OnBorningState();
@@ -122,7 +122,7 @@ private:
 
     // Game2048 Data
     BlockState m_totalState;
-    bool m_isPlaying;
+    bool m_isContinue;
     std::size_t m_score;
     std::uint32_t m_createBlockIndex;
 

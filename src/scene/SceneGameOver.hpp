@@ -1,6 +1,8 @@
 #ifndef SCENE_GAMEOVER_HPP
 #define SCENE_GAMEOVER_HPP
 
+#include "SFML/Graphics/RectangleShape.hpp"
+#include "SFML/Graphics/Text.hpp"
 #include "Scene.hpp"
 
 class SceneGameOver : public Scene
@@ -20,9 +22,13 @@ public:
 
 private:
     bool _InitGui();
-    void _OnNewGame(const std::any& param);
-    void _OnContinuePlay(const std::any& param);
-    void _OnQuitGame(const std::any& param);
+    void _OnFirstButtonClicked(const std::any& param);
+    void _OnBackButtonClicked(const std::any& param);
+
+private:
+    sf::RectangleShape m_background;
+    std::shared_ptr<sf::Font> m_font;
+    std::shared_ptr<sf::Text> m_text;
 };
 
 #endif // SCENE_GAMEOVER_HPP

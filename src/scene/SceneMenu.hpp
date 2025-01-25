@@ -1,7 +1,10 @@
 #ifndef SCENEMENU_HPP
 #define SCENEMENU_HPP
 
+#include "SFML/Graphics/RectangleShape.hpp"
+#include "SFML/Graphics/Texture.hpp"
 #include "Scene.hpp"
+
 
 class SceneMenu : public Scene
 {

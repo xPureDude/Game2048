@@ -94,7 +94,7 @@ Game2048::Game2048(std::shared_ptr<sf::Texture> blockTexture)
       m_colCount(0),
       m_blockTexture(blockTexture),
       m_totalState(BlockState::Borning),
-      m_isPlaying(false),
+      m_isContinue(false),
       m_score(0),
       m_createBlockIndex(0)
 {
@@ -125,6 +125,7 @@ Game2048::~Game2048()
 
 void Game2048::Update(const sf::Time& elapsed)
 {
+    BlockState prevState = m_totalState;
     for (auto block : m_blocks)
     {
         block->Update(elapsed);
@@ -143,9 +144,18 @@ void Game2048::Update(const sf::Time& elapsed)
         break;
     case BlockState::Idle:
     {
-        _OnIdleState();
         break;
     }
+    }
+
+    if (prevState != m_totalState && m_totalState == BlockState::Idle)
+    {
+        if (_CheckLose())
+        {
+            DBG("Game Lose, total score: {}", m_score);
+            std::any isWin = std::make_any<bool>(false);
+            m_signalQueue.emplace_back(GameSignal::GameOver, isWin);
+        }
     }
 
     for (auto& signal : m_signalQueue)
@@ -158,27 +168,9 @@ void Game2048::Update(const sf::Time& elapsed)
             }
         }
     }
+    m_signalQueue.clear();
 
-    if (m_delayInput != DelayMove::None)
-    {
-        switch (m_delayInput)
-        {
-        case DelayMove::None:
-            break;
-        case DelayMove::Left:
-            OnMoveLeft();
-            break;
-        case DelayMove::Right:
-            OnMoveRight();
-            break;
-        case DelayMove::Up:
-            OnMoveUp();
-            break;
-        case DelayMove::Down:
-            OnMoveDown();
-            break;
-        }
-    }
+    _DelayMove();
 }
 
 void Game2048::Render(Window* window)
@@ -214,8 +206,8 @@ void Game2048::OnNewGame(const NewGameInfo& info)
         info.m_block.setSize({m_blockSize, m_blockSize});
         info.m_block.setOrigin({m_blockSize / 2.f, m_blockSize / 2.f});
     }
-    m_isPlaying = true;
     m_createBlockIndex = 0;
+    m_isContinue = false;
     m_score = 0;
 
     _ResetBoard();
@@ -441,12 +433,6 @@ void Game2048::_CreateNewBlock()
             }
         }
     }
-    if (availableGrid.empty())
-    {
-        // Game Over
-        m_isPlaying = true;
-        return;
-    }
 
     std::size_t index = 0;
     if (availableGrid.size() > 1)
@@ -485,6 +471,8 @@ void Game2048::_CreateNewBlock()
 
 bool Game2048::_CheckLose()
 {
+    if (m_blocks.size() > 10)
+        return true;
     if (m_blocks.size() < m_rowCount * m_colCount)
         return false;
 
@@ -544,6 +532,30 @@ bool Game2048::_CheckMoveGrid(Block* block, const Vector2size& oGrid, const Vect
     }
 
     return false;
+}
+
+void Game2048::_DelayMove()
+{
+    if (m_delayInput != DelayMove::None)
+    {
+        switch (m_delayInput)
+        {
+        case DelayMove::None:
+            break;
+        case DelayMove::Left:
+            OnMoveLeft();
+            break;
+        case DelayMove::Right:
+            OnMoveRight();
+            break;
+        case DelayMove::Up:
+            OnMoveUp();
+            break;
+        case DelayMove::Down:
+            OnMoveDown();
+            break;
+        }
+    }
 }
 
 void Game2048::_OnMovingState()
@@ -606,15 +618,18 @@ void Game2048::_OnGrowingState()
 {
     bool growEnd = true;
     bool scoreChange = false;
+    bool isWin = false;
     for (auto i = 0; i < m_blocks.size(); ++i)
     {
         auto block = m_blocks[i];
 
         if (block->m_state == BlockState::Idle)
         {
-            if (block->m_index == m_colCount * m_rowCount - 6)
+            // if (block->m_index == m_colCount * m_rowCount - 6)
+            if (!m_isContinue && block->m_index == m_colCount)
             {
                 // Win
+                isWin = true;
             }
             scoreChange = true;
         }
@@ -629,6 +644,12 @@ void Game2048::_OnGrowingState()
     {
         std::any param = std::make_any<std::size_t>(m_score);
         m_signalQueue.emplace_back(GameSignal::ScoreChange, param);
+    }
+
+    if (isWin)
+    {
+        m_signalQueue.emplace_back(GameSignal::GameOver, isWin);
+        m_isContinue = true;
     }
 
     if (growEnd)
@@ -657,10 +678,4 @@ void Game2048::_OnBorningState()
 
 void Game2048::_OnIdleState()
 {
-    if (_CheckLose())
-    {
-        DBG("Game Lose, total score: {}", m_score);
-        std::any param = std::make_any<std::int32_t>(0);
-        m_signalQueue.emplace_back(GameSignal::GameLose, param);
-    }
 }
