@@ -57,13 +57,13 @@ public:
     void SetParent(std::shared_ptr<Element> parent);
     void SetPosition(const sf::Vector2f& pos);
     void SetSize(const sf::Vector2f& size);
-    void SetText(const std::string& textStr, TextStyle* style = nullptr);
+    void SetText(const sf::String& textStr, TextStyle* style = nullptr);
     void SetTextStyle(TextStyle* style);
 
     sf::Vector2f GetGlobalPosition();
     sf::Vector2f GetLocalPosition();
     std::string GetName() { return m_name; }
-    std::string GetText() { return m_textStr; }
+    sf::String GetText() { return m_textStr; }
     TextStyle* GetTextStyle() { return &m_textStyle; }
 
 protected:
@@ -86,7 +86,7 @@ protected:
     sf::Vector2f m_position; // leftTop corner
     sf::Vector2f m_size;
 
-    std::string m_textStr;
+    sf::String m_textStr;
     TextStyle m_textStyle;
     std::shared_ptr<sf::Text> m_text;
 

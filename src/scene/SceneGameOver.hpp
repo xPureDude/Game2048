@@ -26,6 +26,7 @@ private:
     void _OnBackButtonClicked(const std::any& param);
 
 private:
+    bool m_isWin;
     sf::RectangleShape m_background;
     std::shared_ptr<sf::Font> m_font;
     std::shared_ptr<sf::Text> m_text;

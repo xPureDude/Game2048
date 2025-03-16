@@ -140,7 +140,7 @@ void Element::SetSize(const sf::Vector2f& size)
     _RedrawParent();
 }
 
-void Element::SetText(const std::string& textStr, TextStyle* style)
+void Element::SetText(const sf::String& textStr, TextStyle* style)
 {
     m_textStr = textStr;
     if (style)

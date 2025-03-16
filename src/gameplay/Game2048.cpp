@@ -471,8 +471,6 @@ void Game2048::_CreateNewBlock()
 
 bool Game2048::_CheckLose()
 {
-    if (m_blocks.size() > 10)
-        return true;
     if (m_blocks.size() < m_rowCount * m_colCount)
         return false;
 
@@ -625,8 +623,7 @@ void Game2048::_OnGrowingState()
 
         if (block->m_state == BlockState::Idle)
         {
-            // if (block->m_index == m_colCount * m_rowCount - 6)
-            if (!m_isContinue && block->m_index == m_colCount)
+            if (!m_isContinue && block->m_index == m_colCount * m_rowCount - 6)
             {
                 // Win
                 isWin = true;

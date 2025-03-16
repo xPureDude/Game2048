@@ -30,23 +30,23 @@ bool TextStringManager::LoadTextStringFromFile(const std::string_view& file, con
     {
         if (strcmp(text->Value(), "Text") == 0)
         {
-            std::size_t id = text->Unsigned64Attribute("id");
+            TextString id = static_cast<TextString>(text->Unsigned64Attribute("id"));
             std::string str;
             if (auto e = text->FirstChildElement(local.c_str()); e)
             {
                 str = e->Attribute("string");
             }
-            m_textStrings[id] = str;
+            m_textStrings[id] = sf::String::fromUtf8(str.begin(), str.end());
         }
     }
     return true;
 }
 
-std::string TextStringManager::FindTextString(std::size_t id)
+sf::String TextStringManager::FindTextString(TextString id)
 {
     if (m_textStrings.contains(id))
         return m_textStrings[id];
 
-    DBG("TextStringManager::FindTextString, id not exists: {}", id);
+    DBG("TextStringManager::FindTextString, id not exists: {}", static_cast<std::uint64_t>(id));
     return {};
 }
