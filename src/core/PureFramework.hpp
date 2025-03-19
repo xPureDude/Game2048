@@ -2,7 +2,6 @@
 #define PUREFRAMEWORK_HPP
 
 #include "../pch.hpp" // IWYU pragma: keep
-#include "SharedContext.hpp"
 
 struct EventBinding;
 
@@ -26,7 +25,6 @@ private:
     void _SlowUpdate();
 
 protected:
-    SharedContext m_ctx;
     sf::Time m_fpsTime;
     sf::Time m_elasped;
     sf::Time m_lastSlowUpdate;

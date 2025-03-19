@@ -6,17 +6,16 @@
 
 #include <Windows.h>
 
-Window::Window(SharedContext* ctx)
-    : SharedContextDependent(ctx),
-      m_isClose(false),
+Window::Window()
+    : m_isClose(false),
       m_isFocus(true),
       m_state(sf::State::Windowed)
 {
-    auto inputManager = m_ctx->Get<InputManager>();
+    auto inputManager = SharedContext::Instance().Get<InputManager>();
     inputManager->AddInputBindingCallback(SceneType::None, ib::BindType::FullscreenToggle, "Window_FullscreenToggle", BindCallback(&Window::_ToggleFullscreen));
     inputManager->AddInputBindingCallback(SceneType::None, ib::BindType::WindowClose, "Window_WindowClose", BindCallback(&Window::_WindowClose));
 
-    auto& windowConfig = m_ctx->Get<ConfigManager>()->GetWindowConfig();
+    auto& windowConfig = SharedContext::Instance().Get<ConfigManager>()->GetWindowConfig();
     m_title = windowConfig.m_title;
     m_size = {windowConfig.m_width, windowConfig.m_height};
     m_style = windowConfig.m_style;
@@ -28,7 +27,7 @@ Window::Window(SharedContext* ctx)
 
 Window::~Window()
 {
-    auto inputManager = m_ctx->Get<InputManager>();
+    auto inputManager = SharedContext::Instance().Get<InputManager>();
     inputManager->DelInputBindingCallback(SceneType::None, ib::BindType::FullscreenToggle, "Window_FullscreenToggle");
     inputManager->DelInputBindingCallback(SceneType::None, ib::BindType::WindowClose, "Window_WindowClose");
 }

@@ -15,7 +15,7 @@ namespace gui
 struct StyleSheet
 {
     virtual ~StyleSheet() = default;
-    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) = 0;
+    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem) = 0;
 
     std::string m_name;
     sf::Vector2f m_scale{1, 1};
@@ -23,7 +23,7 @@ struct StyleSheet
 
 struct TextStyle : public StyleSheet
 {
-    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) override;
+    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem) override;
 
     std::string m_fontName;
     std::shared_ptr<sf::Font> m_font;
@@ -34,7 +34,7 @@ struct TextStyle : public StyleSheet
 
 struct ButtonStyle : public StyleSheet
 {
-    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) override;
+    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem) override;
 
     // shape
     float m_outlineSize{0.f};
@@ -49,7 +49,7 @@ struct ButtonStyle : public StyleSheet
 
 struct LabelStyle : public StyleSheet
 {
-    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) override;
+    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem) override;
 
     // shape
     float m_outlineSize{0.f};
@@ -64,7 +64,7 @@ struct LabelStyle : public StyleSheet
 
 struct WidgetStyle : public StyleSheet
 {
-    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx) override;
+    virtual bool LoadFromXmlElement(tinyxml2::XMLElement* elem) override;
 
     sf::Color m_backColor{sf::Color::Transparent};
 };

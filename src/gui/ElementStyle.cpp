@@ -7,7 +7,7 @@
 #include "../resource/TextureManager.hpp"
 
 template <typename T>
-static bool LoadTextureBase(T* style, const tinyxml2::XMLElement* elem, SharedContext* ctx)
+static bool LoadTextureBase(T* style, const tinyxml2::XMLElement* elem)
 {
     auto attr = elem->FindAttribute("texture");
     if (!attr)
@@ -18,7 +18,7 @@ static bool LoadTextureBase(T* style, const tinyxml2::XMLElement* elem, SharedCo
 
     style->m_textureName = attr->Value();
 
-    style->m_texture = ctx->Get<TextureManager>()->RequestResource(style->m_textureName);
+    style->m_texture = SharedContext::Instance().Get<TextureManager>()->RequestResource(style->m_textureName);
     if (!style->m_texture)
     {
         DBG("LoadTextureBase, failed to Texture RequestResource: {}", style->m_textureName);
@@ -37,7 +37,7 @@ static bool LoadTextureBase(T* style, const tinyxml2::XMLElement* elem, SharedCo
 namespace gui
 {
 
-bool TextStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx)
+bool TextStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem)
 {
     auto attr = elem->FindAttribute("name");
     if (!attr)
@@ -54,7 +54,7 @@ bool TextStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ct
         return false;
     }
     m_fontName = attr->Value();
-    m_font = ctx->Get<FontManager>()->RequestResource(m_fontName);
+    m_font = SharedContext::Instance().Get<FontManager>()->RequestResource(m_fontName);
     if (!m_font)
     {
         DBG("TextStyle::LoadFromXmlElement, font is nullptr, fontName: {}", m_fontName);
@@ -97,7 +97,7 @@ bool TextStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ct
     return true;
 }
 
-bool ButtonStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx)
+bool ButtonStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem)
 {
     auto attr = elem->FindAttribute("name");
     if (!attr)
@@ -107,7 +107,7 @@ bool ButtonStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* 
     }
     m_name = attr->Value();
 
-    if (!LoadTextureBase(this, elem, ctx))
+    if (!LoadTextureBase(this, elem))
     {
         DBG("ButtonStyle::LoadFromXmlElement, LoadTextureBase failed");
         return false;
@@ -116,7 +116,7 @@ bool ButtonStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* 
     return true;
 }
 
-bool LabelStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx)
+bool LabelStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem)
 {
     auto attr = elem->FindAttribute("name");
     if (!attr)
@@ -126,7 +126,7 @@ bool LabelStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* c
     }
     m_name = attr->Value();
 
-    if (!LoadTextureBase(this, elem, ctx))
+    if (!LoadTextureBase(this, elem))
     {
         DBG("LabelStyle::LoadFromXmlElement, LoadTextureBase failed");
         return false;
@@ -135,7 +135,7 @@ bool LabelStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* c
     return true;
 }
 
-bool WidgetStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem, SharedContext* ctx)
+bool WidgetStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem)
 {
     auto attr = elem->FindAttribute("name");
     if (!attr)

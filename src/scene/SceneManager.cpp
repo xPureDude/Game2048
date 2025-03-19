@@ -8,11 +8,6 @@
 #include "../pch.hpp"
 #include "SceneDependent.hpp"
 
-SceneManager::SceneManager(SharedContext* ctx)
-    : SharedContextDependent(ctx)
-{
-}
-
 SceneManager::~SceneManager()
 {
     for (auto& item : m_scenes)
@@ -20,16 +15,6 @@ SceneManager::~SceneManager()
         item.m_scene->OnDestroy();
     }
     m_scenes.clear();
-}
-
-bool SceneManager::Init(SharedContext* context)
-{
-    if (context == nullptr)
-        return false;
-
-    m_ctx = context;
-
-    return true;
 }
 
 void SceneManager::Update(const sf::Time& elapsed)
@@ -67,7 +52,7 @@ void SceneManager::Render()
     if (m_scenes.empty() == true)
         return;
 
-    auto window = m_ctx->Get<Window>();
+    auto window = SharedContext::Instance().Get<Window>();
     if (m_scenes.back().m_scene->IsRenderTransparent() == true && m_scenes.size() > 1)
     {
         auto iter = m_scenes.end();
@@ -124,11 +109,11 @@ void SceneManager::PushScene(SceneType type, const std::any& param)
         }
     }
     m_scenes.back().m_scene->OnEnter(param);
-    DBG("SceneManager::PushScene, SceneType: {} OnEnter", TranslateSceneTypeToString(type));
+    DBG("SceneManager::PushScene, SceneType: {} OnEnter", TranslateSceneTypeToStringView(type));
 
     // Inform SceneType related Manager
     SceneDependent::ChangeCurrentSceneType(type);
-    m_ctx->Get<Window>()->SetView(m_scenes.back().m_scene->GetView());
+    SharedContext::Instance().Get<Window>()->SetView(m_scenes.back().m_scene->GetView());
 }
 
 void SceneManager::PopScene()
@@ -136,7 +121,7 @@ void SceneManager::PopScene()
     if (m_scenes.empty())
         return;
     m_scenes.back().m_scene->OnLeave();
-    DBG("SceneManager::PopScene, SceneType: {} OnLeave", TranslateSceneTypeToString(m_scenes.back().m_type));
+    DBG("SceneManager::PopScene, SceneType: {} OnLeave", TranslateSceneTypeToStringView(m_scenes.back().m_type));
     m_removeLater.insert(m_scenes.back().m_type);
 
     if (m_scenes.size() < 2)

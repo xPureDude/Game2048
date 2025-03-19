@@ -24,7 +24,7 @@ bool SceneGameOver::OnCreate()
     if (!_InitGui())
         return false;
 
-    m_font = m_sceneManager->GetSharedContext()->Get<FontManager>()->RequestResource("block_font");
+    m_font = SharedContext::Instance().Get<FontManager>()->RequestResource("block_font");
     m_text = std::make_shared<sf::Text>(*m_font);
     m_text->setCharacterSize(40);
     m_text->setOutlineColor(sf::Color::White);
@@ -35,7 +35,7 @@ bool SceneGameOver::OnCreate()
 
 void SceneGameOver::OnDestroy()
 {
-    GuiManager* guiManager = m_sceneManager->GetSharedContext()->Get<GuiManager>();
+    GuiManager* guiManager = SharedContext::Instance().Get<GuiManager>();
     guiManager->ClearSceneGui(SceneType::GameOver);
 }
 
@@ -54,9 +54,8 @@ void SceneGameOver::OnEnter(const std::any& param)
     try
     {
         m_isWin = std::any_cast<bool>(param);
-        auto ctx = m_sceneManager->GetSharedContext();
-        auto textManager = ctx->Get<TextStringManager>();
-        auto button = ctx->Get<GuiManager>()->FindSceneElementByName(SceneType::GameOver, "FirstButton");
+        auto textManager = SharedContext::Instance().Get<TextStringManager>();
+        auto button = SharedContext::Instance().Get<GuiManager>()->FindSceneElementByName(SceneType::GameOver, "FirstButton");
         if (m_isWin)
         {
             button->SetText(textManager->FindTextString(TextString::CONTINUE));
@@ -85,11 +84,11 @@ void SceneGameOver::OnLeave()
 
 bool SceneGameOver::_InitGui()
 {
-    Window* window = m_sceneManager->GetSharedContext()->Get<Window>();
+    Window* window = SharedContext::Instance().Get<Window>();
     m_background.setSize(sf::Vector2f(window->GetSize()));
     m_background.setFillColor(sf::Color(0xFFFFFF77));
 
-    GuiManager* guiManager = m_sceneManager->GetSharedContext()->Get<GuiManager>();
+    GuiManager* guiManager = SharedContext::Instance().Get<GuiManager>();
     auto factory = guiManager->GetElementFactory();
 
     sf::Vector2f buttonSize{200, 60};
@@ -123,7 +122,7 @@ bool SceneGameOver::_InitGui()
         return false;
     }
 
-    auto textManager = m_sceneManager->GetSharedContext()->Get<TextStringManager>();
+    auto textManager = SharedContext::Instance().Get<TextStringManager>();
 
     auto firstButton = factory.CreateElement<gui::Button>();
     firstButton->SetName("FirstButton");

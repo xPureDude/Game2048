@@ -1,12 +1,11 @@
 #pragma once
 
 #include "../pch.hpp" // IWYU pragma: keep
-#include "SharedContextDependent.hpp"
 
-class Window : public SharedContextDependent
+class Window
 {
 public:
-    Window(SharedContext* ctx);
+    Window();
     ~Window();
 
     std::optional<sf::Event> PollEvent();

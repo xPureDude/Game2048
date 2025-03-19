@@ -6,7 +6,6 @@
 #include <any>
 #include <memory>
 
-
 class Window;
 
 enum class SceneType
@@ -19,7 +18,7 @@ enum class SceneType
     GameOver,
 };
 
-std::string_view TranslateSceneTypeToString(SceneType type);
+std::string_view TranslateSceneTypeToStringView(SceneType type);
 
 class Scene
 {

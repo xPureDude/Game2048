@@ -26,7 +26,7 @@ bool SceneMenu::OnCreate()
 
 void SceneMenu::OnDestroy()
 {
-    GuiManager* guiManager = m_sceneManager->GetSharedContext()->Get<GuiManager>();
+    GuiManager* guiManager = SharedContext::Instance().Get<GuiManager>();
     guiManager->ClearSceneGui(SceneType::MainMenu);
 }
 
@@ -49,7 +49,7 @@ void SceneMenu::OnLeave()
 
 bool SceneMenu::_InitGui()
 {
-    GuiManager* guiManager = m_sceneManager->GetSharedContext()->Get<GuiManager>();
+    GuiManager* guiManager = SharedContext::Instance().Get<GuiManager>();
 
     SceneGuiInfo info;
     info.m_type = SceneType::MainMenu;
@@ -62,7 +62,7 @@ bool SceneMenu::_InitGui()
         return false;
     }
 
-    TextureManager* textureManager = m_sceneManager->GetSharedContext()->Get<TextureManager>();
+    TextureManager* textureManager = SharedContext::Instance().Get<TextureManager>();
     m_backgroundTexture = textureManager->RequestResource("scene_menu_bg");
     if (!m_backgroundTexture)
     {
@@ -84,5 +84,5 @@ void SceneMenu::_OnBeginGame(const std::any& param)
 
 void SceneMenu::_OnQuitGame(const std::any& param)
 {
-    m_sceneManager->GetSharedContext()->Get<Window>()->Close();
+    SharedContext::Instance().Get<Window>()->Close();
 }

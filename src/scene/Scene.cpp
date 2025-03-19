@@ -8,7 +8,7 @@
 #include "SceneMenu.hpp"
 #include "ScenePlay.hpp"
 
-std::string_view TranslateSceneTypeToString(SceneType type)
+std::string_view TranslateSceneTypeToStringView(SceneType type)
 {
     std::string_view ret;
     switch (type)
@@ -40,7 +40,7 @@ Scene::Scene(SceneManager* manager)
       m_renderTransparent(false),
       m_sceneManager(manager)
 {
-    m_view = manager->GetSharedContext()->Get<Window>()->GetDefaultView();
+    m_view = SharedContext::Instance().Get<Window>()->GetDefaultView();
     m_sceneManager = manager;
 }
 
@@ -59,7 +59,9 @@ std::shared_ptr<Scene> SceneFactory::CreateScene(SceneType sceneType, SceneManag
         return std::make_shared<SceneMenu>(manager);
     }
     case SceneType::GameOver:
+    {
         return std::make_shared<SceneGameOver>(manager);
+    }
     default:
         return nullptr;
     }

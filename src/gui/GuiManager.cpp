@@ -63,10 +63,10 @@ bool ParseSignalTrigger(std::shared_ptr<gui::Element> elem, const SceneGuiInfo& 
     return true;
 }
 
-GuiManager::GuiManager(SharedContext* ctx)
+GuiManager::GuiManager()
     : SceneDependent(),
-      SharedContextDependent(ctx),
-      m_target({m_ctx->Get<ConfigManager>()->GetWindowConfig().m_width, m_ctx->Get<ConfigManager>()->GetWindowConfig().m_height}),
+      m_target({SharedContext::Instance().Get<ConfigManager>()->GetWindowConfig().m_width,
+                SharedContext::Instance().Get<ConfigManager>()->GetWindowConfig().m_height}),
       m_sprite(m_target.getTexture())
 {
 }
@@ -119,7 +119,7 @@ void GuiManager::HandleInput(const sf::Event& event)
 void GuiManager::Render()
 {
     m_target.clear(sf::Color::Transparent);
-    Window* window = m_ctx->Get<Window>();
+    Window* window = SharedContext::Instance().Get<Window>();
     for (auto& elem : m_elements[s_curSceneType])
     {
         elem->Render(&m_target);
@@ -246,7 +246,7 @@ bool GuiManager::LoadStyleSheetsFromFile(const std::string_view& file)
             return false;
         }
 
-        if (!style->LoadFromXmlElement(e, m_ctx))
+        if (!style->LoadFromXmlElement(e))
         {
             DBG("GuiManager::_TryLoadEmplaceStyleSheet, StyleSheet load failed");
             delete style;

@@ -1,7 +1,6 @@
 #ifndef GUIMANAGER_HPP
 #define GUIMANAGER_HPP
 
-#include "../core/SharedContextDependent.hpp"
 #include "../scene/SceneDependent.hpp"
 #include "Button.hpp"
 #include "ElementFactory.hpp"
@@ -16,12 +15,12 @@ struct SceneGuiInfo
     std::map<std::string_view, CallbackType> m_callbacks;
 };
 
-class GuiManager : public SceneDependent, public SharedContextDependent
+class GuiManager : public SceneDependent
 {
     using ElementContainer = std::vector<std::shared_ptr<gui::Element>>;
 
 public:
-    GuiManager(SharedContext* ctx);
+    GuiManager();
     ~GuiManager();
 
     void Update(const sf::Time& elapsed);

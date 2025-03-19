@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../core/SharedContextDependent.hpp"
 #include "Scene.hpp"
 
 #include <set>
@@ -16,14 +15,11 @@ struct SceneInfo
     }
 };
 
-class SceneManager : public SharedContextDependent
+class SceneManager
 {
 public:
-    SceneManager(SharedContext* ctx);
+    SceneManager() = default;
     ~SceneManager();
-
-    bool Init(SharedContext* context);
-    void UnInit();
 
     void Update(const sf::Time& elapsed);
     void Render();
