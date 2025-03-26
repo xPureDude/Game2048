@@ -1,7 +1,9 @@
 #include "Game2048.hpp"
 
-#include "../common/Log.hpp"
-#include "../core/Window.hpp"
+#include "common/Log.hpp"
+#include "core/Window.hpp"
+
+#include <set>
 
 BlockInfo::BlockInfo(sf::Texture* texture, const sf::IntRect& rect)
 {

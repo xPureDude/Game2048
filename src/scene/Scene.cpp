@@ -1,12 +1,11 @@
 #include "Scene.hpp"
 
-#include "../core/SharedContext.hpp"
-#include "../core/Window.hpp"
-#include "../pch.hpp" // IWYU pragma: keep
 #include "SceneGameOver.hpp"
 #include "SceneManager.hpp"
 #include "SceneMenu.hpp"
 #include "ScenePlay.hpp"
+#include "core/SharedContext.hpp"
+#include "core/Window.hpp"
 
 std::string_view TranslateSceneTypeToStringView(SceneType type)
 {
@@ -40,7 +39,7 @@ Scene::Scene(SceneManager* manager)
       m_renderTransparent(false),
       m_sceneManager(manager)
 {
-    m_view = SharedContext::Instance().Get<Window>()->GetDefaultView();
+    m_view = SharedContext::Instance()->Get<Window>()->GetDefaultView();
     m_sceneManager = manager;
 }
 

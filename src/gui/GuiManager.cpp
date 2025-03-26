@@ -1,13 +1,13 @@
 #include "GuiManager.hpp"
 
-#include "../common/Log.hpp"
-#include "../core/ConfigManager.hpp"
-#include "../core/SharedContext.hpp"
-#include "../core/Window.hpp"
-#include "../gui/Widget.hpp"
-#include "../pch.hpp"
-#include "../tinyxml/tinyxml2.h"
+#include "tinyxml/tinyxml2.h"
+
 #include "ElementStyle.hpp"
+#include "common/Log.hpp"
+#include "core/ConfigManager.hpp"
+#include "core/SharedContext.hpp"
+#include "core/Window.hpp"
+#include "gui/Widget.hpp"
 
 std::optional<sf::FloatRect> ParseFloatRect(tinyxml2::XMLElement* e)
 {
@@ -65,8 +65,8 @@ bool ParseSignalTrigger(std::shared_ptr<gui::Element> elem, const SceneGuiInfo& 
 
 GuiManager::GuiManager()
     : SceneDependent(),
-      m_target({SharedContext::Instance().Get<ConfigManager>()->GetWindowConfig().m_width,
-                SharedContext::Instance().Get<ConfigManager>()->GetWindowConfig().m_height}),
+      m_target({SharedContext::Instance()->Get<ConfigManager>()->GetWindowConfig().m_width,
+                SharedContext::Instance()->Get<ConfigManager>()->GetWindowConfig().m_height}),
       m_sprite(m_target.getTexture())
 {
 }
@@ -119,7 +119,7 @@ void GuiManager::HandleInput(const sf::Event& event)
 void GuiManager::Render()
 {
     m_target.clear(sf::Color::Transparent);
-    Window* window = SharedContext::Instance().Get<Window>();
+    Window* window = SharedContext::Instance()->Get<Window>();
     for (auto& elem : m_elements[s_curSceneType])
     {
         elem->Render(&m_target);

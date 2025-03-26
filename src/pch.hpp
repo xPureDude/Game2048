@@ -1,13 +1,13 @@
-#ifndef PCH_HPP
-#define PCH_HPP
+#pragma once
 
 // IWYU pragma: begin_keep
+#include "tinyxml/tinyxml2.h"
+
 #include "SFML/Audio.hpp"
 #include "SFML/Graphics.hpp"
 #include "SFML/System.hpp"
 #include "SFML/Window.hpp"
 #include "common/Log.hpp"
-#include "tinyxml/tinyxml2.h"
 
 #include <any>
 #include <cassert>
@@ -25,16 +25,3 @@
 
 
 // IWYU pragma: end_keep
-using CallbackType = std::function<void(const std::any&)>;
-
-#define BindCallback(callback) std::bind((callback), this, std::placeholders::_1)
-
-class SharedContext;
-class TextureManager;
-class FontManager;
-class InputManager;
-class Window;
-class SceneManager;
-class GuiManager;
-
-#endif // PCH_HPP

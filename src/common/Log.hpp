@@ -1,5 +1,5 @@
-#if !defined(LOG_HPP)
-#define LOG_HPP
+#pragma once
+
 /* ==========================================================================
 
     $File: log.hpp  $
@@ -43,5 +43,3 @@ protected:
     bool m_log2file;
     std::ofstream m_log_file;
 };
-
-#endif // LOG_H

@@ -1,12 +1,16 @@
 #ifndef GUIMANAGER_HPP
 #define GUIMANAGER_HPP
 
-#include "../scene/SceneDependent.hpp"
+#include <map>
+
 #include "Button.hpp"
 #include "ElementFactory.hpp"
 #include "ElementStyle.hpp"
 #include "Label.hpp"
 #include "Widget.hpp"
+#include "common/GlobalDefine.hpp"
+#include "scene/SceneDependent.hpp"
+
 
 struct SceneGuiInfo
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../pch.hpp" // IWYU pragma: keep
+#include <map>
 
 using ComponentID = std::uint32_t;
 using SystemID = std::uint32_t;

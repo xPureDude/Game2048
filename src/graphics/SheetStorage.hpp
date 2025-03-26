@@ -1,9 +1,10 @@
-#pragma once
+#ifndef SHEETSTORAGE_HPP
+#define SHEETSTORAGE_HPP
 
-#include "../pch.hpp" // IWYU pragma: keep
+#include "common/predeclare.hpp"
 
-class TextureManager;
-class AnimationSheet;
+#include <map>
+#include <string>
 
 class SheetStorage final
 {
@@ -21,3 +22,5 @@ private:
     TextureManager* m_manager;
     std::map<std::string, AnimationSheet*> m_sheets;
 };
+
+#endif // SHEETSTORAGE_HPP

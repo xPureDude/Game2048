@@ -1,7 +1,5 @@
 #include "TextStringManager.hpp"
 
-#include "../pch.hpp" // IWYU pragma: keep
-
 TextStringManager::TextStringManager()
 {
 }

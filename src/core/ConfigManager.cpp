@@ -1,6 +1,6 @@
 #include "ConfigManager.hpp"
 
-#include "../pch.hpp" // IWYU pragma: keep
+#include "SFML/Window.hpp" // IWYU pragma: keep
 
 ConfigManager::ConfigManager()
 {

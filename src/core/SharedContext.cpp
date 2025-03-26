@@ -4,13 +4,20 @@ SharedContext SharedContext::s_obj;
 
 SharedContext::~SharedContext()
 {
-    for (auto& it : m_ctxs)
-    {
-        it.second.Release();
-    }
+    ReleaseAll();
 }
 
-SharedContext& SharedContext::Instance()
+SharedContext* SharedContext::Instance()
 {
-    return s_obj;
+    return &s_obj;
+}
+
+void SharedContext::ReleaseAll()
+{
+    for (auto it = m_ctxList.rbegin(); it != m_ctxList.rend(); ++it)
+    {
+        (*it)->Release();
+    }
+    m_ctxList.clear();
+    m_ctxs.clear();
 }

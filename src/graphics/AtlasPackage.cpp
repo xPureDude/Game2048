@@ -1,8 +1,9 @@
 #include "AtlasPackage.hpp"
 
-#include "../common/Log.hpp"
-#include "../resource/TextureManager.hpp"
 #include "AtlasAnimation.hpp"
+#include "common/Log.hpp"
+#include "resource/TextureManager.hpp"
+
 
 AtlasPackage::AtlasPackage(TextureManager* manager)
     : AnimationSheet(manager)

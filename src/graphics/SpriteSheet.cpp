@@ -1,8 +1,9 @@
 #include "SpriteSheet.hpp"
 
-#include "../common/Log.hpp"
-#include "../resource/TextureManager.hpp"
+#include "AnimationSheet.hpp"
 #include "GridAnimation.hpp"
+#include "common/Log.hpp"
+#include "resource/TextureManager.hpp"
 
 SpriteSheet::SpriteSheet(TextureManager* manager)
     : AnimationSheet(manager)

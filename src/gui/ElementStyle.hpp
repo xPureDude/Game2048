@@ -1,7 +1,8 @@
 #ifndef ELEMENTSTYLE_HPP
 #define ELEMENTSTYLE_HPP
 
-#include "../tinyxml/tinyxml2.h"
+#include "tinyxml/tinyxml2.h"
+
 #include "SFML/Graphics.hpp" // IWYU pragma: keep
 
 #include <memory>

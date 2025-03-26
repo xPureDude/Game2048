@@ -1,6 +1,6 @@
 #include "FontManager.hpp"
 
-#include "../common/Log.hpp"
+#include "common/Log.hpp"
 
 bool FontManager::LoadResourceInfoFromFile(const std::string& file)
 {

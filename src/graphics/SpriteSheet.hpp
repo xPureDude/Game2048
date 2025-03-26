@@ -2,9 +2,6 @@
 
 #include "AnimationSheet.hpp"
 
-class Window;
-class TextureManager;
-
 class SpriteSheet : public AnimationSheet
 {
 public:

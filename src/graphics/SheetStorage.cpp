@@ -1,8 +1,8 @@
 #include "SheetStorage.hpp"
 
-#include "../common/Log.hpp"
 #include "AnimationSheet.hpp"
 #include "AtlasPackage.hpp"
+#include "common/Log.hpp"
 
 SheetStorage::SheetStorage()
     : m_manager(nullptr)

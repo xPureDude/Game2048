@@ -1,13 +1,14 @@
 #include "ScenePlay.hpp"
 
-#include "../common/Log.hpp"
-#include "../core/SharedContext.hpp"
-#include "../core/Window.hpp"
-#include "../gui/Element.hpp"
-#include "../gui/GuiManager.hpp"
-#include "../input/InputManager.hpp"
-#include "../resource/TextureManager.hpp"
 #include "SceneManager.hpp"
+#include "common/Log.hpp"
+#include "core/SharedContext.hpp"
+#include "core/Window.hpp"
+#include "gui/Element.hpp"
+#include "gui/GuiManager.hpp"
+#include "input/InputManager.hpp"
+#include "resource/TextureManager.hpp"
+
 
 ScenePlay::ScenePlay(SceneManager* manager)
     : Scene(manager),
@@ -19,13 +20,13 @@ ScenePlay::~ScenePlay() {}
 
 bool ScenePlay::OnCreate()
 {
-    InputManager* inputManager = SharedContext::Instance().Get<InputManager>();
+    InputManager* inputManager = SharedContext::Instance()->Get<InputManager>();
     inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveLeft, "ScenePlay_MoveLeft", BindCallback(&ScenePlay::_OnMoveLeft));
     inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveRight, "ScenePlay_MoveRight", BindCallback(&ScenePlay::_OnMoveRight));
     inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveUp, "ScenePlay_MoveUp", BindCallback(&ScenePlay::_OnMoveUp));
     inputManager->AddInputBindingCallback(SceneType::Play, ib::BindType::MoveDown, "ScenePlay_MoveDown", BindCallback(&ScenePlay::_OnMoveDown));
 
-    TextureManager* textureManager = SharedContext::Instance().Get<TextureManager>();
+    TextureManager* textureManager = SharedContext::Instance()->Get<TextureManager>();
     auto blockTexture = textureManager->RequestResource("blocks");
     if (!blockTexture)
     {
@@ -50,7 +51,7 @@ void ScenePlay::OnDestroy()
 {
     delete m_game2048;
 
-    InputManager* inputManager = SharedContext::Instance().Get<InputManager>();
+    InputManager* inputManager = SharedContext::Instance()->Get<InputManager>();
     inputManager->DelInputBindingCallback(SceneType::Play, ib::BindType::MoveLeft, "ScenePlay_MoveLeft");
     inputManager->DelInputBindingCallback(SceneType::Play, ib::BindType::MoveRight, "ScenePlay_MoveRight");
     inputManager->DelInputBindingCallback(SceneType::Play, ib::BindType::MoveUp, "ScenePlay_MoveUp");
@@ -71,7 +72,7 @@ void ScenePlay::Render(Window* window)
 
 void ScenePlay::OnEnter(const std::any& param)
 {
-    Window* window = SharedContext::Instance().Get<Window>();
+    Window* window = SharedContext::Instance()->Get<Window>();
     auto windowSize = window->GetSize();
 
     std::size_t rowCount = 4;
@@ -106,7 +107,7 @@ void ScenePlay::OnLeave() {}
 
 bool ScenePlay::_InitGui()
 {
-    GuiManager* guiManager = SharedContext::Instance().Get<GuiManager>();
+    GuiManager* guiManager = SharedContext::Instance()->Get<GuiManager>();
 
     SceneGuiInfo info;
     info.m_type = SceneType::Play;
@@ -118,7 +119,7 @@ bool ScenePlay::_InitGui()
         return false;
     };
 
-    TextureManager* textureManager = SharedContext::Instance().Get<TextureManager>();
+    TextureManager* textureManager = SharedContext::Instance()->Get<TextureManager>();
     m_backgroundTexture = textureManager->RequestResource("scene_play_bg");
     if (!m_backgroundTexture)
     {
@@ -164,7 +165,7 @@ void ScenePlay::_OnScoreChange(const std::any& param)
     try
     {
         auto score = std::any_cast<std::size_t>(param);
-        auto element = SharedContext::Instance().Get<GuiManager>()->FindSceneElementByName(SceneType::Play, "score_label");
+        auto element = SharedContext::Instance()->Get<GuiManager>()->FindSceneElementByName(SceneType::Play, "score_label");
         if (!element)
         {
             DBG("ScenePlay::_OnScoreChange, failed to find Element: {}", "score_label");

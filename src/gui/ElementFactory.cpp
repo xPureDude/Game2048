@@ -1,6 +1,5 @@
 #include "ElementFactory.hpp"
 
-#include "../pch.hpp" // IWYU pragma: keep
 #include "Button.hpp"
 #include "Label.hpp"
 #include "Widget.hpp"

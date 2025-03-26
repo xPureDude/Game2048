@@ -1,6 +1,16 @@
 #pragma once
 
-#include "../pch.hpp" // IWYU pragma: keep
+#include "SFML/Graphics.hpp" // IWYU pragma: keep
+#include "SFML/System.hpp"   // IWYU pragma: keep
+#include "common/globaldefine.hpp"
+#include "common/predeclare.hpp"
+
+#include <any>
+#include <map>
+#include <vector>
+
+
+class Game2048;
 
 using Vector2size = sf::Vector2<std::size_t>;
 
@@ -12,8 +22,6 @@ struct BlockInfo
     void SetPosition(const sf::Vector2f& pos);
     sf::RectangleShape m_block;
 };
-
-class Game2048;
 
 enum class BlockState
 {

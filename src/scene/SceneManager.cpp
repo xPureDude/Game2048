@@ -2,11 +2,10 @@
 
 #include "SceneManager.hpp"
 
-#include "../common/Log.hpp"
-#include "../core/SharedContext.hpp"
-#include "../core/Window.hpp"
-#include "../pch.hpp"
 #include "SceneDependent.hpp"
+#include "common/Log.hpp"
+#include "core/SharedContext.hpp"
+#include "core/Window.hpp"
 
 SceneManager::~SceneManager()
 {
@@ -52,7 +51,7 @@ void SceneManager::Render()
     if (m_scenes.empty() == true)
         return;
 
-    auto window = SharedContext::Instance().Get<Window>();
+    auto window = SharedContext::Instance()->Get<Window>();
     if (m_scenes.back().m_scene->IsRenderTransparent() == true && m_scenes.size() > 1)
     {
         auto iter = m_scenes.end();
@@ -113,7 +112,7 @@ void SceneManager::PushScene(SceneType type, const std::any& param)
 
     // Inform SceneType related Manager
     SceneDependent::ChangeCurrentSceneType(type);
-    SharedContext::Instance().Get<Window>()->SetView(m_scenes.back().m_scene->GetView());
+    SharedContext::Instance()->Get<Window>()->SetView(m_scenes.back().m_scene->GetView());
 }
 
 void SceneManager::PopScene()

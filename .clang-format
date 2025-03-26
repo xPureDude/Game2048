@@ -12,6 +12,15 @@ PackConstructorInitializers: Never
 SpaceBeforeCtorInitializerColon: false
 SpaceAfterTemplateKeyword: true
 IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^"pch.hpp"'
+    Priority: 1
+  - Regex: '^<.*\>'
+    Priority: 2
+  - Regex: '^".*\.h"'
+    Priority: 3
+  - Regex: '^".*\.hpp"'
+    Priority: 4
 AlignOperands: true
 AlwaysBreakTemplateDeclarations: true
 BreakBeforeBinaryOperators: NonAssignment

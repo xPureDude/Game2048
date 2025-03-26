@@ -1,5 +1,4 @@
-#ifndef CONFIGMANAGER_HPP
-#define CONFIGMANAGER_HPP
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -36,5 +35,3 @@ private:
     WindowConfig m_windowConfig;
     VisualConfig m_visualConfig;
 };
-
-#endif // CONFIGMANAGER_HPP

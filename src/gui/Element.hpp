@@ -1,9 +1,12 @@
 #ifndef ELEMENT_HPP
 #define ELEMENT_HPP
 
-#include "../input/InputVisitorDependent.hpp"
-#include "../pch.hpp"
+#include <map>
+#include <string>
+
 #include "ElementStyle.hpp"
+#include "common/globaldefine.hpp"
+#include "input/InputVisitorDependent.hpp"
 
 namespace gui
 {

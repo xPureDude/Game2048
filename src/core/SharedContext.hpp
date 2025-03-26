@@ -1,6 +1,9 @@
 #pragma once
 
-#include "../pch.hpp" // IWYU pragma: keep
+#include <functional>
+#include <map>
+#include <typeindex>
+#include <vector>
 
 using Deletor = std::function<void(void*)>;
 
@@ -16,7 +19,7 @@ class SharedContext
     SharedContext() = default;
 
 public:
-    static SharedContext& Instance();
+    static SharedContext* Instance();
 
     ~SharedContext();
 
@@ -32,8 +35,11 @@ public:
     template <typename T>
     T* Get();
 
+    void ReleaseAll();
+
 private:
     static SharedContext s_obj;
+    std::vector<Context*> m_ctxList;
     std::map<std::type_index, Context> m_ctxs;
 };
 
@@ -47,6 +53,7 @@ T* SharedContext::Emplace(Deletor deletor)
         ctx.m_obj = (void*)(new T);
         ctx.m_deletor = deletor;
         m_ctxs.emplace(idx, ctx);
+        m_ctxList.push_back(&m_ctxs[idx]);
     }
     return static_cast<T*>(m_ctxs[idx].m_obj);
 }
@@ -61,6 +68,7 @@ T* SharedContext::Emplace(Deletor deletor, Args... args)
         ctx.m_obj = (void*)(new T(args...));
         ctx.m_deletor = deletor;
         m_ctxs.emplace(idx, ctx);
+        m_ctxList.push_back(&m_ctxs[idx]);
     }
     return static_cast<T*>(m_ctxs[idx].m_obj);
 }
@@ -74,6 +82,15 @@ void SharedContext::Release()
     {
         it->second.Release();
         m_ctxs.erase(it);
+
+        for (auto iter = m_ctxList.begin(); iter != m_ctxList.end(); ++iter)
+        {
+            if (*iter == &(it->second))
+            {
+                m_ctxList.erase(iter);
+                break;
+            }
+        }
     }
 }
 

@@ -1,6 +1,5 @@
 #include "Button.hpp"
 
-#include "../pch.hpp" // IWYU pragma: keep
 #include "Widget.hpp"
 
 namespace gui

@@ -1,10 +1,9 @@
 #include "ElementStyle.hpp" // IWYU pragma: keep
 
-#include "../common/Log.hpp"
-#include "../core/SharedContext.hpp"
-#include "../pch.hpp" // IWYU pragma: keep
-#include "../resource/FontManager.hpp"
-#include "../resource/TextureManager.hpp"
+#include "common/Log.hpp"
+#include "core/SharedContext.hpp"
+#include "resource/FontManager.hpp"
+#include "resource/TextureManager.hpp"
 
 template <typename T>
 static bool LoadTextureBase(T* style, const tinyxml2::XMLElement* elem)
@@ -18,7 +17,7 @@ static bool LoadTextureBase(T* style, const tinyxml2::XMLElement* elem)
 
     style->m_textureName = attr->Value();
 
-    style->m_texture = SharedContext::Instance().Get<TextureManager>()->RequestResource(style->m_textureName);
+    style->m_texture = SharedContext::Instance()->Get<TextureManager>()->RequestResource(style->m_textureName);
     if (!style->m_texture)
     {
         DBG("LoadTextureBase, failed to Texture RequestResource: {}", style->m_textureName);
@@ -54,7 +53,7 @@ bool TextStyle::LoadFromXmlElement(tinyxml2::XMLElement* elem)
         return false;
     }
     m_fontName = attr->Value();
-    m_font = SharedContext::Instance().Get<FontManager>()->RequestResource(m_fontName);
+    m_font = SharedContext::Instance()->Get<FontManager>()->RequestResource(m_fontName);
     if (!m_font)
     {
         DBG("TextStyle::LoadFromXmlElement, font is nullptr, fontName: {}", m_fontName);

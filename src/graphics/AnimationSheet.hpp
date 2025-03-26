@@ -1,8 +1,11 @@
 #pragma once
 
-#include "../pch.hpp" // IWYU pragma: keep
+#include "SFML/Graphics.hpp" // IWYU pragma: keep
+#include "SFML/System.hpp"   // IWYU pragma: keep
+#include "common/predeclare.hpp"
+#include "tinyxml/tinyxml2.h"
 
-class Animation;
+#include <string>
 
 class AnimationSheet
 {

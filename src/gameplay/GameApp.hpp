@@ -1,4 +1,7 @@
-#include "../core/PureFramework.hpp"
+#ifndef GAMEAPP_INCLUDE
+#define GAMEAPP_INCLUDE
+
+#include "core/PureFramework.hpp"
 
 class GameApp : public PureFramework
 {
@@ -11,3 +14,5 @@ public:
 private:
     bool _LoadResources();
 };
+
+#endif // GAMEAPP_INCLUDE

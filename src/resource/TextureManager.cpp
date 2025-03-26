@@ -1,6 +1,6 @@
 #include "TextureManager.hpp"
 
-#include "../common/Log.hpp"
+#include "common/Log.hpp"
 
 bool TextureManager::LoadResourceInfoFromFile(const std::string& file)
 {

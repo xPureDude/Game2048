@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../pch.hpp" // IWYU pragma: keep
-
 struct ResourceHead
 {
     std::string m_filePath;

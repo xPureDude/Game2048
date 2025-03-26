@@ -1,9 +1,8 @@
 #ifndef INPUTMANAGER_HPP
 #define INPUTMANAGER_HPP
 
-#include "../pch.hpp" // IWYU pragma: keep
-#include "../scene/SceneDependent.hpp"
 #include "InputBinding.hpp"
+#include "scene/SceneDependent.hpp"
 
 class InputManager : public SceneDependent
 {

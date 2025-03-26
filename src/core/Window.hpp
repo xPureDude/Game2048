@@ -1,6 +1,11 @@
 #pragma once
 
-#include "../pch.hpp" // IWYU pragma: keep
+#include "SFML/Graphics.hpp" // IWYU pragma: keep
+#include "SFML/Window.hpp"   // IWYU pragma: keep
+
+#include <any>
+#include <optional>
+#include <string>
 
 class Window
 {

@@ -1,8 +1,8 @@
 #ifndef INPUTBINDING_HPP
 #define INPUTBINDING_HPP
 
-#include "../pch.hpp" // IWYU pragma: keep
 #include "InputVisitorDependent.hpp"
+#include "common/globaldefine.hpp"
 
 namespace ib
 {

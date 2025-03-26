@@ -1,7 +1,6 @@
 #ifndef SCENEDEPENDENT_HPP
 #define SCENEDEPENDENT_HPP
 
-#include "../pch.hpp" // IWYU pragma: keep
 #include "Scene.hpp"
 
 class SceneDependent

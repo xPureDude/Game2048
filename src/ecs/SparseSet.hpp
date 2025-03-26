@@ -1,6 +1,9 @@
 #pragma once
 
-#include "../pch.hpp" // IWYU pragma: keep
+#include <array>
+#include <tuple>
+#include <vector>
+
 
 template <typename T, uint32_t pageSize>
 class SparseSet
