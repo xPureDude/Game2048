@@ -1,10 +1,10 @@
 #pragma once
 
-#include "SFML/Graphics/View.hpp"
-#include "SFML/System/Time.hpp"
-
 #include <any>
 #include <memory>
+
+#include "SFML/Graphics/View.hpp"
+#include "SFML/System/Time.hpp"
 
 class Window;
 
@@ -25,7 +25,7 @@ class Scene
     friend class SceneManager;
 
 public:
-    Scene(SceneManager* manager);
+    Scene();
     virtual ~Scene();
 
     virtual bool OnCreate() = 0;
@@ -46,13 +46,6 @@ protected:
     bool m_updateTransparent;
     bool m_renderTransparent;
     sf::View m_view;
-    SceneManager* m_sceneManager;
 };
 
 using ScenePtr = std::shared_ptr<Scene>;
-
-class SceneFactory final
-{
-public:
-    std::shared_ptr<Scene> CreateScene(SceneType sceneType, SceneManager* manager);
-};

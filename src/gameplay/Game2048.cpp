@@ -1,9 +1,10 @@
 #include "Game2048.hpp"
 
+#include <set>
+
 #include "common/Log.hpp"
 #include "core/Window.hpp"
 
-#include <set>
 
 BlockInfo::BlockInfo(sf::Texture* texture, const sf::IntRect& rect)
 {
@@ -625,7 +626,8 @@ void Game2048::_OnGrowingState()
 
         if (block->m_state == BlockState::Idle)
         {
-            if (!m_isContinue && block->m_index == m_colCount * m_rowCount - 6)
+            // if (!m_isContinue && block->m_index == m_colCount * m_rowCount - 6)
+            if (!m_isContinue && block->m_index == m_colCount)
             {
                 // Win
                 isWin = true;

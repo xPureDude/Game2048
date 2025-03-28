@@ -1,11 +1,12 @@
 #include "Window.hpp"
 
+#include <Windows.h>
+
 #include "ConfigManager.hpp"
 #include "SharedContext.hpp"
-#include "common/globaldefine.hpp"
+#include "common/Utility.hpp"
 #include "input/InputManager.hpp"
 
-#include <Windows.h>
 
 Window::Window()
     : m_isClose(false),

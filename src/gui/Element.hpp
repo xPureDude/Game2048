@@ -5,7 +5,7 @@
 #include <string>
 
 #include "ElementStyle.hpp"
-#include "common/globaldefine.hpp"
+#include "common/Utility.hpp"
 #include "input/InputVisitorDependent.hpp"
 
 namespace gui

@@ -1,13 +1,14 @@
 #include "SceneMenu.hpp"
 
+#include "pch.hpp" // IWYU pragma: keep
+
 #include "SceneManager.hpp"
 #include "core/SharedContext.hpp"
 #include "core/Window.hpp"
 #include "gui/GuiManager.hpp"
 #include "resource/TextureManager.hpp"
 
-SceneMenu::SceneMenu(SceneManager* manager)
-    : Scene(manager)
+SceneMenu::SceneMenu()
 {
 }
 
@@ -78,7 +79,7 @@ void SceneMenu::_OnBeginGame(const std::any& param)
 {
     // Note: Temp default 4x4
     std::any sceneParam = std::make_any<std::size_t>(4);
-    m_sceneManager->ChangeScene(SceneType::Play, sceneParam);
+    SharedContext::Instance()->Get<SceneManager>()->ChangeScene(SceneType::Play, sceneParam);
 }
 
 void SceneMenu::_OnQuitGame(const std::any& param)

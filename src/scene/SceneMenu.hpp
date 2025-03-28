@@ -5,11 +5,10 @@
 #include "SFML/Graphics/Texture.hpp"
 #include "Scene.hpp"
 
-
 class SceneMenu : public Scene
 {
 public:
-    SceneMenu(SceneManager* manager);
+    SceneMenu();
     virtual ~SceneMenu();
 
     virtual bool OnCreate() override;

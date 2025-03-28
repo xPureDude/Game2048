@@ -3,11 +3,10 @@
 #include "Scene.hpp"
 #include "gameplay/Game2048.hpp"
 
-
 class ScenePlay : public Scene
 {
 public:
-    ScenePlay(SceneManager* manager);
+    ScenePlay();
     virtual ~ScenePlay();
 
     virtual bool OnCreate() override;

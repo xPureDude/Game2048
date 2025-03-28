@@ -7,8 +7,14 @@
 
 class SceneGameOver : public Scene
 {
+    enum class State
+    {
+        Entering,
+        Normal,
+    };
+
 public:
-    SceneGameOver(SceneManager* manager);
+    SceneGameOver();
     virtual ~SceneGameOver();
 
     virtual bool OnCreate() override;
@@ -27,6 +33,8 @@ private:
 
 private:
     bool m_isWin;
+    State m_state;
+    sf::Time m_fadeInElapsed;
     sf::RectangleShape m_background;
     std::shared_ptr<sf::Font> m_font;
     std::shared_ptr<sf::Text> m_text;

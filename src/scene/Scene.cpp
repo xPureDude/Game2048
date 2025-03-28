@@ -1,9 +1,5 @@
 #include "Scene.hpp"
 
-#include "SceneGameOver.hpp"
-#include "SceneManager.hpp"
-#include "SceneMenu.hpp"
-#include "ScenePlay.hpp"
 #include "core/SharedContext.hpp"
 #include "core/Window.hpp"
 
@@ -34,34 +30,11 @@ std::string_view TranslateSceneTypeToStringView(SceneType type)
     return ret;
 }
 
-Scene::Scene(SceneManager* manager)
+Scene::Scene()
     : m_updateTransparent(false),
-      m_renderTransparent(false),
-      m_sceneManager(manager)
+      m_renderTransparent(false)
 {
     m_view = SharedContext::Instance()->Get<Window>()->GetDefaultView();
-    m_sceneManager = manager;
 }
 
 Scene::~Scene() {}
-
-std::shared_ptr<Scene> SceneFactory::CreateScene(SceneType sceneType, SceneManager* manager)
-{
-    switch (sceneType)
-    {
-    case SceneType::Play:
-    {
-        return std::make_shared<ScenePlay>(manager);
-    }
-    case SceneType::MainMenu:
-    {
-        return std::make_shared<SceneMenu>(manager);
-    }
-    case SceneType::GameOver:
-    {
-        return std::make_shared<SceneGameOver>(manager);
-    }
-    default:
-        return nullptr;
-    }
-}

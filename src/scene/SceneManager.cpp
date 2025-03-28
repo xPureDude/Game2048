@@ -2,6 +2,8 @@
 
 #include "SceneManager.hpp"
 
+#include "pch.hpp" // IWYU pragma: keep
+
 #include "SceneDependent.hpp"
 #include "common/Log.hpp"
 #include "core/SharedContext.hpp"
@@ -139,7 +141,7 @@ void SceneManager::ProcessRemoves()
 
 bool SceneManager::_CreateScene(SceneType type)
 {
-    std::shared_ptr<Scene> scene = m_factory.CreateScene(type, this);
+    std::shared_ptr<Scene> scene = m_factory.CreateScene(type);
     if (scene == nullptr)
     {
         std::cout << "SceneManager::_CreateScene failed, Type " << static_cast<int>(type) << " not found" << std::endl;

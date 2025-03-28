@@ -1,15 +1,15 @@
 #include "SceneGameOver.hpp"
 
 #include "SceneManager.hpp"
+#include "common/Log.hpp"
 #include "core/SharedContext.hpp"
 #include "core/Window.hpp"
 #include "gui/GuiManager.hpp"
 #include "resource/FontManager.hpp"
 #include "resource/TextStringManager.hpp"
 
-SceneGameOver::SceneGameOver(SceneManager* manager)
-    : Scene(manager),
-      m_isWin(false)
+SceneGameOver::SceneGameOver()
+    : m_isWin(false)
 {
     m_renderTransparent = true;
 }
@@ -40,16 +40,29 @@ void SceneGameOver::OnDestroy()
 
 void SceneGameOver::Update(const sf::Time& elasped)
 {
+    if (m_state == State::Entering)
+    {
+        m_fadeInElapsed += elasped;
+        m_background.setFillColor(sf::Color(0xFFFFFF00 + 0x77 * m_fadeInElapsed.asMilliseconds() / 2000));
+        if (m_fadeInElapsed > sf::seconds(2.0))
+        {
+            m_fadeInElapsed = sf::Time::Zero;
+            m_background.setFillColor(sf::Color(0xFFFFFF77));
+            m_state = State::Normal;
+        }
+    }
 }
 
 void SceneGameOver::Render(Window* window)
 {
     window->Render(m_background);
-    window->Render(*m_text);
+    if (m_state == State::Normal)
+        window->Render(*m_text);
 }
 
 void SceneGameOver::OnEnter(const std::any& param)
 {
+    m_state = State::Entering;
     try
     {
         m_isWin = std::any_cast<bool>(param);
@@ -85,7 +98,7 @@ bool SceneGameOver::_InitGui()
 {
     Window* window = SharedContext::Instance()->Get<Window>();
     m_background.setSize(sf::Vector2f(window->GetSize()));
-    m_background.setFillColor(sf::Color(0xFFFFFF77));
+    m_background.setFillColor(sf::Color(0xFFFFFF00));
 
     GuiManager* guiManager = SharedContext::Instance()->Get<GuiManager>();
     auto factory = guiManager->GetElementFactory();
@@ -146,17 +159,19 @@ bool SceneGameOver::_InitGui()
 
 void SceneGameOver::_OnFirstButtonClicked(const std::any& param)
 {
+    auto sceneManager = SharedContext::Instance()->Get<SceneManager>();
     if (m_isWin)
     {
-        m_sceneManager->PopScene();
+        sceneManager->PopScene();
     }
     else
     {
-        m_sceneManager->ChangeScene(SceneType::Play, std::any());
+        sceneManager->ChangeScene(SceneType::Play, std::any());
     }
 }
 
 void SceneGameOver::_OnBackButtonClicked(const std::any& param)
 {
-    m_sceneManager->ChangeScene(SceneType::MainMenu, std::any());
+    auto sceneManager = SharedContext::Instance()->Get<SceneManager>();
+    sceneManager->ChangeScene(SceneType::MainMenu, std::any());
 }

@@ -9,10 +9,8 @@
 #include "input/InputManager.hpp"
 #include "resource/TextureManager.hpp"
 
-
-ScenePlay::ScenePlay(SceneManager* manager)
-    : Scene(manager),
-      m_game2048(nullptr)
+ScenePlay::ScenePlay()
+    : m_game2048(nullptr)
 {
 }
 
@@ -181,5 +179,5 @@ void ScenePlay::_OnScoreChange(const std::any& param)
 
 void ScenePlay::_OnGameOver(const std::any& param)
 {
-    m_sceneManager->PushScene(SceneType::GameOver, param);
+    SharedContext::Instance()->Get<SceneManager>()->PushScene(SceneType::GameOver, param);
 }

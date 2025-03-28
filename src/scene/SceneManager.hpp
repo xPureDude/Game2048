@@ -1,8 +1,10 @@
 #pragma once
 
-#include "Scene.hpp"
-
 #include <set>
+
+#include "Scene.hpp"
+#include "SceneDependent.hpp"
+
 
 struct SceneInfo
 {

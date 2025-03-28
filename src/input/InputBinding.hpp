@@ -1,8 +1,11 @@
 #ifndef INPUTBINDING_HPP
 #define INPUTBINDING_HPP
 
+#include <any>
+#include <map>
+
 #include "InputVisitorDependent.hpp"
-#include "common/globaldefine.hpp"
+#include "common/Utility.hpp"
 
 namespace ib
 {

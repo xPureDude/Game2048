@@ -44,7 +44,7 @@ private:
 };
 
 template <typename T>
-T* SharedContext::Emplace(Deletor deletor)
+inline T* SharedContext::Emplace(Deletor deletor)
 {
     auto idx = std::type_index(typeid(T));
     if (m_ctxs.find(idx) == m_ctxs.end())
@@ -59,7 +59,7 @@ T* SharedContext::Emplace(Deletor deletor)
 }
 
 template <typename T, typename... Args>
-T* SharedContext::Emplace(Deletor deletor, Args... args)
+inline T* SharedContext::Emplace(Deletor deletor, Args... args)
 {
     auto idx = std::type_index(typeid(T));
     if (m_ctxs.find(idx) == m_ctxs.end())
@@ -74,7 +74,7 @@ T* SharedContext::Emplace(Deletor deletor, Args... args)
 }
 
 template <typename T>
-void SharedContext::Release()
+inline void SharedContext::Release()
 {
     auto idx = std::type_index(typeid(T));
     auto it = m_ctxs.find(idx);
@@ -95,7 +95,7 @@ void SharedContext::Release()
 }
 
 template <typename T>
-T* SharedContext::Get()
+inline T* SharedContext::Get()
 {
     auto idx = std::type_index(typeid(T));
     return static_cast<T*>(m_ctxs[idx].m_obj);

@@ -8,9 +8,8 @@
 #include "ElementStyle.hpp"
 #include "Label.hpp"
 #include "Widget.hpp"
-#include "common/GlobalDefine.hpp"
+#include "common/Utility.hpp"
 #include "scene/SceneDependent.hpp"
-
 
 struct SceneGuiInfo
 {

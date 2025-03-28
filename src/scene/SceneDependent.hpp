@@ -1,5 +1,4 @@
-#ifndef SCENEDEPENDENT_HPP
-#define SCENEDEPENDENT_HPP
+#pragma once
 
 #include "Scene.hpp"
 
@@ -20,4 +19,8 @@ private:
     static std::vector<SceneDependent*> s_instances;
 };
 
-#endif // BASEMANAGER_HPP
+class SceneFactory final
+{
+public:
+    std::shared_ptr<Scene> CreateScene(SceneType sceneType);
+};

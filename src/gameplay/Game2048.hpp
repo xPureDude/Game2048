@@ -1,14 +1,13 @@
 #pragma once
 
-#include "SFML/Graphics.hpp" // IWYU pragma: keep
-#include "SFML/System.hpp"   // IWYU pragma: keep
-#include "common/globaldefine.hpp"
-#include "common/predeclare.hpp"
-
 #include <any>
 #include <map>
 #include <vector>
 
+#include "SFML/Graphics.hpp" // IWYU pragma: keep
+#include "SFML/System.hpp"   // IWYU pragma: keep
+#include "common/Predeclare.hpp"
+#include "common/Utility.hpp"
 
 class Game2048;
 
