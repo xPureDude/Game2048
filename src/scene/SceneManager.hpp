@@ -1,21 +1,10 @@
 #pragma once
 
 #include <set>
+#include <unordered_map>
 
 #include "Scene.hpp"
 #include "SceneDependent.hpp"
-
-
-struct SceneInfo
-{
-    SceneType m_type{SceneType::None};
-    std::shared_ptr<Scene> m_scene;
-
-    bool operator==(const SceneInfo& other)
-    {
-        return m_type == other.m_type;
-    }
-};
 
 class SceneManager
 {
@@ -42,7 +31,9 @@ private:
     bool _IsInRemoveLater(SceneType type);
 
 private:
-    std::vector<SceneInfo> m_scenes;
+    std::vector<SceneType> m_sceneVec;
+    std::unordered_map<SceneType, std::shared_ptr<Scene>> m_sceneMap;
+
     std::set<SceneType> m_removeLater;
     SceneFactory m_factory;
 };

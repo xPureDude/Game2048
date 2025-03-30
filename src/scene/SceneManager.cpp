@@ -11,82 +11,89 @@
 
 SceneManager::~SceneManager()
 {
-    for (auto& item : m_scenes)
+    for (auto& item : m_sceneMap)
     {
-        item.m_scene->OnDestroy();
+        item.second->OnDestroy();
     }
-    m_scenes.clear();
+    m_sceneVec.clear();
+    m_sceneMap.clear();
 }
 
 void SceneManager::Update(const sf::Time& elapsed)
 {
-    if (m_scenes.empty() == true)
+    if (m_sceneVec.empty() == true)
         return;
-    if (m_scenes.back().m_scene->IsUpdateTransparent() == true && m_scenes.size() > 1)
+    auto curScene = m_sceneMap[m_sceneVec.back()];
+    if (curScene->IsUpdateTransparent() == true && m_sceneVec.size() > 1)
     {
-        auto iter = m_scenes.end();
+        auto iter = m_sceneVec.end();
         --iter;
-        while (iter != m_scenes.begin())
+        while (iter != m_sceneVec.begin())
         {
-            if (iter->m_scene->IsUpdateTransparent() == false && _IsInRemoveLater(iter->m_type) == false)
+            auto scene = m_sceneMap[*iter];
+            if (scene->IsUpdateTransparent() == false && _IsInRemoveLater(*iter) == false)
             {
                 break;
             }
             --iter;
         }
 
-        while (iter != m_scenes.end())
+        while (iter != m_sceneVec.end())
         {
-            if (_IsInRemoveLater(iter->m_type) == false)
-                iter->m_scene->Update(elapsed);
+            auto scene = m_sceneMap[*iter];
+            if (_IsInRemoveLater(*iter) == false)
+                scene->Update(elapsed);
             ++iter;
         }
     }
     else
     {
-        m_scenes.back().m_scene->Update(elapsed);
+        curScene->Update(elapsed);
     }
 }
 
 void SceneManager::Render()
 {
-    if (m_scenes.empty() == true)
+    if (m_sceneVec.empty() == true)
         return;
 
     auto window = SharedContext::Instance()->Get<Window>();
-    if (m_scenes.back().m_scene->IsRenderTransparent() == true && m_scenes.size() > 1)
+    auto curScene = m_sceneMap[m_sceneVec.back()];
+    if (curScene->IsRenderTransparent() == true && m_sceneVec.size() > 1)
     {
-        auto iter = m_scenes.end();
+        auto iter = m_sceneVec.end();
         --iter;
-        while (iter != m_scenes.begin())
+        while (iter != m_sceneVec.begin())
         {
-            if (iter->m_scene->IsRenderTransparent() == false && _IsInRemoveLater(iter->m_type) == false)
+            auto scene = m_sceneMap[*iter];
+            if (scene->IsRenderTransparent() == false && _IsInRemoveLater(*iter) == false)
             {
                 break;
             }
             --iter;
         }
 
-        while (iter != m_scenes.end())
+        while (iter != m_sceneVec.end())
         {
-            if (_IsInRemoveLater(iter->m_type) == false)
+            auto scene = m_sceneMap[*iter];
+            if (_IsInRemoveLater(*iter) == false)
             {
-                window->SetView(iter->m_scene->GetView());
-                iter->m_scene->Render(window);
+                window->SetView(scene->GetView());
+                scene->Render(window);
             }
             ++iter;
         }
     }
     else
     {
-        m_scenes.back().m_scene->Render(window);
-        window->SetView(m_scenes.back().m_scene->GetView());
+        window->SetView(curScene->GetView());
+        curScene->Render(window);
     }
 }
 
 void SceneManager::ChangeScene(SceneType type, const std::any& param)
 {
-    if (m_scenes.back().m_type == type)
+    if (m_sceneVec.back() == type)
         return;
 
     PopScene();
@@ -95,12 +102,10 @@ void SceneManager::ChangeScene(SceneType type, const std::any& param)
 
 void SceneManager::PushScene(SceneType type, const std::any& param)
 {
-    auto iter = std::find(m_scenes.begin(), m_scenes.end(), SceneInfo({.m_type = type, .m_scene = nullptr}));
-    if (iter != m_scenes.end())
+    if (m_sceneMap.contains(type))
     {
-        auto tempScene = iter->m_scene;
-        m_scenes.erase(iter);
-        m_scenes.emplace_back(type, tempScene);
+        m_sceneVec.erase(std::find(m_sceneVec.begin(), m_sceneVec.end(), type));
+        m_sceneVec.emplace_back(type);
     }
     else
     {
@@ -109,25 +114,28 @@ void SceneManager::PushScene(SceneType type, const std::any& param)
             return;
         }
     }
-    m_scenes.back().m_scene->OnEnter(param);
+    auto scene = m_sceneMap[type];
+    scene->OnEnter(param);
     DBG("SceneManager::PushScene, SceneType: {} OnEnter", TranslateSceneTypeToStringView(type));
 
     // Inform SceneType related Manager
     SceneDependent::ChangeCurrentSceneType(type);
-    SharedContext::Instance()->Get<Window>()->SetView(m_scenes.back().m_scene->GetView());
+    SharedContext::Instance()->Get<Window>()->SetView(scene->GetView());
 }
 
 void SceneManager::PopScene()
 {
-    if (m_scenes.empty())
+    if (m_sceneVec.empty())
         return;
-    m_scenes.back().m_scene->OnLeave();
-    DBG("SceneManager::PopScene, SceneType: {} OnLeave", TranslateSceneTypeToStringView(m_scenes.back().m_type));
-    m_removeLater.insert(m_scenes.back().m_type);
+    auto lastScene = m_sceneMap[m_sceneVec.back()];
+    lastScene->OnLeave();
 
-    if (m_scenes.size() < 2)
+    DBG("SceneManager::PopScene, SceneType: {} OnLeave", TranslateSceneTypeToStringView(m_sceneVec.back()));
+    m_removeLater.insert(m_sceneVec.back());
+
+    if (m_sceneVec.size() < 2)
         return;
-    SceneDependent::ChangeCurrentSceneType(m_scenes[m_scenes.size() - 2].m_type);
+    SceneDependent::ChangeCurrentSceneType(m_sceneVec[m_sceneVec.size() - 2]);
 }
 
 void SceneManager::ProcessRemoves()
@@ -153,20 +161,19 @@ bool SceneManager::_CreateScene(SceneType type)
         scene->OnDestroy();
         return false;
     }
-    m_scenes.emplace_back(type, scene);
+    m_sceneVec.push_back(type);
+    m_sceneMap.emplace(type, scene);
+
     return true;
 }
 
 void SceneManager::_DestroyScene(SceneType type)
 {
-    for (auto iter = m_scenes.begin(); iter != m_scenes.end(); ++iter)
+    if (m_sceneMap.contains(type))
     {
-        if (iter->m_type == type)
-        {
-            iter->m_scene->OnDestroy();
-            m_scenes.erase(iter);
-            return;
-        }
+        m_sceneMap[type]->OnDestroy();
+        m_sceneMap.erase(type);
+        m_sceneVec.erase(std::find(m_sceneVec.begin(), m_sceneVec.end(), type));
     }
 }
 
