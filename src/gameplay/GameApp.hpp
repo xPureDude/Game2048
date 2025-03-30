@@ -13,6 +13,7 @@ public:
 
 private:
     bool _LoadResources();
+    bool _LoadResourceInfo();
 };
 
 #endif // GAMEAPP_INCLUDE

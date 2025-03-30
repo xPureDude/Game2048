@@ -3,6 +3,8 @@
 #include <set>
 
 #include "common/Log.hpp"
+#include "common/Random.hpp"
+#include "core/SharedContext.hpp"
 #include "core/Window.hpp"
 
 
@@ -440,7 +442,7 @@ void Game2048::_CreateNewBlock()
     std::size_t index = 0;
     if (availableGrid.size() > 1)
     {
-        index = rand() % (availableGrid.size() - 1);
+        index = SharedContext::Instance()->Get<Random>()->GetInt(0, (availableGrid.size() - 1));
     }
 
     auto [row, col] = availableGrid[index];

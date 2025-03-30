@@ -35,28 +35,28 @@ bool GameApp::Init()
 
 bool GameApp::_LoadResources()
 {
-    if (!SharedContext::Instance()->Get<TextureManager>()->LoadResourceInfoFromFile("Resource/TextureInfo.xml"))
+    if (!SharedContext::Instance()->Get<TextureManager>()->LoadResourceInfoFromFile("assets/TextureInfo.xml"))
     {
-        ERR("GameApp::_LoadResources, TextureManager load failed, file: {}", "Resource/TextureInfo.xml");
+        ERR("GameApp::_LoadResources, TextureManager load failed, file: {}", "assets/TextureInfo.xml");
         return false;
     }
 
-    if (!SharedContext::Instance()->Get<FontManager>()->LoadResourceInfoFromFile("Resource/FontInfo.xml"))
+    if (!SharedContext::Instance()->Get<FontManager>()->LoadResourceInfoFromFile("assets/FontInfo.xml"))
     {
-        ERR("GameApp::_LoadResources, FontManager load failed, file: {}", "Resource/FontInfo.xml");
+        ERR("GameApp::_LoadResources, FontManager load failed, file: {}", "assets/FontInfo.xml");
         return false;
     }
 
     std::string& local = SharedContext::Instance()->Get<ConfigManager>()->GetVisualConfig().m_language;
-    if (!SharedContext::Instance()->Get<TextStringManager>()->LoadTextStringFromFile("Resource/TextString.xml", local))
+    if (!SharedContext::Instance()->Get<TextStringManager>()->LoadTextStringFromFile("assets/TextString.xml", local))
     {
-        ERR("GameApp::_LoadResources, TextStringManager load failed, file: {}", "Resource/TextString.xml");
+        ERR("GameApp::_LoadResources, TextStringManager load failed, file: {}", "assets/TextString.xml");
         return false;
     }
 
-    if (!SharedContext::Instance()->Get<GuiManager>()->LoadStyleSheetsFromFile("Resource/GuiStyleSheet.xml"))
+    if (!SharedContext::Instance()->Get<GuiManager>()->LoadStyleSheetsFromFile("assets/GuiStyleSheet.xml"))
     {
-        ERR("GameApp::_LoadResources, GuiManager load failed, file: {}", "Resource/GuiStyleSheet.xml");
+        ERR("GameApp::_LoadResources, GuiManager load failed, file: {}", "assets/GuiStyleSheet.xml");
         return false;
     }
 

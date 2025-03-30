@@ -3,12 +3,14 @@
 #include "ConfigManager.hpp"
 #include "SharedContext.hpp"
 #include "Window.hpp"
+#include "common/Random.hpp"
 #include "gui/GuiManager.hpp"
 #include "input/InputManager.hpp"
 #include "resource/FontManager.hpp"
 #include "resource/TextStringManager.hpp"
 #include "resource/TextureManager.hpp"
 #include "scene/SceneManager.hpp"
+
 
 #define FRAME_ELASPED 1000.0f / 144.0f
 const sf::Time fpsNil = sf::Time::Zero;
@@ -27,6 +29,7 @@ PureFramework::~PureFramework()
 bool PureFramework::Init()
 {
     SharedContext::Instance()->Emplace<ConfigManager>([](void* obj) { delete (ConfigManager*)obj; });
+    SharedContext::Instance()->Emplace<Random>([](void* obj) { delete (Random*)obj; });
     SharedContext::Instance()->Emplace<TextStringManager>([](void* obj) { delete (TextStringManager*)obj; });
     SharedContext::Instance()->Emplace<TextureManager>([](void* obj) { delete (TextureManager*)obj; });
     SharedContext::Instance()->Emplace<FontManager>([](void* obj) { delete (FontManager*)obj; });

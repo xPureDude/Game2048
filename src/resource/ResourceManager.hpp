@@ -1,5 +1,11 @@
 #pragma once
 
+#include <memory>
+#include <string>
+#include <unordered_map>
+
+#include "SFML/Graphics.hpp" // IWYU pragma: keep
+
 struct ResourceHead
 {
     std::string m_filePath;

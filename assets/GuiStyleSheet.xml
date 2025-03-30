@@ -4,8 +4,8 @@
     <WidgetStyle name="widget_normal" color="0xFFFFFF00"/>
 
     <ButtonStyle name="button_normal" texture="button_sheet" rectx="0"   recty="0" rectw="200" recth="60"/>
-    <ButtonStyle name="button_hover"   texture="button_sheet" rectx="200" recty="0" rectw="200" recth="60"/>
-    <ButtonStyle name="button_press"   texture="button_sheet" rectx="400" recty="0" rectw="200" recth="60"/>
+    <ButtonStyle name="button_hover"   texture="button_sheet" rectx="201" recty="0" rectw="200" recth="60"/>
+    <ButtonStyle name="button_press"   texture="button_sheet" rectx="401" recty="0" rectw="200" recth="60"/>
 
     <LabelStyle name="label_normal" texture="button_sheet" rectx="0" recty="0" rectw="200" recth="60"/>
 </StyleSheet>

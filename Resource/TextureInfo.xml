@@ -1,6 +1,0 @@
-<Textures>
-    <texture name="button_sheet"  filepath="Resource/button_sheet.png"/>
-    <texture name="scene_menu_bg" filepath="Resource/scene_menu_bg.png"/>
-    <texture name="scene_play_bg" filepath="Resource/scene_play_bg.png"/>
-    <texture name="blocks"        filepath="Resource/blocks.png"/>
-</Textures>

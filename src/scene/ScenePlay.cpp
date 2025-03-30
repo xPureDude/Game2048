@@ -109,7 +109,7 @@ bool ScenePlay::_InitGui()
 
     SceneGuiInfo info;
     info.m_type = SceneType::Play;
-    info.m_fileName = "Resource/ScenePlay.xml";
+    info.m_fileName = "assets/ScenePlay.xml";
     info.m_callbacks.try_emplace("OnNewGame", BindCallback(&ScenePlay::_OnNewGame));
     if (!guiManager->LoadSceneGuiFromFile(info))
     {

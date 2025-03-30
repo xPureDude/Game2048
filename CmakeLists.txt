@@ -6,19 +6,25 @@ project(PureGame2048
 )
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED true)
 
-set(projectOutputDirectory "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+#if (MSVC)
+#    add_compile_options(/W4)
+#endif()
 
+set(targetName ${PROJECT_NAME})
+
+set(projectOutputDirectory "${CMAKE_CURRENT_SOURCE_DIR}")
 set(targetSourceDir "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 file(GLOB_RECURSE headerFiles "${targetSourceDir}/*.hpp")
 file(GLOB_RECURSE srcFiles "${targetSourceDir}/*.cpp")
 
-add_executable(${PROJECT_NAME} ${headerFiles} ${srcFiles})
+add_executable(${targetName} ${headerFiles} ${srcFiles})
 
-target_precompile_headers(${PROJECT_NAME} PRIVATE "${targetSourceDir}/pch.hpp")
+target_precompile_headers(${targetName} PRIVATE "${targetSourceDir}/pch.hpp")
 
-target_include_directories(${PROJECT_NAME} 
+target_include_directories(${targetName} 
     PUBLIC "${SFML_ROOT}/include"
     PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
@@ -26,14 +32,15 @@ target_include_directories(${PROJECT_NAME}
 # Change to set dll or lib
 set(SFML_STATIC_LIBRARIES OFF)
 find_package(SFML REQUIRED System Window Graphics Main)
-target_link_libraries(${PROJECT_NAME} PUBLIC SFML::Main SFML::Window SFML::Graphics SFML::System)
+target_link_libraries(${targetName} PUBLIC SFML::Main SFML::Window SFML::Graphics SFML::System)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES 
-    RUNTIME_OUTPUT_DIRECTORY "${projectOutputDirectory}"
+set_target_properties(${targetName} PROPERTIES 
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG "${projectOutputDirectory}"
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${projectOutputDirectory}"
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 if(WIN32)
-    set_target_properties(${PROJECT_NAME} PROPERTIES
+    set_target_properties(${targetName} PROPERTIES
                           LINK_FLAGS "/SUBSYSTEM:WINDOWS")
 endif()

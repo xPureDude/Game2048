@@ -53,7 +53,7 @@ bool SceneMenu::_InitGui()
 
     SceneGuiInfo info;
     info.m_type = SceneType::MainMenu;
-    info.m_fileName = "Resource/SceneMenu.xml";
+    info.m_fileName = "assets/SceneMenu.xml";
     info.m_callbacks.try_emplace("OnBeginGame", BindCallback(&SceneMenu::_OnBeginGame));
     info.m_callbacks.try_emplace("OnQuitGame", BindCallback(&SceneMenu::_OnQuitGame));
     if (!guiManager->LoadSceneGuiFromFile(info))
