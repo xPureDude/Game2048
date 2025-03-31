@@ -1,6 +1,10 @@
 #include "Element.hpp"
 
+#include "pch.hpp" // IWYU pragma: keep
+
 #include "Widget.hpp"
+#include "common/Log.hpp"
+
 
 namespace gui
 {
@@ -44,12 +48,12 @@ bool Element::HandleInput(const sf::Event& event)
     return false;
 }
 
-void Element::Render(sf::RenderTarget* target)
+void Element::Render(sf::RenderTarget& target)
 {
     _RenderPrimitive(target);
     if (m_text)
     {
-        target->draw(*m_text);
+        target.draw(*m_text);
     }
 }
 

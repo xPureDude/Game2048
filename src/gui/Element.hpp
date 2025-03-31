@@ -49,7 +49,7 @@ public:
 
     virtual void Update(const sf::Time& elapsed);
     virtual bool HandleInput(const sf::Event& event);
-    void Render(sf::RenderTarget* target);
+    void Render(sf::RenderTarget& target);
 
     virtual bool operator()(const sf::Event::MouseMoved& event) override;
 
@@ -75,7 +75,7 @@ protected:
 private:
     void _RedrawParent();
     void _ProcessCallback();
-    virtual void _RenderPrimitive(sf::RenderTarget* target) = 0;
+    virtual void _RenderPrimitive(sf::RenderTarget& target) = 0;
     virtual void _UpdateCurrentState() {}
     virtual void _UpdatePosition() {}
     virtual void _UpdateSize() {}

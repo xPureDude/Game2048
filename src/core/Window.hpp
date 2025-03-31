@@ -1,11 +1,11 @@
 #pragma once
 
-#include "SFML/Graphics.hpp" // IWYU pragma: keep
-#include "SFML/Window.hpp"   // IWYU pragma: keep
-
 #include <any>
 #include <optional>
 #include <string>
+
+#include "SFML/Graphics.hpp" // IWYU pragma: keep
+#include "SFML/Window.hpp"   // IWYU pragma: keep
 
 class Window
 {
@@ -34,7 +34,7 @@ public:
     sf::Vector2i GetPosition() { return m_window.getPosition(); }
     std::string GetTitle() { return m_title; }
     sf::Vector2u GetSize() { return m_size; }
-    sf::RenderWindow* GetRenderWindow() { return &m_window; }
+    sf::RenderWindow& GetRenderWindow() { return m_window; }
     sf::View GetDefaultView() { return m_window.getDefaultView(); }
 
     sf::FloatRect GetViewSpace();

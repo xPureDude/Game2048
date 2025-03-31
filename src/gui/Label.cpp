@@ -31,9 +31,9 @@ void Label::SetLabelStyle(LabelStyle* style)
     }
 }
 
-void Label::_RenderPrimitive(sf::RenderTarget* target)
+void Label::_RenderPrimitive(sf::RenderTarget& target)
 {
-    target->draw(m_shape);
+    target.draw(m_shape);
 }
 
 void Label::_UpdatePosition()

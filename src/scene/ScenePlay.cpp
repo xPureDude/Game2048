@@ -4,7 +4,6 @@
 #include "common/Log.hpp"
 #include "core/SharedContext.hpp"
 #include "core/Window.hpp"
-#include "gui/Element.hpp"
 #include "gui/GuiManager.hpp"
 #include "input/InputManager.hpp"
 #include "resource/TextureManager.hpp"
@@ -65,7 +64,8 @@ void ScenePlay::Update(const sf::Time& elapsed)
 void ScenePlay::Render(Window* window)
 {
     window->Render(m_background);
-    m_game2048->Render(window);
+    m_scoreLabel->Render(window->GetRenderWindow());
+    m_game2048->Render(window->GetRenderWindow());
 }
 
 void ScenePlay::OnEnter(const std::any& param)
@@ -127,6 +127,14 @@ bool ScenePlay::_InitGui()
     m_background.setTexture(m_backgroundTexture.get(), true);
     m_background.setSize({500, 700});
 
+    // <Label name = "score_label" x = "10" y = "130" w = "200" h = "60" style = "label_normal" text = "text_normal" textStr = "Score: 0" />
+    m_scoreLabel = gui::ElementFactory::CreateElement<gui::Label>();
+    m_scoreLabel->SetName("score_label");
+    m_scoreLabel->SetPosition({10, 130});
+    m_scoreLabel->SetSize({200, 60});
+    m_scoreLabel->SetLabelStyle(static_cast<gui::LabelStyle*>(SharedContext::Instance()->Get<GuiManager>()->FindStyleSheetByName("label_normal")));
+    m_scoreLabel->SetText("Score: 0", static_cast<gui::TextStyle*>(SharedContext::Instance()->Get<GuiManager>()->FindStyleSheetByName("text_normal")));
+
     return true;
 }
 
@@ -163,13 +171,7 @@ void ScenePlay::_OnScoreChange(const std::any& param)
     try
     {
         auto score = std::any_cast<std::size_t>(param);
-        auto element = SharedContext::Instance()->Get<GuiManager>()->FindSceneElementByName(SceneType::Play, "score_label");
-        if (!element)
-        {
-            DBG("ScenePlay::_OnScoreChange, failed to find Element: {}", "score_label");
-            return;
-        }
-        element->SetText("Score: " + std::to_string(score));
+        m_scoreLabel->SetText("Score: " + std::to_string(score));
     }
     catch (const std::bad_any_cast& err)
     {

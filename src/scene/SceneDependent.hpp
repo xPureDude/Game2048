@@ -22,5 +22,5 @@ private:
 class SceneFactory final
 {
 public:
-    std::shared_ptr<Scene> CreateScene(SceneType sceneType);
+    static std::shared_ptr<Scene> CreateScene(SceneType type);
 };

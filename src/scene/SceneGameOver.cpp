@@ -101,7 +101,6 @@ bool SceneGameOver::_InitGui()
     m_background.setFillColor(sf::Color(0xFFFFFF00));
 
     GuiManager* guiManager = SharedContext::Instance()->Get<GuiManager>();
-    auto factory = guiManager->GetElementFactory();
 
     sf::Vector2f buttonSize{200, 60};
 
@@ -136,16 +135,16 @@ bool SceneGameOver::_InitGui()
 
     auto textManager = SharedContext::Instance()->Get<TextStringManager>();
 
-    auto firstButton = factory.CreateElement<gui::Button>();
+    auto firstButton = gui::ElementFactory::CreateElement<gui::Button>();
     firstButton->SetName("FirstButton");
     firstButton->SetPosition({150, 280});
     firstButton->SetSize(buttonSize);
-    firstButton->SetTextStyle(textStyle);
+    firstButton->SetText(std::string(), textStyle);
     firstButton->SetButtonStyle(normalStyle, hoverStyle, pressStyle, nullptr);
     firstButton->ConnectSignalCallback(gui::Signal::OnClicked, "OnContinueOrReplay", BindCallback(&SceneGameOver::_OnFirstButtonClicked));
     guiManager->AddSceneGui(SceneType::GameOver, firstButton);
 
-    auto backButton = factory.CreateElement<gui::Button>();
+    auto backButton = gui::ElementFactory::CreateElement<gui::Button>();
     backButton->SetName("BackButton");
     backButton->SetPosition({150, 360});
     backButton->SetSize(buttonSize);

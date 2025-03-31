@@ -1,5 +1,9 @@
 #include "Widget.hpp"
 
+#include "pch.hpp" // IWYU pragma: keep
+
+#include "common/Log.hpp"
+
 namespace gui
 {
 
@@ -67,6 +71,7 @@ bool Widget::AppendChild(std::shared_ptr<Element> child)
     {
         if (elem->GetName() == child->GetName())
         {
+            DBG("Widget::AppendChild, Child name duplicant: {}", child->GetName());
             return false;
         }
     }
@@ -93,19 +98,19 @@ void Widget::_RedrawPanel()
     m_panelTexture.clear(m_style.m_backColor);
     for (auto& elem : m_childs)
     {
-        elem->Render(&m_panelTexture);
+        elem->Render(m_panelTexture);
     }
     m_panelTexture.display();
     m_needRedraw = false;
 }
 
-void Widget::_RenderPrimitive(sf::RenderTarget* target)
+void Widget::_RenderPrimitive(sf::RenderTarget& target)
 {
     if (m_needRedraw)
     {
         _RedrawPanel();
     }
-    target->draw(m_panelSprite);
+    target.draw(m_panelSprite);
 }
 
 void Widget::_UpdatePosition()

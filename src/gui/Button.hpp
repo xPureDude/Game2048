@@ -19,7 +19,7 @@ public:
     ButtonStyle* GetButtonStyle(ElementState state);
 
 private:
-    virtual void _RenderPrimitive(sf::RenderTarget* target) override;
+    virtual void _RenderPrimitive(sf::RenderTarget& target) override;
     virtual void _UpdateCurrentState() override;
     virtual void _UpdatePosition() override;
     virtual void _UpdateSize() override;

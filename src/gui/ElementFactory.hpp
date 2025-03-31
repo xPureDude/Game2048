@@ -23,7 +23,7 @@ class ElementFactory
 {
 public:
     template <typename T>
-    std::shared_ptr<T> CreateElement();
+    static std::shared_ptr<T> CreateElement();
 
     std::shared_ptr<Element> CreateElement(ElementType type, const std::string& name);
 };

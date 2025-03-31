@@ -6,7 +6,6 @@
 
 #include "SFML/Graphics.hpp" // IWYU pragma: keep
 #include "SFML/System.hpp"   // IWYU pragma: keep
-#include "common/Predeclare.hpp"
 #include "common/Utility.hpp"
 
 class Game2048;
@@ -87,7 +86,7 @@ public:
     ~Game2048();
 
     void Update(const sf::Time& elapsed);
-    void Render(Window* window);
+    void Render(sf::RenderTarget& target);
 
     void OnNewGame(const NewGameInfo& info);
 

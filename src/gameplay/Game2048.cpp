@@ -5,8 +5,6 @@
 #include "common/Log.hpp"
 #include "common/Random.hpp"
 #include "core/SharedContext.hpp"
-#include "core/Window.hpp"
-
 
 BlockInfo::BlockInfo(sf::Texture* texture, const sf::IntRect& rect)
 {
@@ -178,7 +176,7 @@ void Game2048::Update(const sf::Time& elapsed)
     _DelayMove();
 }
 
-void Game2048::Render(Window* window)
+void Game2048::Render(sf::RenderTarget& target)
 {
     m_boardTexture.clear(sf::Color::Transparent);
     for (auto info : m_blocks)
@@ -188,7 +186,7 @@ void Game2048::Render(Window* window)
         m_blockInfos[info->m_index].Render(m_boardTexture);
     }
     m_boardTexture.display();
-    window->Render(m_boardSprite);
+    target.draw(m_boardSprite);
 }
 
 void Game2048::OnNewGame(const NewGameInfo& info)

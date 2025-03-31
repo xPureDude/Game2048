@@ -2,6 +2,7 @@
 
 #include "Scene.hpp"
 #include "gameplay/Game2048.hpp"
+#include "gui/Label.hpp"
 
 class ScenePlay : public Scene
 {
@@ -33,6 +34,7 @@ private:
     NewGameInfo m_info;
     Game2048* m_game2048;
 
+    std::shared_ptr<gui::Label> m_scoreLabel;
     std::shared_ptr<sf::Texture> m_backgroundTexture;
     sf::RectangleShape m_background;
 };

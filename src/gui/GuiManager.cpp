@@ -122,12 +122,12 @@ void GuiManager::Render()
     Window* window = SharedContext::Instance()->Get<Window>();
     for (auto& elem : m_elements[s_curSceneType])
     {
-        elem->Render(&m_target);
+        elem->Render(m_target);
     }
 
     for (auto& elem : m_elements[SceneType::None])
     {
-        elem->Render(&m_target);
+        elem->Render(m_target);
     }
     m_target.display();
     auto view = window->GetViewSpace();
@@ -379,7 +379,7 @@ std::shared_ptr<gui::Widget> GuiManager::_ParseWidget(const SceneGuiInfo& info, 
         return nullptr;
     }
 
-    std::shared_ptr<gui::Widget> widget = m_factory.CreateElement<gui::Widget>();
+    std::shared_ptr<gui::Widget> widget = gui::ElementFactory::CreateElement<gui::Widget>();
     widget->SetName(nameAttr->Value());
     widget->SetWidgetStyle(style);
     widget->SetPosition(optRect->position);
@@ -459,7 +459,7 @@ std::shared_ptr<gui::Button> GuiManager::_ParseButton(const SceneGuiInfo& info, 
         return nullptr;
     }
 
-    std::shared_ptr<gui::Button> button = m_factory.CreateElement<gui::Button>();
+    std::shared_ptr<gui::Button> button = gui::ElementFactory::CreateElement<gui::Button>();
     button->SetName(nameAttr->Value());
     button->SetPosition(optRect->position);
     button->SetSize(optRect->size);
@@ -516,7 +516,7 @@ std::shared_ptr<gui::Label> GuiManager::_ParseLabel(const SceneGuiInfo& info, ti
         return nullptr;
     }
 
-    std::shared_ptr<gui::Label> label = m_factory.CreateElement<gui::Label>();
+    std::shared_ptr<gui::Label> label = gui::ElementFactory::CreateElement<gui::Label>();
     label->SetName(nameAttr->Value());
     label->SetPosition(optRect->position);
     label->SetSize(optRect->size);
@@ -530,8 +530,7 @@ std::shared_ptr<gui::Label> GuiManager::_ParseLabel(const SceneGuiInfo& info, ti
             DBG("GuiManager::_ParseButton, StyleSheet '{}' not found", textAttr->Value());
             return nullptr;
         }
-        label->SetText(textStrAttr->Value());
-        label->SetTextStyle(textStyle);
+        label->SetText(textStrAttr->Value(), textStyle);
     }
 
     return label;

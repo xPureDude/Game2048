@@ -38,8 +38,6 @@ public:
     std::shared_ptr<gui::Element> FindSceneElementByName(SceneType type, const std::string& name);
     gui::StyleSheet* FindStyleSheetByName(const std::string& name);
 
-    gui::ElementFactory& GetElementFactory() { return m_factory; }
-
     bool LoadStyleSheetsFromFile(const std::string_view& file);
     bool LoadSceneGuiFromFile(const SceneGuiInfo& info);
 
@@ -51,7 +49,6 @@ private:
 
 private:
     std::map<std::string, gui::StyleSheet*> m_styleSheets;
-    gui::ElementFactory m_factory;
     sf::RenderTexture m_target;
     sf::Sprite m_sprite;
     std::map<SceneType, ElementContainer> m_elements;

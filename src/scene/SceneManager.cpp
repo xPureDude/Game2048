@@ -149,7 +149,7 @@ void SceneManager::ProcessRemoves()
 
 bool SceneManager::_CreateScene(SceneType type)
 {
-    std::shared_ptr<Scene> scene = m_factory.CreateScene(type);
+    std::shared_ptr<Scene> scene = SceneFactory::CreateScene(type);
     if (scene == nullptr)
     {
         std::cout << "SceneManager::_CreateScene failed, Type " << static_cast<int>(type) << " not found" << std::endl;

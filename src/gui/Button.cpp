@@ -66,9 +66,9 @@ ButtonStyle* Button::GetButtonStyle(ElementState state)
     return nullptr;
 }
 
-void Button::_RenderPrimitive(sf::RenderTarget* target)
+void Button::_RenderPrimitive(sf::RenderTarget& target)
 {
-    target->draw(m_shape);
+    target.draw(m_shape);
 }
 
 void Button::_UpdateCurrentState()

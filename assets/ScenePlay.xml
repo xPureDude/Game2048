@@ -1,6 +1,5 @@
 <Elements>
     <Widget name="top_widget" x="0" y="0" w="500" h="200" style="widget_normal">
-        <Label name="score_label" x = "10" y="130" w="200" h="60" style="label_normal" text="text_normal" textStr="Score: 0"/>
         <Button name="replay_button" x="290" y="130" w="200" h="60" normal="button_normal" hover="button_hover" press="button_press" text="text_normal" textStr="Replay">
             <SignalTrigger signal="OnClicked" callback="OnNewGame"/>
         </Button>

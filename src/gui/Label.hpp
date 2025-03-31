@@ -17,7 +17,7 @@ public:
     LabelStyle* GetLabelStyle() { return m_style; }
 
 private:
-    virtual void _RenderPrimitive(sf::RenderTarget* target) override;
+    virtual void _RenderPrimitive(sf::RenderTarget& target) override;
     virtual void _UpdatePosition() override;
     virtual void _UpdateSize() override;
 

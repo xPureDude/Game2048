@@ -27,7 +27,7 @@ public:
 
 private:
     void _RedrawPanel();
-    virtual void _RenderPrimitive(sf::RenderTarget* target) override;
+    virtual void _RenderPrimitive(sf::RenderTarget& target) override;
     virtual void _UpdatePosition() override;
     virtual void _UpdateSize() override;
 

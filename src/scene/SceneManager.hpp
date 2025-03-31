@@ -4,7 +4,6 @@
 #include <unordered_map>
 
 #include "Scene.hpp"
-#include "SceneDependent.hpp"
 
 class SceneManager
 {
@@ -35,5 +34,4 @@ private:
     std::unordered_map<SceneType, std::shared_ptr<Scene>> m_sceneMap;
 
     std::set<SceneType> m_removeLater;
-    SceneFactory m_factory;
 };
