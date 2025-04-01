@@ -1,12 +1,12 @@
 #include "SceneMenu.hpp"
 
-#include "pch.hpp" // IWYU pragma: keep
-
 #include "SceneManager.hpp"
+#include "common/Log.hpp"
 #include "core/SharedContext.hpp"
 #include "core/Window.hpp"
 #include "gui/GuiManager.hpp"
 #include "resource/TextureManager.hpp"
+
 
 SceneMenu::SceneMenu()
 {

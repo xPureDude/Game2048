@@ -1,7 +1,5 @@
 #include "Widget.hpp"
 
-#include "pch.hpp" // IWYU pragma: keep
-
 #include "common/Log.hpp"
 
 namespace gui
