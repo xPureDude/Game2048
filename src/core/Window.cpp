@@ -5,8 +5,7 @@
 #include "ConfigManager.hpp"
 #include "SharedContext.hpp"
 #include "common/Utility.hpp"
-#include "input/InputManager.hpp"
-
+#include "event/InputManager.hpp"
 
 Window::Window()
     : m_isClose(false),

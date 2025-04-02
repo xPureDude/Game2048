@@ -4,9 +4,10 @@
 #include "common/Log.hpp"
 #include "core/SharedContext.hpp"
 #include "core/Window.hpp"
+#include "event/InputManager.hpp"
 #include "gui/GuiManager.hpp"
-#include "input/InputManager.hpp"
 #include "resource/TextureManager.hpp"
+
 
 ScenePlay::ScenePlay()
     : m_game2048(nullptr)

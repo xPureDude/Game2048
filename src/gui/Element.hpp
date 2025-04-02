@@ -6,7 +6,7 @@
 
 #include "ElementStyle.hpp"
 #include "common/Utility.hpp"
-#include "input/InputVisitorDependent.hpp"
+#include "event/InputVisitorDependent.hpp"
 
 namespace gui
 {

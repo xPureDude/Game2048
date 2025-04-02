@@ -4,13 +4,12 @@
 #include "SharedContext.hpp"
 #include "Window.hpp"
 #include "common/Random.hpp"
+#include "event/InputManager.hpp"
 #include "gui/GuiManager.hpp"
-#include "input/InputManager.hpp"
 #include "resource/FontManager.hpp"
 #include "resource/TextStringManager.hpp"
 #include "resource/TextureManager.hpp"
 #include "scene/SceneManager.hpp"
-
 
 #define FRAME_ELASPED 1000.0f / 144.0f
 const sf::Time fpsNil = sf::Time::Zero;
