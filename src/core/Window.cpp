@@ -5,16 +5,15 @@
 #include "ConfigManager.hpp"
 #include "SharedContext.hpp"
 #include "common/Utility.hpp"
-#include "event/InputManager.hpp"
+#include "event/GlobalEvent.hpp"
 
 Window::Window()
     : m_isClose(false),
       m_isFocus(true),
       m_state(sf::State::Windowed)
 {
-    auto inputManager = SharedContext::Instance()->Get<InputManager>();
-    inputManager->AddInputBindingCallback(SceneType::None, ib::BindType::FullscreenToggle, "Window_FullscreenToggle", BindCallback(&Window::_ToggleFullscreen));
-    inputManager->AddInputBindingCallback(SceneType::None, ib::BindType::WindowClose, "Window_WindowClose", BindCallback(&Window::_WindowClose));
+    m_eventListener.Subscribe<evt::FullscreenToggle>(BindCallback(&Window::_OnToggleFullscreen));
+    m_eventListener.Subscribe<evt::WindowClose>(BindCallback(&Window::_OnWindowClose));
 
     auto& windowConfig = SharedContext::Instance()->Get<ConfigManager>()->GetWindowConfig();
     m_title = windowConfig.m_title;
@@ -28,9 +27,6 @@ Window::Window()
 
 Window::~Window()
 {
-    auto inputManager = SharedContext::Instance()->Get<InputManager>();
-    inputManager->DelInputBindingCallback(SceneType::None, ib::BindType::FullscreenToggle, "Window_FullscreenToggle");
-    inputManager->DelInputBindingCallback(SceneType::None, ib::BindType::WindowClose, "Window_WindowClose");
 }
 
 std::optional<sf::Event> Window::PollEvent()
@@ -78,7 +74,7 @@ sf::FloatRect Window::GetViewSpace()
     return sf::FloatRect(center - halfSize, size);
 }
 
-void Window::_ToggleFullscreen(const std::any& param)
+void Window::_OnToggleFullscreen(evt::Base* e)
 {
     if (m_state == sf::State::Windowed)
         m_state = sf::State::Fullscreen;
@@ -89,7 +85,7 @@ void Window::_ToggleFullscreen(const std::any& param)
     m_window.create(sf::VideoMode(m_size), m_title, m_style, m_state);
 }
 
-void Window::_WindowClose(const std::any& param)
+void Window::_OnWindowClose(evt::Base* e)
 {
     m_isClose = true;
 }

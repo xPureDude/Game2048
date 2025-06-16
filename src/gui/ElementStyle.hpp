@@ -1,12 +1,12 @@
 #ifndef ELEMENTSTYLE_HPP
 #define ELEMENTSTYLE_HPP
 
+#include <memory>
+#include <string>
+
 #include "tinyxml/tinyxml2.h"
 
 #include "SFML/Graphics.hpp" // IWYU pragma: keep
-
-#include <memory>
-#include <string>
 
 class SharedContext;
 

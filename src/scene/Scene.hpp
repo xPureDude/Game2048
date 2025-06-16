@@ -1,29 +1,16 @@
 #pragma once
 
 #include <any>
-#include <memory>
 
 #include "SFML/Graphics/View.hpp"
 #include "SFML/System/Time.hpp"
+#include "SceneManager.hpp"
+#include "event/EventListenable.hpp"
 
 class Window;
 
-enum class SceneType
+class Scene : public EventListenable
 {
-    None = 0,
-    Intro,
-    MainMenu,
-    Play,
-    Paused,
-    GameOver,
-};
-
-std::string_view TranslateSceneTypeToStringView(SceneType type);
-
-class Scene
-{
-    friend class SceneManager;
-
 public:
     Scene();
     virtual ~Scene();
@@ -34,8 +21,8 @@ public:
     virtual void Update(const sf::Time& elasped) = 0;
     virtual void Render(Window* window) = 0;
 
-    virtual void OnEnter(const std::any& param) = 0;
-    virtual void OnLeave() = 0;
+    virtual void OnEnter(const std::any& param);
+    virtual void OnLeave();
 
     bool IsUpdateTransparent() { return m_updateTransparent; }
     bool IsRenderTransparent() { return m_renderTransparent; }
@@ -47,5 +34,3 @@ protected:
     bool m_renderTransparent;
     sf::View m_view;
 };
-
-using ScenePtr = std::shared_ptr<Scene>;

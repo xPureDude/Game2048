@@ -2,13 +2,8 @@
 
 #include "AtlasAnimation.hpp"
 #include "common/Log.hpp"
+#include "core/SharedContext.hpp"
 #include "resource/TextureManager.hpp"
-
-
-AtlasPackage::AtlasPackage(TextureManager* manager)
-    : AnimationSheet(manager)
-{
-}
 
 bool AtlasPackage::LoadFromXmlElement(tinyxml2::XMLElement* elem)
 {
@@ -17,7 +12,7 @@ bool AtlasPackage::LoadFromXmlElement(tinyxml2::XMLElement* elem)
 
     m_name = elem->Attribute("name");
     m_textureName = elem->Attribute("collectionName");
-    m_texture = m_textureManager->RequestResource(m_textureName);
+    m_texture = SharedContext::Instance()->Get<TextureManager>()->RequestResource(m_textureName);
 
     tinyxml2::XMLElement* animateElem = nullptr;
     for (auto e = elem->FirstChildElement(); e != nullptr; e = e->NextSiblingElement())

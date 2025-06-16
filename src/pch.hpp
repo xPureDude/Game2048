@@ -1,14 +1,6 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#include "tinyxml/tinyxml2.h"
-
-#include "SFML/Audio.hpp"
-#include "SFML/Graphics.hpp"
-#include "SFML/System.hpp"
-#include "SFML/Window.hpp"
-#include "common/Log.hpp"
-
 #include <any>
 #include <cassert>
 #include <format>
@@ -23,5 +15,13 @@
 #include <utility>
 #include <vector>
 
+#include "tinyxml/tinyxml2.h"
+
+#include "SFML/Audio.hpp"
+#include "SFML/Graphics.hpp"
+#include "SFML/System.hpp"
+#include "SFML/Window.hpp"
+#include "common/Log.hpp"
+#include "event/BaseEvent.hpp"
 
 // IWYU pragma: end_keep

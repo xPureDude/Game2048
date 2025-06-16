@@ -2,7 +2,6 @@
 
 #include "Scene.hpp"
 #include "gameplay/Game2048.hpp"
-#include "gui/Label.hpp"
 
 class ScenePlay : public Scene
 {
@@ -21,20 +20,18 @@ public:
 
 private:
     bool _InitGui();
-    void _OnMoveLeft(const std::any& param);
-    void _OnMoveRight(const std::any& param);
-    void _OnMoveUp(const std::any& param);
-    void _OnMoveDown(const std::any& param);
+    void _OnMoveLeft(evt::Base* event);
+    void _OnMoveRight(evt::Base* event);
+    void _OnMoveUp(evt::Base* event);
+    void _OnMoveDown(evt::Base* event);
 
-    void _OnNewGame(const std::any& param);
-    void _OnScoreChange(const std::any& param);
-    void _OnGameOver(const std::any& param);
+    void _OnNewGame(evt::Base* event);
+    void _OnGameOver(evt::Base* event);
 
 private:
     NewGameInfo m_info;
     Game2048* m_game2048;
 
-    std::shared_ptr<gui::Label> m_scoreLabel;
     std::shared_ptr<sf::Texture> m_backgroundTexture;
     sf::RectangleShape m_background;
 };

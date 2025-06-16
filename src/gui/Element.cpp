@@ -1,7 +1,6 @@
 #include "Element.hpp"
 
-#include "Widget.hpp"
-#include "common/Log.hpp"
+#include "GuiComponent.hpp"
 
 namespace gui
 {
@@ -23,9 +22,10 @@ std::optional<Signal> TranslateStringToSignal(const std::string& str)
     return ret;
 }
 
-Element::Element()
-    : m_activate(true),
-      m_state(ElementState::Normal)
+Element::Element(const std::string& name)
+    : m_name(name),
+      m_needReRender(false),
+      m_needUpdateContext(false)
 {
 }
 
@@ -33,52 +33,34 @@ Element::~Element()
 {
 }
 
-void Element::Update(const sf::Time& elapsed)
+void Element::UpdateFrame(const sf::Time& elapsed)
 {
-    _ProcessCallback();
-}
-
-bool Element::HandleInput(const sf::Event& event)
-{
-    if (event.visit<InputVisitorDependent&>(*this))
-        return true;
-    return false;
-}
-
-void Element::Render(sf::RenderTarget& target)
-{
-    _RenderPrimitive(target);
-    if (m_text)
+    if (m_needUpdateContext)
     {
-        target.draw(*m_text);
+        UpdateContext();
+        m_needUpdateContext = false;
+    }
+
+    for (auto& compo : m_components)
+    {
+        compo->UpdateFrame(elapsed);
     }
 }
 
-bool Element::operator()(const sf::Event::MouseMoved& event)
+void Element::Render(sf::RenderTarget* target)
 {
-    sf::Rect rect{GetGlobalPosition(), m_size};
-    if (rect.contains(sf::Vector2f{event.position}))
+    for (auto& compo : m_components)
     {
-        if (m_state == ElementState::Normal)
-        {
-            m_state = ElementState::Hover;
-            _UpdateCurrentState();
-            m_signalQueue.emplace_back(Signal::OnHover, std::any());
-            DBG("Element '{}' OnHover", m_name);
-        }
+        compo->Render(target);
     }
-    else
-    {
-        if (m_state == ElementState::Pressed || m_state == ElementState::Hover)
-        {
-            m_state = ElementState::Normal;
-            _UpdateCurrentState();
-            m_signalQueue.emplace_back(Signal::OnLeave, std::any());
-            DBG("Element '{}' OnDefault", m_name);
-        }
-    }
+}
 
-    return false;
+void Element::UpdateContext()
+{
+    for (auto& compo : m_components)
+    {
+        compo->UpdateContext();
+    }
 }
 
 bool Element::ConnectSignalCallback(Signal sig, const std::string_view& name, CallbackType callback)
@@ -101,116 +83,60 @@ void Element::DisConnectSignalCallback(Signal sig, const std::string_view& name)
         callbacks.erase(iter);
 }
 
-void Element::SetParent(std::shared_ptr<Element> parent)
-{
-    if (!m_parent.expired())
-    {
-        m_parent.lock()->RemoveChild(m_name);
-    }
-    m_parent = std::dynamic_pointer_cast<gui::Widget>(parent);
-
-    if (!m_parent.expired())
-    {
-        m_parent.lock()->SetRedraw(true);
-    }
-}
-
-void Element::SetPosition(const sf::Vector2f& pos)
-{
-    m_position = pos;
-    _UpdatePosition();
-
-    if (m_text)
-    {
-        m_text->setPosition(m_position + m_size / 2.f);
-    }
-
-    _RedrawParent();
-}
-
-void Element::SetSize(const sf::Vector2f& size)
-{
-    m_size = size;
-    _UpdateSize();
-
-    if (m_text)
-    {
-        m_text->setPosition(m_position + m_size / 2.f);
-    }
-
-    _RedrawParent();
-}
-
-void Element::SetText(const sf::String& textStr, TextStyle* style)
-{
-    m_textStr = textStr;
-    if (style)
-        m_textStyle = *style;
-
-    _UpdateText();
-    _RedrawParent();
-}
-
-void Element::SetTextStyle(TextStyle* style)
-{
-    m_textStyle = *style;
-    _UpdateText();
-
-    _RedrawParent();
-}
-
 sf::Vector2f Element::GetGlobalPosition()
 {
-    if (!m_parent.expired())
+    auto localPosition = GetLocalPosition();
+    if (auto baseCompo = GetComponent<ElementBaseComponent>(); baseCompo)
     {
-        return m_parent.lock()->GetGlobalPosition() + m_position;
+        auto parent = baseCompo->GetParent();
+        if (auto ptr = parent.lock())
+        {
+            return ptr->GetGlobalPosition() + localPosition;
+        }
     }
-    return m_position;
+
+    return localPosition;
 }
 
 sf::Vector2f Element::GetLocalPosition()
 {
-    return m_position;
-}
-
-void Element::_UpdateText()
-{
-    if (!m_text)
+    if (auto myTransform = GetComponent<TransformComponent>(); myTransform)
     {
-        if (!m_textStyle.m_font)
-            return;
-        m_text = std::make_shared<sf::Text>(*(m_textStyle.m_font));
+        return myTransform->GetPosition();
     }
-
-    m_text->setString(m_textStr);
-    m_text->setCharacterSize(m_textStyle.m_charSize);
-    m_text->setFillColor(m_textStyle.m_color);
-    m_text->setStyle(m_textStyle.m_style);
-    m_text->setOrigin(m_text->getLocalBounds().getCenter());
-    m_text->setPosition(m_position + m_size / 2.f);
+    return {0, 0};
 }
 
-void Element::_RedrawParent()
+void Element::OnMouseHover()
 {
-    if (!m_parent.expired())
+    for (auto& compo : m_components)
     {
-        m_parent.lock()->SetRedraw(true);
+        compo->OnMouseHover();
     }
 }
 
-void Element::_ProcessCallback()
+void Element::OnMousePress()
 {
-    for (auto& info : m_signalQueue)
+    for (auto& compo : m_components)
     {
-        if (m_callbacks.find(info.m_sig) == m_callbacks.end())
-            continue;
-        auto& callbacks = m_callbacks[info.m_sig];
-        for (auto& callback : callbacks)
-        {
-            callback.second(info.m_data);
-        }
+        compo->OnMousePress();
     }
-    m_signalQueue.clear();
+}
+
+void Element::OnMouseRelease()
+{
+    for (auto& compo : m_components)
+    {
+        compo->OnMouseRelease();
+    }
+}
+
+void Element::OnMouseLeave()
+{
+    for (auto& compo : m_components)
+    {
+        compo->OnMouseLeave();
+    }
 }
 
 } // namespace gui

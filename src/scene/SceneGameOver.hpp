@@ -2,7 +2,6 @@
 #define SCENE_GAMEOVER_HPP
 
 #include "SFML/Graphics/RectangleShape.hpp"
-#include "SFML/Graphics/Text.hpp"
 #include "Scene.hpp"
 
 class SceneGameOver : public Scene
@@ -27,17 +26,15 @@ public:
     virtual void OnLeave() override;
 
 private:
-    bool _InitGui();
-    void _OnFirstButtonClicked(const std::any& param);
-    void _OnBackButtonClicked(const std::any& param);
+    void _OnContinueGameEvent(evt::Base* event);
+    void _OnRetryGameEvent(evt::Base* event);
+    void _OnBackToMenuEvent(evt::Base* event);
 
 private:
     bool m_isWin;
     State m_state;
     sf::Time m_fadeInElapsed;
     sf::RectangleShape m_background;
-    std::shared_ptr<sf::Font> m_font;
-    std::shared_ptr<sf::Text> m_text;
 };
 
 #endif // SCENE_GAMEOVER_HPP

@@ -1,12 +1,9 @@
 #pragma once
 
-#include <any>
-#include <map>
 #include <vector>
 
 #include "SFML/Graphics.hpp" // IWYU pragma: keep
 #include "SFML/System.hpp"   // IWYU pragma: keep
-#include "common/Utility.hpp"
 
 class Game2048;
 
@@ -58,18 +55,6 @@ struct NewGameInfo
     float m_blockSpace;
 };
 
-enum class GameSignal
-{
-    ScoreChange,
-    GameOver,
-};
-
-struct GameSignalInfo
-{
-    GameSignal m_signal;
-    std::any m_param;
-};
-
 class Game2048
 {
     enum class DelayMove
@@ -93,8 +78,6 @@ public:
     void SetPosition(const sf::Vector2f& pos);
 
     sf::Vector2f GetGridPosition(const sf::Vector2<std::size_t>& grid);
-
-    void ConnectGameSignalCallback(GameSignal signal, CallbackType callback);
 
     void OnMoveLeft();
     void OnMoveRight();
@@ -135,7 +118,4 @@ private:
     std::vector<Block*> m_blocks;
     std::vector<Block*> m_blockCache;
     std::vector<std::vector<Block*>> m_board;
-
-    std::vector<GameSignalInfo> m_signalQueue;
-    std::map<GameSignal, std::vector<CallbackType>> m_callbacks;
 };

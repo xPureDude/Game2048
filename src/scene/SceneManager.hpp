@@ -1,9 +1,18 @@
 #pragma once
 
+#include <any>
 #include <set>
 #include <unordered_map>
 
-#include "Scene.hpp"
+#include "SFML/System.hpp" // IWYU pragma: keep
+#include "SceneDefine.hpp"
+
+namespace event
+{
+class Base;
+}
+
+class Scene;
 
 class SceneManager
 {
@@ -11,7 +20,7 @@ public:
     SceneManager() = default;
     ~SceneManager();
 
-    void Update(const sf::Time& elapsed);
+    void UpdateFrame(const sf::Time& elapsed);
     void Render();
 
     // Pop Current Scene && Push New Scene "type"

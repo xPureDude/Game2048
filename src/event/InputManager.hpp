@@ -1,27 +1,38 @@
 #ifndef INPUTMANAGER_HPP
 #define INPUTMANAGER_HPP
 
-#include "InputBinding.hpp"
-#include "scene/SceneDependent.hpp"
+#include <unordered_map>
 
-class InputManager : public SceneDependent
+#include "InputBinding.hpp"
+
+// Input State may have different binding list
+enum InputState
+{
+    GlobalState,
+    SettingState,
+    PlayState
+};
+
+class InputManager
 {
 public:
     InputManager();
     ~InputManager();
 
-    void Update(const sf::Time& elapsed);
+    void Update();
     void HandleInput(const sf::Event& event);
 
-    void SetFocus(bool focus);
+    void SetFocus(bool focus) { m_isFocus = focus; }
+    void SetInputState(InputState state) { m_state = state; }
 
-    bool AddInputBindingCallback(SceneType type, ib::BindType bindType, const std::string_view& name, CallbackType callback);
-    void DelInputBindingCallback(SceneType type, ib::BindType bindType, const std::string_view& name);
+private:
+    void _InitInputBinding();
 
 private:
     bool m_isFocus;
-    InputBindingFactory m_inputBindingFactory;
-    std::map<SceneType, std::map<ib::BindType, ib::BindingPtr>> m_bindings;
+    InputState m_state;
+
+    std::unordered_map<InputState, std::vector<std::shared_ptr<input::Binding>>> m_bindings;
 };
 
 #endif // INPUTMANAGER_HPP

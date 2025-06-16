@@ -1,21 +1,16 @@
 #include "SpriteSheet.hpp"
 
-#include "AnimationSheet.hpp"
 #include "GridAnimation.hpp"
 #include "common/Log.hpp"
+#include "core/SharedContext.hpp"
 #include "resource/TextureManager.hpp"
-
-SpriteSheet::SpriteSheet(TextureManager* manager)
-    : AnimationSheet(manager)
-{
-}
 
 bool SpriteSheet::LoadFromXmlElement(tinyxml2::XMLElement* e)
 {
     m_name = e->Attribute("name");
     m_textureName = e->Attribute("texture_name");
 
-    m_texture = m_textureManager->RequestResource(m_textureName);
+    m_texture = SharedContext::Instance()->Get<TextureManager>()->RequestResource(m_textureName);
 
     for (auto eChild = e->FirstChildElement(); eChild != nullptr; eChild = eChild->NextSiblingElement())
     {

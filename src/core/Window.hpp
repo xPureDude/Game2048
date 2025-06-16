@@ -1,11 +1,11 @@
 #pragma once
 
-#include <any>
 #include <optional>
 #include <string>
 
 #include "SFML/Graphics.hpp" // IWYU pragma: keep
 #include "SFML/Window.hpp"   // IWYU pragma: keep
+#include "event/ScopedEventListener.hpp"
 
 class Window
 {
@@ -40,8 +40,8 @@ public:
     sf::FloatRect GetViewSpace();
 
 private:
-    void _ToggleFullscreen(const std::any& param);
-    void _WindowClose(const std::any& param);
+    void _OnToggleFullscreen(evt::Base* e);
+    void _OnWindowClose(evt::Base* e);
 
 private:
     bool m_isClose;
@@ -52,4 +52,6 @@ private:
     std::int32_t m_style;
     sf::State m_state;
     sf::RenderWindow m_window;
+
+    ScopedEventListener m_eventListener;
 };

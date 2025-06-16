@@ -18,6 +18,10 @@ struct VisualConfig
     std::int32_t m_fps;
 };
 
+struct KeyBindConfig
+{
+};
+
 class ConfigManager
 {
 public:

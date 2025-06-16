@@ -24,10 +24,10 @@ public:
     ~SharedContext();
 
     template <typename T>
-    T* Emplace(Deletor deletor);
+    T* Emplace();
 
     template <typename T, typename... Args>
-    T* Emplace(Deletor deletor, Args... args);
+    T* Emplace(Args... args);
 
     template <typename T>
     void Release();
@@ -44,14 +44,14 @@ private:
 };
 
 template <typename T>
-inline T* SharedContext::Emplace(Deletor deletor)
+inline T* SharedContext::Emplace()
 {
     auto idx = std::type_index(typeid(T));
     if (m_ctxs.find(idx) == m_ctxs.end())
     {
         Context ctx;
         ctx.m_obj = (void*)(new T);
-        ctx.m_deletor = deletor;
+        ctx.m_deletor = [](void* obj) { delete static_cast<T*>(obj); };
         m_ctxs.emplace(idx, ctx);
         m_ctxList.push_back(&m_ctxs[idx]);
     }
@@ -59,14 +59,14 @@ inline T* SharedContext::Emplace(Deletor deletor)
 }
 
 template <typename T, typename... Args>
-inline T* SharedContext::Emplace(Deletor deletor, Args... args)
+inline T* SharedContext::Emplace(Args... args)
 {
     auto idx = std::type_index(typeid(T));
     if (m_ctxs.find(idx) == m_ctxs.end())
     {
         Context ctx;
         ctx.m_obj = (void*)(new T(args...));
-        ctx.m_deletor = deletor;
+        ctx.m_deletor = [](void* obj) { delete static_cast<T*>(obj); };
         m_ctxs.emplace(idx, ctx);
         m_ctxList.push_back(&m_ctxs[idx]);
     }

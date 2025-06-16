@@ -1,30 +1,50 @@
 <TextStrings>
-    <Text id="0">
-        <English string="Begin Game"/>
-        <Chinese string="开始游戏"/>
+    <Text id="begin_game">
+        <English>Begin Game</English>
+        <Chinese>开始游戏</Chinese>
     </Text>
-    <Text id="1">
-        <English string="Quit Game"/>
-        <Chinese string="退出游戏"/>
+    <Text id="game_options">
+        <English>Options</English>
+        <Chinese>游戏设置</Chinese>
     </Text>
-    <Text id="2">
-        <English string="Continue"/>
-        <Chinese string="继续游戏"/>
+    <Text id="quit_game">
+        <English>Quit Game</English>
+        <Chinese>退出游戏</Chinese>
     </Text>
-    <Text id="3">
-        <English string="Replay"/>
-        <Chinese string="重新开始"/>
+    <Text id="continue_game">
+        <English>Continue</English>
+        <Chinese>继续游戏</Chinese>
     </Text>
-    <Text id="4">
-        <English string="You Win !"/>
-        <Chinese string="你获胜了！"/>
+    <Text id="retry_game">
+        <English>Replay</English>
+        <Chinese>重新开始</Chinese>
     </Text>
-    <Text id="5">
-        <English string="You Lose !"/>
-        <Chinese string="你输了！"/>
+    <Text id="you_win">
+        <English>You Win !</English>
+        <Chinese>你获胜了！</Chinese>
     </Text>
-    <Text id="6">
-        <English string="Back To Menu"/>
-        <Chinese string="退回主菜单"/>
+    <Text id="you_lose">
+        <English>You Lose !</English>
+        <Chinese>你输了！</Chinese>
+    </Text>
+    <Text id="back_to_menu">
+        <English>Back To Menu</English>
+        <Chinese>退回主菜单</Chinese>
+    </Text>
+    <Text id="cur_score">
+        <English>Score:{}</English>
+        <Chinese>当前得分:{}</Chinese>
+    </Text>
+    <Text id="best_score">
+        <English>Best Score:{}</English>
+        <Chinese>最高得分:{}</Chinese>
+    </Text>
+    <Text id="lang_english">
+        <English>English</English>
+        <Chinese>英文</Chinese>
+    </Text>
+    <Text id="lang_chinese">
+        <English>Chinese</English>
+        <Chinese>中文</Chinese>
     </Text>
 </TextStrings>

@@ -3,55 +3,54 @@
 
 #include <map>
 
-#include "Button.hpp"
-#include "ElementFactory.hpp"
 #include "ElementStyle.hpp"
-#include "Label.hpp"
-#include "Widget.hpp"
-#include "common/Utility.hpp"
-#include "scene/SceneDependent.hpp"
 
-struct SceneGuiInfo
+enum class GuiLayerType
 {
-    SceneType m_type;
-    std::string_view m_fileName;
-    std::map<std::string_view, CallbackType> m_callbacks;
+    None,
+    Global,
+    MainMenu,
+    Setting,
+    Play,
+    GameOver
 };
 
-class GuiManager : public SceneDependent
+namespace gui
 {
-    using ElementContainer = std::vector<std::shared_ptr<gui::Element>>;
+class Layer;
+} // namespace gui
 
+class GuiManager
+{
 public:
     GuiManager();
     ~GuiManager();
 
-    void Update(const sf::Time& elapsed);
-    void HandleInput(const sf::Event& event);
+    void UpdateFrame(const sf::Time& elapsed);
     void Render();
 
-    void ClearSceneGui(SceneType type);
-    void AddSceneGui(SceneType type, std::shared_ptr<gui::Element> elem);
-    void AddSceneGui(SceneType type, std::vector<std::shared_ptr<gui::Element>>& elem);
+    gui::Layer* GetGuiLayer(GuiLayerType);
 
-    std::optional<ElementContainer> GetAllSceneElements(SceneType type);
-    std::shared_ptr<gui::Element> FindSceneElementByName(SceneType type, const std::string& name);
+    template <typename T>
+    void CreateGuiLayer(GuiLayerType type);
+    void ReleaseGuiLayer(GuiLayerType type);
+
+    void SetCurLayerType(GuiLayerType type) { m_curLayerType = type; }
+
     gui::StyleSheet* FindStyleSheetByName(const std::string& name);
-
     bool LoadStyleSheetsFromFile(const std::string_view& file);
-    bool LoadSceneGuiFromFile(const SceneGuiInfo& info);
 
 private:
-    bool _ParseGuiElements(const SceneGuiInfo& info, std::shared_ptr<gui::Widget> parent, tinyxml2::XMLElement* e);
-    std::shared_ptr<gui::Widget> _ParseWidget(const SceneGuiInfo& info, tinyxml2::XMLElement* e);
-    std::shared_ptr<gui::Button> _ParseButton(const SceneGuiInfo& info, tinyxml2::XMLElement* e);
-    std::shared_ptr<gui::Label> _ParseLabel(const SceneGuiInfo& info, tinyxml2::XMLElement* e);
-
-private:
+    GuiLayerType m_curLayerType;
+    std::map<GuiLayerType, std::unique_ptr<gui::Layer>> m_layers;
     std::map<std::string, gui::StyleSheet*> m_styleSheets;
-    sf::RenderTexture m_target;
-    sf::Sprite m_sprite;
-    std::map<SceneType, ElementContainer> m_elements;
+    sf::RenderTexture m_context;
 };
+
+template <typename T>
+void GuiManager::CreateGuiLayer(GuiLayerType type)
+{
+    m_layers[type] = std::make_unique<T>();
+}
 
 #endif // GUIMANAGER_HPP

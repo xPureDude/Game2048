@@ -5,11 +5,11 @@
 #include "SFML/Graphics/Texture.hpp"
 #include "Scene.hpp"
 
-class SceneMenu : public Scene
+class SceneMainMenu : public Scene
 {
 public:
-    SceneMenu();
-    virtual ~SceneMenu();
+    SceneMainMenu();
+    virtual ~SceneMainMenu();
 
     virtual bool OnCreate() override;
     virtual void OnDestroy() override;
@@ -23,6 +23,7 @@ public:
 private:
     bool _InitGui();
     void _OnBeginGame(const std::any& param);
+    void _OnOpenSetting(const std::any& param);
     void _OnQuitGame(const std::any& param);
 
 private:

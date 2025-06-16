@@ -1,9 +1,11 @@
 #include "InputManager.hpp"
 
+#include "InputBinding.hpp"
+
 InputManager::InputManager()
-    : SceneDependent(),
-      m_isFocus(true)
+    : m_isFocus(true)
 {
+    _InitInputBinding();
 }
 
 InputManager::~InputManager()
@@ -11,30 +13,31 @@ InputManager::~InputManager()
     m_bindings.clear();
 }
 
-void InputManager::Update(const sf::Time& elapsed)
+void InputManager::Update()
 {
     if (m_isFocus == false)
         return;
 
     // update input event binding
-    auto globalBindings = m_bindings.find(SceneType::None);
-
-    // Key hold event
-    for (auto& itBinding : globalBindings->second)
+    if (m_bindings.contains(InputState::GlobalState))
     {
-        if (itBinding.second->IsTriggered())
+        // Key hold event
+        for (auto& itBinding : m_bindings.at(InputState::GlobalState))
         {
-            itBinding.second->TriggerCallbacks();
+            if (itBinding->IsTriggered())
+            {
+                itBinding->TriggerEvent();
+            }
         }
     }
 
-    if (m_bindings.contains(s_curSceneType))
+    if (m_bindings.contains(m_state))
     {
-        for (auto& itBinding : m_bindings[s_curSceneType])
+        for (auto& itBinding : m_bindings[m_state])
         {
-            if (itBinding.second->IsTriggered())
+            if (itBinding->IsTriggered())
             {
-                itBinding.second->TriggerCallbacks();
+                itBinding->TriggerEvent();
             }
         }
     }
@@ -42,57 +45,47 @@ void InputManager::Update(const sf::Time& elapsed)
 
 void InputManager::HandleInput(const sf::Event& event)
 {
-    auto globalBindings = m_bindings.find(SceneType::None);
-
-    for (auto& itBinding : globalBindings->second)
+    if (m_bindings.contains(InputState::GlobalState))
     {
-        event.visit(*(itBinding.second));
+        for (auto& itBinding : m_bindings.at(InputState::GlobalState))
+        {
+            if (event.visit(*(itBinding)))
+            {
+                return;
+            }
+        }
     }
 
-    if (m_bindings.contains(s_curSceneType))
+    if (m_bindings.contains(m_state))
     {
-        for (auto& itBinding : m_bindings[s_curSceneType])
+        for (auto& itBinding : m_bindings.at(m_state))
         {
-            event.visit(*(itBinding.second));
+            if (event.visit(*(itBinding)))
+            {
+                return;
+            }
         }
     }
 }
 
-void InputManager::SetFocus(bool focus)
+void InputManager::_InitInputBinding()
 {
-    m_isFocus = focus;
-}
-
-bool InputManager::AddInputBindingCallback(SceneType sceneType, ib::BindType bindType, const std::string_view& name, CallbackType callback)
-{
-    auto& sceneBindings = m_bindings[sceneType];
-
-    if (sceneBindings.find(bindType) == sceneBindings.end())
+    // Global InputBinding
     {
-        // Try create new Binding;
-        auto newBindPtr = m_inputBindingFactory.CreateInputBinding(bindType);
-        if (newBindPtr == nullptr)
-        {
-            return false;
-        }
-        sceneBindings.emplace(bindType, newBindPtr);
+        auto& bindings = m_bindings[InputState::GlobalState];
+        bindings.push_back(std::make_shared<input::MouseMove>());
+        bindings.push_back(std::make_shared<input::MouseButtonDown>());
+        bindings.push_back(std::make_shared<input::MouseButtonUp>());
+        bindings.push_back(std::make_shared<input::WindowClose>());
+        bindings.push_back(std::make_shared<input::FullscreenToggle>());
     }
 
-    auto& bindPtr = sceneBindings[bindType];
-
-    bindPtr->AddBindingCallback(name, callback);
-    return true;
-}
-
-void InputManager::DelInputBindingCallback(SceneType type, ib::BindType bindType, const std::string_view& name)
-{
-    auto sceneIter = m_bindings.find(type);
-    if (sceneIter != m_bindings.end())
+    // Play InputBinding
     {
-        auto bindIter = sceneIter->second.find(bindType);
-        if (bindIter != sceneIter->second.end())
-        {
-            bindIter->second->DelBindingCallback(name);
-        }
+        auto& bindings = m_bindings[InputState::PlayState];
+        bindings.push_back(std::make_shared<input::MoveLeft>());
+        bindings.push_back(std::make_shared<input::MoveRight>());
+        bindings.push_back(std::make_shared<input::MoveUp>());
+        bindings.push_back(std::make_shared<input::MoveDown>());
     }
 }

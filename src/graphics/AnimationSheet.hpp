@@ -1,20 +1,22 @@
 #pragma once
 
-#include "SFML/Graphics.hpp" // IWYU pragma: keep
-#include "SFML/System.hpp"   // IWYU pragma: keep
-#include "common/predeclare.hpp"
+#include <string>
+
 #include "tinyxml/tinyxml2.h"
 
-#include <string>
+#include "SFML/Graphics.hpp" // IWYU pragma: keep
+#include "SFML/System.hpp"   // IWYU pragma: keep
+
+class Animation;
 
 class AnimationSheet
 {
 public:
-    AnimationSheet(TextureManager* manager);
+    AnimationSheet();
     virtual ~AnimationSheet();
 
     void Update(const sf::Time& elapsed);
-    void Render(Window* window);
+    void Render(sf::RenderTarget* target);
 
     void SetDirection(bool left);
     void SetPosition(const sf::Vector2f& pos);
@@ -26,7 +28,6 @@ public:
     bool GetDirection() { return m_left; }
     sf::FloatRect GetGlobalBounds();
     sf::Vector2u GetTextureSize() { return m_texture->getSize(); }
-    TextureManager* GetTextureManager() { return m_textureManager; }
     std::shared_ptr<sf::Texture> GetTexture() { return m_texture; }
     Animation* GetCurAnimation() { return m_curAnimation; }
     Animation* GetAnimation(const std::string& name);
@@ -39,7 +40,6 @@ public:
 
 protected:
     std::string m_name;
-    TextureManager* m_textureManager;
     std::string m_textureName;
     std::shared_ptr<sf::Texture> m_texture;
 

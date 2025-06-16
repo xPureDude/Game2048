@@ -1,23 +1,14 @@
 #ifndef TEXTSTRING_MANAGER_HPP
 #define TEXTSTRING_MANAGER_HPP
 
-#include "SFML/System/String.hpp"
-
-#include <map>
 #include <string>
 
-enum class TextString : std::uint64_t
-{
-    BEGIN_GAME,
-    QUIT_GAME,
-    CONTINUE,
-    REPLAY,
-    YOU_WIN,
-    YOU_LOSE,
-    BACK_TO_MENU
-};
+#include "SFML/System/String.hpp"
+#include "event/EventListenable.hpp"
 
-class TextStringManager
+#include "unordered_map"
+
+class TextStringManager : public EventListenable
 {
 public:
     TextStringManager();
@@ -25,10 +16,16 @@ public:
 
     bool LoadTextStringFromFile(const std::string_view& file, const std::string& local);
 
-    sf::String FindTextString(TextString id);
+    sf::String FindTextString(const std::string& id);
+
+    static sf::String PackFormatString(const sf::String& str, const std::vector<std::string>& args);
 
 private:
-    std::map<TextString, sf::String> m_textStrings;
+    void _OnLanguageChanged(evt::Base* event);
+
+private:
+    std::string_view m_filePath;
+    std::unordered_map<std::string, sf::String> m_textStrings;
 };
 
 #endif // LOCALIZE_MANAGER_HPP

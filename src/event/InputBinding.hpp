@@ -1,101 +1,123 @@
-#ifndef INPUTBINDING_HPP
-#define INPUTBINDING_HPP
+#ifndef Binding_HPP
+#define Binding_HPP
 
 #include <any>
-#include <map>
 
 #include "InputVisitorDependent.hpp"
-#include "common/Utility.hpp"
 
-namespace ib
+namespace input
 {
-
-enum class BindType
-{
-    WindowClose,
-    FullscreenToggle,
-
-    MoveLeft,
-    MoveRight,
-    MoveUp,
-    MoveDown,
-};
 
 class Binding : public InputVisitorDependent
 {
 public:
-    Binding(BindType bind);
+    Binding();
     virtual ~Binding();
 
-    void AddBindingCallback(const std::string_view& name, CallbackType callback);
-    void DelBindingCallback(const std::string_view& name);
-    void TriggerCallbacks();
+    void TriggerEvent();
 
     bool IsTriggered() { return m_isTriggered; }
+    void SetTriggered(bool flag) { m_isTriggered = flag; }
 
 protected:
-    BindType m_bind;
+    virtual void _DoTriggerEvent() = 0;
+
+protected:
     bool m_isTriggered;
     std::any m_param;
-    std::map<std::string_view, CallbackType> m_callbacks;
 };
-
-using BindingPtr = std::shared_ptr<Binding>;
 
 class WindowClose : public Binding
 {
 public:
-    WindowClose();
-
     virtual bool operator()(const sf::Event::Closed& event) override;
+
+protected:
+    virtual void _DoTriggerEvent() override;
 };
 
 class FullscreenToggle : public Binding
 {
 public:
-    FullscreenToggle();
-
     virtual bool operator()(const sf::Event::KeyPressed& event) override;
+
+protected:
+    virtual void _DoTriggerEvent() override;
+};
+
+class MouseMove : public Binding
+{
+public:
+    virtual bool operator()(const sf::Event::MouseMoved& event) override;
+
+protected:
+    virtual void _DoTriggerEvent() override;
+
+private:
+    sf::Vector2f m_curPos;
+    sf::Vector2f m_prevPos;
+};
+
+class MouseButtonDown : public Binding
+{
+public:
+    virtual bool operator()(const sf::Event::MouseButtonPressed& event) override;
+
+protected:
+    virtual void _DoTriggerEvent() override;
+
+private:
+    sf::Mouse::Button m_button;
+};
+
+class MouseButtonUp : public Binding
+{
+public:
+    virtual bool operator()(const sf::Event::MouseButtonReleased& event) override;
+
+protected:
+    virtual void _DoTriggerEvent() override;
+
+private:
+    sf::Mouse::Button m_button;
 };
 
 class MoveLeft : public Binding
 {
 public:
-    MoveLeft();
-
     virtual bool operator()(const sf::Event::KeyPressed& event) override;
+
+protected:
+    virtual void _DoTriggerEvent() override;
 };
 
 class MoveRight : public Binding
 {
 public:
-    MoveRight();
-
     virtual bool operator()(const sf::Event::KeyPressed& event) override;
+
+protected:
+    virtual void _DoTriggerEvent() override;
 };
 
 class MoveUp : public Binding
 {
 public:
-    MoveUp();
-
     virtual bool operator()(const sf::Event::KeyPressed& event) override;
+
+protected:
+    virtual void _DoTriggerEvent() override;
 };
 
 class MoveDown : public Binding
 {
 public:
-    MoveDown();
-
     virtual bool operator()(const sf::Event::KeyPressed& event) override;
+
+protected:
+    virtual void _DoTriggerEvent() override;
 };
 
-} // namespace ib
-
-class InputBindingFactory final
-{
-public:
-    ib::BindingPtr CreateInputBinding(ib::BindType type);
-};
+} // namespace input
 
 #endif // EVENTBINDING_HPP

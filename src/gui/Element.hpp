@@ -2,14 +2,16 @@
 #define ELEMENT_HPP
 
 #include <map>
+#include <optional>
 #include <string>
 
-#include "ElementStyle.hpp"
+#include "SFML/Graphics.hpp" // IWYU pragma: keep
 #include "common/Utility.hpp"
-#include "event/InputVisitorDependent.hpp"
 
 namespace gui
 {
+
+class Component;
 
 enum class Signal
 {
@@ -35,67 +37,112 @@ enum class ElementState
 {
     Normal,
     Hover,
-    Pressed,
-    Disable,
+    Pressed
 };
 
 class Widget;
 
-class Element : public InputVisitorDependent
+class Element
 {
 public:
-    Element();
+    Element(const std::string& name);
     virtual ~Element();
 
-    virtual void Update(const sf::Time& elapsed);
-    virtual bool HandleInput(const sf::Event& event);
-    void Render(sf::RenderTarget& target);
+    void UpdateFrame(const sf::Time& elapsed);
+    void Render(sf::RenderTarget* target);
 
-    virtual bool operator()(const sf::Event::MouseMoved& event) override;
+    void UpdateContext();
 
     bool ConnectSignalCallback(Signal sig, const std::string_view& name, CallbackType callback);
     void DisConnectSignalCallback(Signal sig, const std::string_view& name);
 
     void SetName(const std::string& name) { m_name = name; }
-    void SetParent(std::shared_ptr<Element> parent);
-    void SetPosition(const sf::Vector2f& pos);
-    void SetSize(const sf::Vector2f& size);
-    void SetText(const sf::String& textStr, TextStyle* style = nullptr);
-    void SetTextStyle(TextStyle* style);
+    void SetNeedUpdateContext(bool flag) { m_needUpdateContext = flag; }
+    void SetNeedReRender(bool flag) { m_needReRender = flag; }
+
+    std::string GetName() { return m_name; }
+    bool GetNeedUpdateContext() { return m_needUpdateContext; }
+    bool GetNeedReRender() { return m_needReRender; }
 
     sf::Vector2f GetGlobalPosition();
     sf::Vector2f GetLocalPosition();
-    std::string GetName() { return m_name; }
-    sf::String GetText() { return m_textStr; }
-    TextStyle* GetTextStyle() { return &m_textStyle; }
 
-protected:
-    void _UpdateText();
+    void OnMouseHover();
+    void OnMousePress();
+    void OnMouseRelease();
+    void OnMouseLeave();
+
+    template <typename T>
+    Element* AddComponent(typename T::ParamType& param);
+
+    template <typename T>
+    void DelComponent();
+
+    template <typename T>
+    T* GetComponent();
 
 private:
     void _RedrawParent();
-    void _ProcessCallback();
-    virtual void _RenderPrimitive(sf::RenderTarget& target) = 0;
-    virtual void _UpdateCurrentState() {}
-    virtual void _UpdatePosition() {}
-    virtual void _UpdateSize() {}
 
 protected:
-    std::weak_ptr<Widget> m_parent;
-    bool m_activate;
-    ElementState m_state;
-
     std::string m_name;
-    sf::Vector2f m_position; // leftTop corner
-    sf::Vector2f m_size;
+    bool m_needUpdateContext;
+    bool m_needReRender;
 
-    sf::String m_textStr;
-    TextStyle m_textStyle;
-    std::shared_ptr<sf::Text> m_text;
+    std::vector<std::shared_ptr<Component>> m_components;
+    std::vector<std::shared_ptr<Element>> m_childs;
 
     std::vector<SignalTriggerInfo> m_signalQueue;
     std::map<Signal, std::map<std::string_view, CallbackType>> m_callbacks;
 };
+
+template <typename T>
+Element* Element::AddComponent(typename T::ParamType& param)
+{
+    for (auto& ptr : m_components)
+    {
+        if (std::dynamic_pointer_cast<T>(ptr))
+        {
+            return this;
+        }
+    }
+
+    param.m_owner = this;
+    auto comp = std::make_shared<T>(param);
+    m_components.push_back(comp);
+
+    SetNeedUpdateContext(true);
+    SetNeedReRender(true);
+    return this;
+}
+
+template <typename T>
+void Element::DelComponent()
+{
+    for (auto iter = m_components.begin(); iter != m_components.end(); ++iter)
+    {
+        if (auto ret = std::dynamic_pointer_cast<T>(*iter))
+        {
+            iter = m_components.erase(iter);
+            SetNeedUpdateContext(true);
+            SetNeedReRender(true);
+            break;
+        }
+    }
+}
+
+template <typename T>
+T* Element::GetComponent()
+{
+    for (auto& ptr : m_components)
+    {
+        if (auto ret = std::dynamic_pointer_cast<T>(ptr))
+        {
+            return ret.get();
+        }
+    }
+    return nullptr;
+}
 
 } // namespace gui
 

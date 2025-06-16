@@ -2,7 +2,8 @@
 
 #include "SceneManager.hpp"
 
-#include "SceneDependent.hpp"
+#include "Scene.hpp"
+#include "SceneFactory.hpp"
 #include "common/Log.hpp"
 #include "core/SharedContext.hpp"
 #include "core/Window.hpp"
@@ -17,7 +18,7 @@ SceneManager::~SceneManager()
     m_sceneMap.clear();
 }
 
-void SceneManager::Update(const sf::Time& elapsed)
+void SceneManager::UpdateFrame(const sf::Time& elapsed)
 {
     if (m_sceneVec.empty() == true)
         return;
@@ -89,35 +90,34 @@ void SceneManager::Render()
     }
 }
 
-void SceneManager::ChangeScene(SceneType type, const std::any& param)
+void SceneManager::ChangeScene(SceneType sceneType, const std::any& param)
 {
-    if (m_sceneVec.back() == type)
+    if (m_sceneVec.back() == sceneType)
         return;
 
     PopScene();
-    PushScene(type, param);
+    PushScene(sceneType, param);
 }
 
-void SceneManager::PushScene(SceneType type, const std::any& param)
+void SceneManager::PushScene(SceneType sceneType, const std::any& param)
 {
-    if (m_sceneMap.contains(type))
+    if (m_sceneMap.contains(sceneType))
     {
-        m_sceneVec.erase(std::find(m_sceneVec.begin(), m_sceneVec.end(), type));
-        m_sceneVec.emplace_back(type);
+        m_sceneVec.erase(std::find(m_sceneVec.begin(), m_sceneVec.end(), sceneType));
+        m_sceneVec.push_back(sceneType);
     }
     else
     {
-        if (_CreateScene(type) != true)
+        if (_CreateScene(sceneType) != true)
         {
             return;
         }
     }
-    auto scene = m_sceneMap[type];
+    auto scene = m_sceneMap[sceneType];
     scene->OnEnter(param);
-    DBG("SceneManager::PushScene, SceneType: {} OnEnter", TranslateSceneTypeToStringView(type));
+    DBG("SceneManager::PushScene, SceneType: {} OnEnter", SceneType2String(sceneType));
 
     // Inform SceneType related Manager
-    SceneDependent::ChangeCurrentSceneType(type);
     SharedContext::Instance()->Get<Window>()->SetView(scene->GetView());
 }
 
@@ -128,12 +128,8 @@ void SceneManager::PopScene()
     auto lastScene = m_sceneMap[m_sceneVec.back()];
     lastScene->OnLeave();
 
-    DBG("SceneManager::PopScene, SceneType: {} OnLeave", TranslateSceneTypeToStringView(m_sceneVec.back()));
+    DBG("SceneManager::PopScene, SceneType: {} OnLeave", SceneType2String(m_sceneVec.back()));
     m_removeLater.insert(m_sceneVec.back());
-
-    if (m_sceneVec.size() < 2)
-        return;
-    SceneDependent::ChangeCurrentSceneType(m_sceneVec[m_sceneVec.size() - 2]);
 }
 
 void SceneManager::ProcessRemoves()
@@ -145,12 +141,12 @@ void SceneManager::ProcessRemoves()
     m_removeLater.clear();
 }
 
-bool SceneManager::_CreateScene(SceneType type)
+bool SceneManager::_CreateScene(SceneType sceneType)
 {
-    std::shared_ptr<Scene> scene = SceneFactory::CreateScene(type);
+    std::shared_ptr<Scene> scene = SceneFactory::CreateScene(sceneType);
     if (scene == nullptr)
     {
-        DBG("SceneManager::_CreateScene failed, Type {} not found", static_cast<int>(type));
+        DBG("SceneManager::_CreateScene failed, Type {} not found", SceneType2String(sceneType));
         return false;
     }
 
@@ -159,23 +155,24 @@ bool SceneManager::_CreateScene(SceneType type)
         scene->OnDestroy();
         return false;
     }
-    m_sceneVec.push_back(type);
-    m_sceneMap.emplace(type, scene);
+    m_sceneVec.push_back(sceneType);
+
+    m_sceneMap.emplace(sceneType, scene);
 
     return true;
 }
 
-void SceneManager::_DestroyScene(SceneType type)
+void SceneManager::_DestroyScene(SceneType sceneType)
 {
-    if (m_sceneMap.contains(type))
+    if (m_sceneMap.contains(sceneType))
     {
-        m_sceneMap[type]->OnDestroy();
-        m_sceneMap.erase(type);
-        m_sceneVec.erase(std::find(m_sceneVec.begin(), m_sceneVec.end(), type));
+        m_sceneMap[sceneType]->OnDestroy();
+        m_sceneMap.erase(sceneType);
+        m_sceneVec.erase(std::find(m_sceneVec.begin(), m_sceneVec.end(), sceneType));
     }
 }
 
-bool SceneManager::_IsInRemoveLater(SceneType type)
+bool SceneManager::_IsInRemoveLater(SceneType sceneType)
 {
-    return m_removeLater.find(type) != m_removeLater.end();
+    return m_removeLater.find(sceneType) != m_removeLater.end();
 }

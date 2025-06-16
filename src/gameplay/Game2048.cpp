@@ -5,6 +5,8 @@
 #include "common/Log.hpp"
 #include "common/Random.hpp"
 #include "core/SharedContext.hpp"
+#include "event/EventManager.hpp"
+#include "event/SceneEvent.hpp"
 
 BlockInfo::BlockInfo(sf::Texture* texture, const sf::IntRect& rect)
 {
@@ -156,22 +158,10 @@ void Game2048::Update(const sf::Time& elapsed)
         if (_CheckLose())
         {
             DBG("Game Lose, total score: {}", m_score);
-            std::any isWin = std::make_any<bool>(false);
-            m_signalQueue.emplace_back(GameSignal::GameOver, isWin);
+            auto event = SharedContext::Instance()->Get<EventManager>()->PushEvent<evt::GameOver>();
+            event->m_isWin = false;
         }
     }
-
-    for (auto& signal : m_signalQueue)
-    {
-        if (m_callbacks.contains(signal.m_signal))
-        {
-            for (auto& callback : m_callbacks[signal.m_signal])
-            {
-                callback(signal.m_param);
-            }
-        }
-    }
-    m_signalQueue.clear();
 
     _DelayMove();
 }
@@ -216,6 +206,8 @@ void Game2048::OnNewGame(const NewGameInfo& info)
     _ResetBoard();
     _CreateNewBlock();
     _CreateNewBlock();
+
+    SharedContext::Instance()->Get<EventManager>()->PushEvent<evt::ScoreChange>()->m_curScore = m_score;
 }
 
 void Game2048::SetPosition(const sf::Vector2f& pos)
@@ -230,11 +222,6 @@ sf::Vector2f Game2048::GetGridPosition(const sf::Vector2<std::size_t>& grid)
     auto xpos = (col + 1) * m_blockSpace + col * m_blockSize + m_blockSize / 2.f;
     auto ypos = (row + 1) * m_blockSpace + row * m_blockSize + m_blockSize / 2.f;
     return {xpos, ypos};
-}
-
-void Game2048::ConnectGameSignalCallback(GameSignal signal, CallbackType callback)
-{
-    m_callbacks[signal].push_back(callback);
 }
 
 void Game2048::OnMoveLeft()
@@ -617,7 +604,7 @@ void Game2048::_OnMovingState()
 
 void Game2048::_OnGrowingState()
 {
-    bool growEnd = true;
+    bool growEnd = false;
     bool scoreChange = false;
     bool isWin = false;
     for (auto i = 0; i < m_blocks.size(); ++i)
@@ -626,30 +613,26 @@ void Game2048::_OnGrowingState()
 
         if (block->m_state == BlockState::Idle)
         {
-            // if (!m_isContinue && block->m_index == m_colCount * m_rowCount - 6)
-            if (!m_isContinue && block->m_index == m_colCount)
+            if (!m_isContinue && block->m_index == m_colCount * m_rowCount - 6)
             {
                 // Win
                 isWin = true;
             }
             scoreChange = true;
-        }
-        else
-        {
-            growEnd = false;
-            DBG("Block is growing: {},{}", block->m_originGrid.x, block->m_originGrid.y);
+            growEnd = true;
         }
     }
 
     if (scoreChange)
     {
-        std::any param = std::make_any<std::size_t>(m_score);
-        m_signalQueue.emplace_back(GameSignal::ScoreChange, param);
+        auto scoreChange = SharedContext::Instance()->Get<EventManager>()->PushEvent<evt::ScoreChange>();
+        scoreChange->m_curScore = m_score;
     }
 
     if (isWin)
     {
-        m_signalQueue.emplace_back(GameSignal::GameOver, isWin);
+        auto gameOver = SharedContext::Instance()->Get<EventManager>()->PushEvent<evt::GameOver>();
+        gameOver->m_isWin = true;
         m_isContinue = true;
     }
 

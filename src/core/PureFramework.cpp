@@ -4,6 +4,7 @@
 #include "SharedContext.hpp"
 #include "Window.hpp"
 #include "common/Random.hpp"
+#include "event/EventManager.hpp"
 #include "event/InputManager.hpp"
 #include "gui/GuiManager.hpp"
 #include "resource/FontManager.hpp"
@@ -27,15 +28,16 @@ PureFramework::~PureFramework()
 
 bool PureFramework::Init()
 {
-    SharedContext::Instance()->Emplace<ConfigManager>([](void* obj) { delete (ConfigManager*)obj; });
-    SharedContext::Instance()->Emplace<Random>([](void* obj) { delete (Random*)obj; });
-    SharedContext::Instance()->Emplace<TextStringManager>([](void* obj) { delete (TextStringManager*)obj; });
-    SharedContext::Instance()->Emplace<TextureManager>([](void* obj) { delete (TextureManager*)obj; });
-    SharedContext::Instance()->Emplace<FontManager>([](void* obj) { delete (FontManager*)obj; });
-    SharedContext::Instance()->Emplace<InputManager>([](void* obj) { delete (InputManager*)obj; });
-    SharedContext::Instance()->Emplace<Window>([](void* obj) { delete (Window*)obj; });
-    SharedContext::Instance()->Emplace<GuiManager>([](void* obj) { delete (GuiManager*)obj; });
-    SharedContext::Instance()->Emplace<SceneManager>([](void* obj) { delete (SceneManager*)obj; });
+    SharedContext::Instance()->Emplace<ConfigManager>();
+    SharedContext::Instance()->Emplace<Random>();
+    SharedContext::Instance()->Emplace<InputManager>();
+    SharedContext::Instance()->Emplace<EventManager>();
+    SharedContext::Instance()->Emplace<TextStringManager>();
+    SharedContext::Instance()->Emplace<TextureManager>();
+    SharedContext::Instance()->Emplace<FontManager>();
+    SharedContext::Instance()->Emplace<Window>();
+    SharedContext::Instance()->Emplace<GuiManager>();
+    SharedContext::Instance()->Emplace<SceneManager>();
 
     return true;
 }
@@ -69,9 +71,8 @@ void PureFramework::Run()
 
 void PureFramework::Update()
 {
-    SharedContext::Instance()->Get<InputManager>()->Update(m_elasped);
-    SharedContext::Instance()->Get<GuiManager>()->Update(m_elasped);
-    SharedContext::Instance()->Get<SceneManager>()->Update(m_elasped);
+    SharedContext::Instance()->Get<GuiManager>()->UpdateFrame(m_elasped);
+    SharedContext::Instance()->Get<SceneManager>()->UpdateFrame(m_elasped);
 }
 
 void PureFramework::Render()
@@ -85,11 +86,13 @@ void PureFramework::Render()
 void PureFramework::HandleEvent()
 {
     Window* window = SharedContext::Instance()->Get<Window>();
+    InputManager* inputManager = SharedContext::Instance()->Get<InputManager>();
     while (const std::optional event = window->PollEvent())
     {
-        SharedContext::Instance()->Get<InputManager>()->HandleInput(event.value());
-        SharedContext::Instance()->Get<GuiManager>()->HandleInput(event.value());
+        inputManager->HandleInput(event.value());
     }
+    SharedContext::Instance()->Get<InputManager>()->Update();
+    SharedContext::Instance()->Get<EventManager>()->DispatchEvents();
 }
 
 void PureFramework::LateUpdate()

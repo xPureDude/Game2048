@@ -2,12 +2,11 @@
 
 #include "Animation.hpp"
 #include "common/Log.hpp"
-#include "core/Window.hpp"
+#include "core/SharedContext.hpp"
 #include "resource/TextureManager.hpp"
 
-AnimationSheet::AnimationSheet(TextureManager* manager)
-    : m_textureManager(manager),
-      m_left(true),
+AnimationSheet::AnimationSheet()
+    : m_left(true),
       m_curAnimation(nullptr)
 {
 }
@@ -29,10 +28,10 @@ void AnimationSheet::Update(const sf::Time& elapsed)
         m_curAnimation->Update(elapsed);
 }
 
-void AnimationSheet::Render(Window* window)
+void AnimationSheet::Render(sf::RenderTarget* target)
 {
     if (m_curAnimation != nullptr)
-        window->Render(m_curAnimation->GetSprite());
+        target->draw(m_curAnimation->GetSprite());
 }
 
 void AnimationSheet::SetPosition(const sf::Vector2f& pos)
@@ -54,7 +53,7 @@ void AnimationSheet::SetDirection(bool left)
 void AnimationSheet::SetTextureName(const std::string& name)
 {
     m_name = name;
-    m_texture = m_textureManager->RequestResource(name);
+    m_texture = SharedContext::Instance()->Get<TextureManager>()->RequestResource(name);
     assert(m_texture);
 }
 

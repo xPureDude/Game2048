@@ -5,7 +5,6 @@
 #include "common/Log.hpp"
 
 SheetStorage::SheetStorage()
-    : m_manager(nullptr)
 {
 }
 
@@ -40,7 +39,7 @@ bool SheetStorage::LoadAtlasPackageFromXml(const std::string& file)
     {
         if (std::strcmp(e->Value(), "AtlasPackage") == 0)
         {
-            AtlasPackage* sheet = new AtlasPackage(m_manager);
+            AtlasPackage* sheet = new AtlasPackage;
             if (sheet->LoadFromXmlElement(e) == false)
             {
                 delete sheet;

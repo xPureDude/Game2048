@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "SFML/Graphics.hpp" // IWYU pragma: keep
+#include "common/Log.hpp"
 
 struct ResourceHead
 {
@@ -113,7 +114,10 @@ std::shared_ptr<T> ResourceManager<T>::RequestResource(const std::string& name)
 {
     auto itInfo = m_resources.find(name);
     if (itInfo == m_resources.end())
+    {
+        ERR("ResourceManager::RequestResource: Resource not found, name: {}", name);
         return nullptr;
+    }
 
     return itInfo->second.Get();
 }
