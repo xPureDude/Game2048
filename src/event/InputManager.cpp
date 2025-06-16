@@ -68,24 +68,47 @@ void InputManager::HandleInput(const sf::Event& event)
     }
 }
 
+bool InputManager::CheckAction(const std::string_view& action)
+{
+    if (m_actions.contains(m_state))
+    {
+        auto& actions = m_actions.at(m_state);
+        if (actions.contains(action))
+        {
+            return actions.at(action)->CheckTriggered();
+        }
+    }
+    return false;
+}
+
 void InputManager::_InitInputBinding()
 {
     // Global InputBinding
     {
         auto& bindings = m_bindings[InputState::GlobalState];
-        bindings.push_back(std::make_shared<input::MouseMove>());
-        bindings.push_back(std::make_shared<input::MouseButtonDown>());
-        bindings.push_back(std::make_shared<input::MouseButtonUp>());
-        bindings.push_back(std::make_shared<input::WindowClose>());
-        bindings.push_back(std::make_shared<input::FullscreenToggle>());
+        bindings.push_back(std::make_shared<input::binding::MouseMove>());
+        bindings.push_back(std::make_shared<input::binding::MouseButtonDown>());
+        bindings.push_back(std::make_shared<input::binding::MouseButtonUp>());
+        bindings.push_back(std::make_shared<input::binding::WindowClose>());
+        bindings.push_back(std::make_shared<input::binding::FullscreenToggle>());
     }
 
     // Play InputBinding
     {
         auto& bindings = m_bindings[InputState::PlayState];
-        bindings.push_back(std::make_shared<input::MoveLeft>());
-        bindings.push_back(std::make_shared<input::MoveRight>());
-        bindings.push_back(std::make_shared<input::MoveUp>());
-        bindings.push_back(std::make_shared<input::MoveDown>());
+        bindings.push_back(std::make_shared<input::binding::PauseGame>());
+        bindings.push_back(std::make_shared<input::binding::MoveLeft>());
+        bindings.push_back(std::make_shared<input::binding::MoveRight>());
+        bindings.push_back(std::make_shared<input::binding::MoveUp>());
+        bindings.push_back(std::make_shared<input::binding::MoveDown>());
+    }
+
+    // Play InputAction
+    {
+        auto& actions = m_actions[InputState::PlayState];
+        actions["MoveLeft"] = std::make_shared<input::action::MoveLeft>();
+        actions["MoveRight"] = std::make_shared<input::action::MoveRight>();
+        actions["MoveUp"] = std::make_shared<input::action::MoveUp>();
+        actions["MoveDown"] = std::make_shared<input::action::MoveDown>();
     }
 }

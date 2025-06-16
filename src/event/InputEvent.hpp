@@ -7,6 +7,11 @@
 namespace evt
 {
 
+struct PauseGame : public InputBase
+{
+    EVENT_STATIC_NAME(PauseGame);
+};
+
 struct MouseMove : public InputBase
 {
     EVENT_STATIC_NAME(MouseMove);

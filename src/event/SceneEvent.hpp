@@ -18,4 +18,5 @@ struct GameOver : public SceneBase
 
     bool m_isWin{false};
 };
+
 } // namespace evt

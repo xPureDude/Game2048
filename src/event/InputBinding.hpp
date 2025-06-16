@@ -7,6 +7,8 @@
 
 namespace input
 {
+namespace binding
+{
 
 class Binding : public InputVisitorDependent
 {
@@ -37,6 +39,15 @@ protected:
 };
 
 class FullscreenToggle : public Binding
+{
+public:
+    virtual bool operator()(const sf::Event::KeyPressed& event) override;
+
+protected:
+    virtual void _DoTriggerEvent() override;
+};
+
+class PauseGame : public Binding
 {
 public:
     virtual bool operator()(const sf::Event::KeyPressed& event) override;
@@ -118,6 +129,7 @@ protected:
     virtual void _DoTriggerEvent() override;
 };
 
+} // namespace binding
 } // namespace input
 
 #endif // EVENTBINDING_HPP

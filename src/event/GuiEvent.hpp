@@ -20,11 +20,6 @@ struct RetryGame : public GuiBase
     EVENT_STATIC_NAME(RetryGame);
 };
 
-struct PauseGame : public GuiBase
-{
-    EVENT_STATIC_NAME(PauseGame);
-};
-
 struct ContinueGame : public GuiBase
 {
     EVENT_STATIC_NAME(ContinueGame);

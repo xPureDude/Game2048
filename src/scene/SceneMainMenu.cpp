@@ -76,8 +76,9 @@ bool SceneMainMenu::_InitGui()
 void SceneMainMenu::_OnBeginGame(const std::any& param)
 {
     // Note: Temp default 4x4
-    std::any sceneParam = std::make_any<std::size_t>(4);
-    SharedContext::Instance()->Get<SceneManager>()->ChangeScene(SceneType::Play, sceneParam);
+    ScenePlayParam scenePlayParam;
+    scenePlayParam.m_isContinue = false;
+    SharedContext::Instance()->Get<SceneManager>()->ChangeScene(SceneType::Play, std::make_any<ScenePlayParam>(scenePlayParam));
 }
 
 void SceneMainMenu::_OnOpenSetting(const std::any& param)

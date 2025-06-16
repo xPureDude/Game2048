@@ -7,7 +7,8 @@
 
 namespace input
 {
-
+namespace binding
+{
 Binding::Binding()
     : m_isTriggered(false)
 {
@@ -49,6 +50,22 @@ bool FullscreenToggle::operator()(const sf::Event::KeyPressed& event)
 void FullscreenToggle::_DoTriggerEvent()
 {
     SharedContext::Instance()->Get<EventManager>()->PushEvent<evt::FullscreenToggle>();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+bool PauseGame::operator()(const sf::Event::KeyPressed& event)
+{
+    if (event.scancode == sf::Keyboard::Scancode::Escape)
+    {
+        m_isTriggered = true;
+        return true;
+    }
+    return false;
+}
+
+void PauseGame::_DoTriggerEvent()
+{
+    SharedContext::Instance()->Get<EventManager>()->PushEvent<evt::PauseGame>();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -162,5 +179,5 @@ void MoveDown::_DoTriggerEvent()
 {
     SharedContext::Instance()->Get<EventManager>()->PushEvent<evt::MoveDown>();
 }
-
+} // namespace binding
 } // namespace input
