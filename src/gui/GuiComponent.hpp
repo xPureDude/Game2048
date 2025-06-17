@@ -25,7 +25,7 @@ class Element;
 
 struct ComponentParam
 {
-    Element* m_owner;
+    Element* m_owner = nullptr;
 };
 
 class Component
@@ -50,7 +50,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 struct ElementBaseComponentParam : public ComponentParam
 {
-    std::weak_ptr<Element> m_parent;
+    std::weak_ptr<Element> m_parent = std::weak_ptr<Element>();
 };
 
 class ElementBaseComponent : public Component
@@ -104,7 +104,7 @@ public:
 private:
     sf::Vector2f m_position;
     sf::Vector2f m_size;
-    std::int32_t m_zValue;
+    std::int32_t m_zValue{0};
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ public:
     void SetLabelStyle(const std::string& styleName);
 
 private:
-    gui::LabelStyle* m_style;
+    gui::LabelStyle* m_style{nullptr};
     std::optional<sf::Sprite> m_sprite;
 };
 
@@ -159,7 +159,7 @@ public:
     void SetHAlignment(HAlignment align);
 
 private:
-    TextStyle* m_style;
+    TextStyle* m_style{nullptr};
     std::optional<sf::Text> m_text;
     std::string m_strID;
     std::vector<std::string> m_args;
@@ -220,7 +220,7 @@ public:
 private:
     std::unordered_map<std::string, std::shared_ptr<Element>> m_mapChilds;
     std::vector<std::shared_ptr<Element>> m_vecChilds;
-    WidgetStyle* m_style;
+    WidgetStyle* m_style{nullptr};
 
     sf::RenderTexture m_panelTexture;
     sf::Sprite m_sprite;

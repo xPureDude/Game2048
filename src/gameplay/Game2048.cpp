@@ -126,6 +126,7 @@ Game2048::~Game2048()
     {
         delete block;
     }
+    m_blocks.clear();
 }
 
 void Game2048::Update(const sf::Time& elapsed)

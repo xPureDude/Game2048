@@ -8,7 +8,8 @@
 #include "gui/GuiManager.hpp"
 
 ScenePlayLayer::ScenePlayLayer()
-    : gui::Layer()
+    : gui::Layer(),
+      m_scoreLabel(nullptr)
 {
     _InitLayer();
 

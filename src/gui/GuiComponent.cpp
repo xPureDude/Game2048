@@ -16,6 +16,8 @@ Component::Component(const ComponentParam& param)
 /////////////////////////////////////////////////////////////////////////
 ElementBaseComponent::ElementBaseComponent(const ParamType& param)
     : Component(param),
+      m_parent(param.m_parent),
+      m_activate(true),
       m_state(ElementState::Normal)
 {
 }
